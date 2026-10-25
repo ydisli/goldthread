@@ -1,6 +1,6 @@
 import type { Graph } from '../graph.ts';
 import { ENGAGEMENT, nameOf, type Entity } from '../schema.ts';
-import { daysBetween, mean, fmtMoney, uniq } from '../util.ts';
+import { daysBetween, isoDate, mean, fmtMoney, uniq } from '../util.ts';
 import { concurrency, forecastScope } from './forecast.ts';
 
 // ---------------- Power / interest ----------------
@@ -113,7 +113,8 @@ export function sentimentTrend(s: Entity, interactions: Entity[]): SentimentTren
   const points = interactionsWith(s, interactions)
     .filter((i) => typeof i.sentiment === 'number')
     .map((i) => ({ date: i.date as string, sentiment: i.sentiment as number, id: i.id }));
-  if (points.length < 2) return { points, average: points[0]?.sentiment ?? null, recent: points[0]?.sentiment ?? null, label: 'unknown', slope: 0 };
+  // A trend needs at least three data points.
+  if (points.length < 3) return { points, average: points.length ? mean(points.map((p) => p.sentiment)) : null, recent: points[points.length - 1]?.sentiment ?? null, label: 'unknown', slope: 0 };
   const xs = points.map((_, i) => i), ys = points.map((p) => p.sentiment);
   const mx = mean(xs), my = mean(ys);
   let num = 0, den = 0;
@@ -371,6 +372,14 @@ export interface AlignmentGap { stakeholder: Entity; reason: string; severity: '
  */
 export function alignmentCheck(subject: Entity, g: Graph, now: Date): AlignmentGap[] {
   const involved = new Set<string>([...(subject.deciderIds ?? []), ...(subject.consultedIds ?? []), subject.ownerId].filter(Boolean));
+  // For bets, releases and specs (no explicit consultation list), anyone with a
+  // logged interaction since the work started counts as involved.
+  const isDecision = subject.type === 'decision';
+  const since: string = subject.date ?? subject.startDate ?? isoDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30));
+  if (!isDecision) {
+    for (const i of g.all('interaction')) if (i.date >= since) for (const sid of i.stakeholderIds ?? []) involved.add(sid);
+  }
+  const notInvolved = isDecision ? 'but not involved' : `but no interaction logged since ${since}`;
   const relatedIds = new Set<string>([subject.id, ...(subject.relatedIds ?? []), subject.betId, subject.scopeId].filter(Boolean));
   // Bets linked to related specs etc.
   for (const id of [...relatedIds]) {
@@ -388,7 +397,7 @@ export function alignmentCheck(subject: Entity, g: Graph, now: Date): AlignmentG
     if (!relatedIds.has(m.scopeId)) continue;
     for (const a of (m.activities ?? []) as string[]) {
       for (const [sid, role] of Object.entries((m.assignments?.[a] ?? {}) as Record<string, string>)) {
-        if ((role === 'A' || role === 'C') && !involved.has(sid)) add(g.get(sid), `${role === 'A' ? 'Accountable' : 'Consulted'} for "${a}" in ${m.title} but not involved.`, role === 'A' ? 'high' : 'medium');
+        if ((role === 'A' || role === 'C') && !involved.has(sid)) add(g.get(sid), `${role === 'A' ? 'Accountable' : 'Consulted'} for "${a}" in ${m.title} ${notInvolved}.`, role === 'A' ? 'high' : 'medium');
       }
     }
   }
@@ -521,6 +530,20 @@ function sumArr(evidence: Entity[]): number {
   return t;
 }
 
+// ---------------- Comms plan ----------------
+
+const FREQ_DAYS: Record<string, number> = { weekly: 7, biweekly: 14, monthly: 30, quarterly: 91 };
+
+export function commsDue(item: Entity, now: Date): { nextDue?: string; dueIn?: number; status: 'ok' | 'due' | 'overdue' | 'event-driven' | 'never-sent' } {
+  const days = FREQ_DAYS[item.frequency];
+  if (!days) return { status: 'event-driven' };
+  if (!item.lastSent) return { status: 'never-sent' };
+  const dueIn = days - daysBetween(item.lastSent, now);
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + dueIn);
+  const nextDue = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}-${String(next.getDate()).padStart(2, '0')}`;
+  return { nextDue, dueIn, status: dueIn < 0 ? 'overdue' : dueIn <= 1 ? 'due' : 'ok' };
+}
+
 // ---------------- Hub summary ----------------
 
 export interface HubSummary {
@@ -532,6 +555,7 @@ export interface HubSummary {
   riskyCommitments: { c: Entity; risk: CommitmentRisk }[];
   openConflicts: Entity[];
   loopsToClose: Entity[];
+  overdueComms: Entity[];
 }
 
 export function hubSummary(g: Graph, now: Date): HubSummary {
@@ -547,6 +571,7 @@ export function hubSummary(g: Graph, now: Date): HubSummary {
   const riskyCommitments = g.all('commitment').filter((c) => c.status === 'open').map((c) => ({ c, risk: commitmentRisk(c, g, now) })).filter((x) => x.risk.level === 'high' || x.risk.level === 'medium');
   const openConflicts = g.all('conflict').filter((c) => c.status !== 'resolved');
   const loopsToClose = g.all('request').filter((r) => !r.loopClosed && ['shipped', 'measured'].includes(g.get(r.betId)?.status));
-  return { overdue, cooling, gaps, pendingApprovals, overdueRequests, riskyCommitments, openConflicts, loopsToClose };
+  const overdueComms = g.all('commsItem').filter((i) => commsDue(i, now).status === 'overdue');
+  return { overdue, cooling, gaps, pendingApprovals, overdueRequests, riskyCommitments, openConflicts, loopsToClose, overdueComms };
 }
 

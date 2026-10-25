@@ -2,7 +2,7 @@ import type { Graph } from '../graph.ts';
 import { daysBetween, fmtMoney, pluralize } from '../util.ts';
 import { clusterEvidence } from './clustering.ts';
 import { backlogHygiene } from './hygiene.ts';
-import { hubSummary, pendingApprovalsFor, QUADRANTS, quadrant } from './stakeholders.ts';
+import { commsDue, hubSummary, pendingApprovalsFor, QUADRANTS, quadrant } from './stakeholders.ts';
 
 export type BriefSeverity = 'critical' | 'high' | 'medium' | 'low';
 
@@ -55,6 +55,10 @@ export function dailyBrief(g: Graph, now: Date): BriefItem[] {
   }
   for (const r of hub.loopsToClose) {
     items.push({ id: `loop-${r.id}`, area: 'stakeholders', severity: 'low', title: `Close the loop with ${g.get(r.requesterId)?.name ?? 'the requester'}`, detail: `"${r.title}" shipped with ${g.get(r.betId)?.title}`, refId: r.id });
+  }
+  for (const i of hub.overdueComms) {
+    const due = commsDue(i, now);
+    items.push({ id: `comms-${i.id}`, area: 'stakeholders', severity: 'medium', title: `Comms overdue: ${i.title}`, detail: `${i.frequency} · last sent ${i.lastSent} · ${-(due.dueIn ?? 0)} days late`, refId: i.id });
   }
   for (const c of hub.openConflicts.filter((c) => c.status === 'escalated')) {
     items.push({ id: `conf-${c.id}`, area: 'stakeholders', severity: 'high', title: `Escalated conflict: ${c.title}`, refId: c.id });

@@ -69,12 +69,15 @@ export interface HygieneReport {
 /** Backlog hygiene scan over stories that are not done. */
 export function backlogHygiene(stories: Entity[], now: Date, staleDays = 90): HygieneReport {
   const open = stories.filter((s) => s.status !== 'done');
-  const tok = new Map(open.map((s) => [s.id, new Set(tokenize(`${s.title} ${s.iWant ?? ''}`))]));
+  const tok = new Map(stories.map((s) => [s.id, new Set(tokenize(`${s.title} ${s.iWant ?? ''}`))]));
+  // Open stories are compared with every story: a duplicate of a done story is "already delivered".
   const duplicates: HygieneReport['duplicates'] = [];
+  const openIds = new Set(open.map((s) => s.id));
   for (let i = 0; i < open.length; i++)
-    for (let j = i + 1; j < open.length; j++) {
-      const sim = jaccard(tok.get(open[i].id)!, tok.get(open[j].id)!);
-      if (sim >= 0.6) duplicates.push({ a: open[i], b: open[j], similarity: sim });
+    for (const other of stories) {
+      if (other.id === open[i].id || (openIds.has(other.id) && stories.indexOf(other) < stories.indexOf(open[i]))) continue;
+      const sim = jaccard(tok.get(open[i].id)!, tok.get(other.id)!);
+      if (sim >= 0.6) duplicates.push({ a: open[i], b: other, similarity: sim });
     }
   const stale = open.filter((s) => s.status === 'backlog' && daysBetween((s.updatedAt ?? s.createdAt ?? '').slice(0, 10), now) > staleDays);
   const orphans = open.filter((s) => !s.betId && !(s.requirementIds ?? []).length);
