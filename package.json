@@ -1,0 +1,35 @@
+{
+  "name": "throughline",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Throughline — the intent & alignment layer for Product Owners and Business Analysts",
+  "type": "module",
+  "engines": {
+    "node": ">=23.6"
+  },
+  "bin": {
+    "tl": "cli/tl.ts"
+  },
+  "scripts": {
+    "dev": "node server/index.ts --dev",
+    "build": "vite build --config web/vite.config.ts",
+    "start": "node server/index.ts",
+    "test": "node --test \"core/test/*.test.ts\"",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "seed": "node server/index.ts --reset-only",
+    "tl": "node cli/tl.ts"
+  },
+  "dependencies": {
+    "lucide-react": "^1.61.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  }
+}
