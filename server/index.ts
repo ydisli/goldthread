@@ -271,10 +271,6 @@ const MIME: Record<string, string> = {
 };
 
 let vite: any = null;
-if (DEV) {
-  const { createServer: createVite } = await import('vite');
-  vite = await createVite({ configFile: join(ROOT, 'web', 'vite.config.ts'), server: { middlewareMode: true }, appType: 'spa' });
-}
 
 const DIST = join(ROOT, 'web', 'dist');
 function serveStatic(req: IncomingMessage, res: ServerResponse, url: URL) {
@@ -327,6 +323,23 @@ const server = createServer(async (req, res) => {
   }
   if (vite) vite.middlewares(req, res, () => res.writeHead(404).end());
   else serveStatic(req, res, url);
+});
+
+// Dev: Vite runs as middleware and shares this server for hot reload, so a
+// second copy on another PORT needs no extra ports.
+if (DEV) {
+  const { createServer: createVite } = await import('vite');
+  vite = await createVite({ configFile: join(ROOT, 'web', 'vite.config.ts'), server: { middlewareMode: true, ws: { server } }, appType: 'spa' });
+}
+
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use — Throughline is probably already running at http://${HOST}:${PORT}.`);
+    console.error(`Open that URL, stop the other process, or start a second copy with: PORT=${PORT + 1} npm run dev`);
+  } else {
+    console.error(`Could not start the server: ${err.message}`);
+  }
+  process.exit(1);
 });
 
 server.listen(PORT, HOST, () => {
