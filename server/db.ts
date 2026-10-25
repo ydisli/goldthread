@@ -149,6 +149,22 @@ export class Store {
     return current;
   }
 
+  /** Recently deleted entities, newest first. Deletes are soft, so anything here can be restored. */
+  trash(limit = 50): (Entity & { deletedAt: string })[] {
+    const rows = this.db.prepare('SELECT * FROM entities WHERE deleted = 1 ORDER BY updated_at DESC LIMIT ?').all(Math.min(200, limit)) as any[];
+    return rows.map((r) => ({ ...rowToEntity(r), deletedAt: r.updated_at }));
+  }
+
+  restore(id: string, actor: Actor = 'system'): Entity | undefined {
+    const row = this.db.prepare('SELECT * FROM entities WHERE id = ? AND deleted = 1').get(id) as any;
+    if (!row) return undefined;
+    const at = new Date().toISOString();
+    this.db.prepare('UPDATE entities SET deleted = 0, updated_at = ? WHERE id = ?').run(at, id);
+    const e = { ...rowToEntity(row), updatedAt: at };
+    this.log(actor, e, 'update', `Restored ${ENTITY_MAP[e.type]?.label.toLowerCase() ?? e.type} "${titleFor(e)}"`);
+    return e;
+  }
+
   private log(actor: Actor, e: Entity, action: Activity['action'], summary: string, changes?: Activity['changes']) {
     this.db.prepare('INSERT INTO activity(at, actor, actor_id, entity_id, entity_type, action, summary, changes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
       .run(new Date().toISOString(), actorName(actor), actorId(actor), e.id, e.type, action, summary, changes ? JSON.stringify(changes) : null);

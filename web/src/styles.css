@@ -564,3 +564,16 @@ a.list-item:hover { background: var(--surface-2); text-decoration: none; }
   .pm-body { grid-template-columns: minmax(0, 1fr); }
   .pm-inspector { border-left: 0; border-top: 1px solid var(--border); max-height: none; }
 }
+
+/* ---------- Comments & mentions ---------- */
+.mention { color: var(--accent-text); background: var(--accent-soft); border-radius: 4px; padding: 0 3px; font-weight: 550; }
+.comment-new { align-items: flex-end; }
+.mention-menu { position: absolute; left: 0; bottom: calc(100% + 4px); z-index: 30; min-width: 220px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); box-shadow: var(--shadow-md); padding: 4px; display: flex; flex-direction: column; }
+.mention-menu button { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 0; background: none; color: var(--text); border-radius: 5px; text-align: left; font: inherit; cursor: pointer; }
+.mention-menu button span:nth-child(2) { flex: 1; }
+.mention-menu button.on, .mention-menu button:hover { background: var(--surface-2); }
+
+/* ---------- Keyboard shortcuts ---------- */
+.shortcut-list { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.shortcut-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.shortcut-row:last-child { border-bottom: 0; }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { defaultsFor, defOf, nameOf, type Entity } from '../../../core/schema.ts';
-import { can, createEntity, deleteEntity, updateEntity, useEntity } from '../store.ts';
+import { can, createEntity, deleteEntity, restoreEntity, updateEntity, useEntity } from '../store.ts';
 import { navigate } from '../router.tsx';
 import { Drawer, errorToast, toast } from '../ui/kit.tsx';
 import { Icon } from '../ui/icons.tsx';
@@ -77,10 +77,10 @@ function EntityForm({ req, onClose }: { req: EditorRequest; onClose: () => void 
   };
 
   const remove = async () => {
-    if (!existing || !confirm(`Delete ${def.label.toLowerCase()} "${nameOf(existing)}"? It stays in the activity trail.`)) return;
+    if (!existing || !confirm(`Delete ${def.label.toLowerCase()} "${nameOf(existing)}"? You can undo this or restore it later from Settings → Data.`)) return;
     try {
       await deleteEntity(existing.id);
-      toast(`${def.label} deleted`);
+      toast(`${def.label} deleted`, 'info', { label: 'Undo', run: () => { restoreEntity(existing.id).then(() => toast(`${def.label} restored`)).catch(errorToast); } });
       onClose();
     } catch (err) { errorToast(err); }
   };

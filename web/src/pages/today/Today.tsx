@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { dailyBrief, type BriefItem } from '../../../../core/engines/brief.ts';
+import { dailyBrief, openMentions, type BriefItem } from '../../../../core/engines/brief.ts';
 import { commitmentRisk, hubSummary, pendingApprovalsFor, quadrant } from '../../../../core/engines/stakeholders.ts';
 import { daysBetween, isoDate } from '../../../../core/util.ts';
 import { ENTITY_MAP, nameOf } from '../../../../core/schema.ts';
@@ -7,8 +7,9 @@ import { can, now, updateMe, useGraph, useMe, useSettings, useStore } from '../.
 import { Link } from '../../router.tsx';
 import { Avatar, Badge, Card, Empty, PageHead, Seg, errorToast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
-import { fmtDate, relDays } from '../../ui/format.ts';
+import { fmtDate, fmtDateTime, relDays } from '../../ui/format.ts';
 import { hrefOf } from '../../entity/links.ts';
+import { MentionText } from '../../entity/comments.tsx';
 
 const AREA_LABEL: Record<BriefItem['area'], string> = { stakeholders: 'Stakeholders', discover: 'Discover', define: 'Define', deliver: 'Deliver', learn: 'Learn', strategy: 'Strategy' };
 
@@ -218,9 +219,31 @@ export function InboxPage() {
   const findings = g.all('reviewFinding').filter((f) => f.status === 'open');
   const actions = g.all('meeting').flatMap((m) => ((m.actions ?? []) as any[]).filter((a) => !a.done).map((a) => ({ ...a, meeting: m })));
   const mine = actions.filter((a) => a.ownerId === me?.id);
+  const account = useMe();
+  const members = useStore().members;
+  const seen = account?.prefs.seenMentions ?? [];
+  const mentions = openMentions(g, account?.id, seen);
+  const clear = (ids: string[]) => updateMe({ prefs: { seenMentions: [...seen, ...ids].slice(-300) } }).catch(errorToast);
   return (
     <div className="page">
-      <PageHead title="Inbox" sub="Everything that is waiting on you: sign-offs, requests to triage, review questions and action items." />
+      <PageHead title="Inbox" sub="Everything that is waiting on you: mentions, sign-offs, requests to triage, review questions and action items." />
+      {mentions.length > 0 && (
+        <Card title={`Mentioned you · ${mentions.length}`} icon="at-sign" flush className="mb16" actions={mentions.length > 1 && <button className="btn btn-sm btn-ghost" onClick={() => clear(mentions.map((c) => c.id))}>Mark all done</button>}>
+          <div className="list">{mentions.map((c) => {
+            const on = g.get(c.entityId);
+            return (
+              <div key={c.id} className="list-item">
+                <Avatar name={c.author} size="sm" />
+                <Link to={on ? hrefOf(on) : '/inbox'} className="grow" style={{ color: 'inherit' }}>
+                  <div className="small"><span className="strong">{c.author}</span> <span className="muted">on {nameOf(on)} · {fmtDateTime(c.createdAt)}</span></div>
+                  <div className="pre"><MentionText body={c.body} members={members} /></div>
+                </Link>
+                <button className="btn btn-sm" onClick={() => clear([c.id])}>Done</button>
+              </div>
+            );
+          })}</div>
+        </Card>
+      )}
       <div className="grid g2">
         <Card title={`Waiting on your sign-off · ${approvals.length}`} icon="clipboard-check" flush>
           {approvals.length ? <div className="list">{approvals.map((a) => (

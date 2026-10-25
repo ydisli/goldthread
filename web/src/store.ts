@@ -26,7 +26,7 @@ export type Role = 'owner' | 'admin' | 'editor' | 'viewer';
 export type Persona = 'po' | 'ba' | 'both';
 export const ROLE_RANK: Record<Role, number> = { viewer: 1, editor: 2, admin: 3, owner: 4 };
 
-export interface Prefs { persona?: Persona; pinned?: string[]; dismissedGuides?: string[]; [k: string]: unknown }
+export interface Prefs { persona?: Persona; pinned?: string[]; dismissedGuides?: string[]; seenMentions?: string[]; book?: Record<string, string>; [k: string]: unknown }
 export interface Me { id: string; email: string; name: string; title?: string; demo: boolean; prefs: Prefs }
 export interface WorkspaceRef { id: string; name: string; kind: 'personal' | 'team'; demo: boolean; role: Role }
 export interface Member { userId: string; name: string; email: string; role: Role }
@@ -261,6 +261,13 @@ export async function deleteEntity(id: string): Promise<void> {
   const entities = new Map(state.entities);
   entities.delete(id);
   set({ entities });
+}
+
+/** Deletes are soft: bring an entity back (used by Undo and Recently deleted). */
+export async function restoreEntity(id: string): Promise<Entity> {
+  const e = await api<Entity>(`/api/entities/${encodeURIComponent(id)}/restore`, { method: 'POST' });
+  upsert([e]);
+  return e;
 }
 
 export type BatchOp = { op: 'create'; type: string; data: Record<string, unknown> } | { op: 'update'; id: string; data: Record<string, unknown> } | { op: 'delete'; id: string };

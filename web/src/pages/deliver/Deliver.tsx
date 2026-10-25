@@ -6,9 +6,9 @@ import { concurrency, forecastScope, scopeCreep, weeklyThroughput } from '../../
 import { impactAnalysis, traceMatrix } from '../../../../core/engines/traceability.ts';
 import { AUDIENCES, commitmentRisk, tailoredUpdate, type Audience } from '../../../../core/engines/stakeholders.ts';
 import { addDays, daysBetween, isoDate } from '../../../../core/util.ts';
-import { deleteEntity, now, updateEntity, useEntity, useGraph } from '../../store.ts';
+import { can, deleteEntity, now, restoreEntity, updateEntity, useEntity, useGraph } from '../../store.ts';
 import { Link, navigate, setQuery, useRoute } from '../../router.tsx';
-import { Badge, Card, Markdown, Meter, PageHead, Seg, Stat, StatusBadge, Tabs, copyText, errorToast, toast, Term } from '../../ui/kit.tsx';
+import { Badge, Card, Dropdown, Markdown, Meter, PageHead, Seg, Stat, StatusBadge, Tabs, copyText, errorToast, toast, Term } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { ToolGuide } from '../../ui/guide.tsx';
 import { HBars, Legend, LineChart, RiskMatrix, SERIES, useTooltip } from '../../ui/charts.tsx';
@@ -18,6 +18,7 @@ import { EntityPicker, RefChip, RefChips } from '../../entity/fields.tsx';
 import { openEditor } from '../../entity/editor.tsx';
 import { hrefOf } from '../../entity/links.ts';
 import { AlignmentPanel } from '../stakeholders/Governance.tsx';
+import { ImportIssuesDrawer, exportStoriesCsv } from './ImportIssues.tsx';
 
 // ---------------- Backlog health ----------------
 
@@ -27,9 +28,12 @@ export function BacklogPage() {
   const stories = g.all('story');
   const h = useMemo(() => backlogHygiene(stories, today), [g]); // eslint-disable-line react-hooks/exhaustive-deps
   const open = stories.filter((s) => s.status !== 'done');
+  const [importing, setImporting] = useState(false);
   const archive = async (s: Entity) => {
-    if (!confirm(`Archive "${s.title}"? It is removed from the backlog but kept in the activity trail.`)) return;
-    try { await deleteEntity(s.id); toast('Archived'); } catch (err) { errorToast(err); }
+    try {
+      await deleteEntity(s.id);
+      toast(`Archived "${s.title}"`, 'info', { label: 'Undo', run: () => { restoreEntity(s.id).catch(errorToast); } });
+    } catch (err) { errorToast(err); }
   };
   const Section = ({ title, icon, items, render, hint }: { title: string; icon: string; items: unknown[]; render: (x: any, i: number) => ReactNode; hint: string }) => (
     <Card title={`${title} · ${items.length}`} icon={icon} sub={hint} flush>
@@ -44,7 +48,17 @@ export function BacklogPage() {
   );
   return (
     <div className="page">
-      <PageHead title="Backlog health" sub="Duplicates, stale items, orphans, missing acceptance criteria, oversized stories and dependency cycles — found automatically." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'story' })}><Icon name="plus" size={14} />New story</button>} />
+      <PageHead title="Backlog health" sub="Duplicates, stale items, orphans, missing acceptance criteria, oversized stories and dependency cycles — found automatically." actions={<>
+        {can('editor') && <button className="btn" onClick={() => setImporting(true)}><Icon name="file-up" size={14} />Import from Jira / ADO</button>}
+        <Dropdown align="right" width={250} trigger={(toggle) => <button className="btn" onClick={toggle}><Icon name="download" size={14} />Export</button>}>
+          {(close) => <>
+            <button className="menu-item" onClick={() => { exportStoriesCsv(true); close(); }}><Icon name="download" size={14} />New stories only (no Jira key yet)</button>
+            <button className="menu-item" onClick={() => { exportStoriesCsv(false); close(); }}><Icon name="download" size={14} />All open stories</button>
+          </>}
+        </Dropdown>
+        {can('editor') && <button className="btn btn-primary" onClick={() => openEditor({ type: 'story' })}><Icon name="plus" size={14} />New story</button>}
+      </>} />
+      {importing && <ImportIssuesDrawer onClose={() => setImporting(false)} />}
       <div className="grid g4 mb16">
         <Stat label="Health score" value={`${h.score}/100`} tone={h.score >= 75 ? 'green' : h.score >= 50 ? 'amber' : 'red'} />
         <Stat label="Open stories" value={open.length} sub={`${open.filter((s) => readiness(s).ok).length} meet Definition of Ready`} />

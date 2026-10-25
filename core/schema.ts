@@ -760,6 +760,7 @@ export const ENTITIES: EntityDef[] = [
       text('asA', 'As a'),
       text('iWant', 'I want'),
       text('soThat', 'So that'),
+      md('description', 'Description'),
       md('acceptance', 'Acceptance criteria', { placeholder: 'Given …\nWhen …\nThen …' }),
       en('status', 'Status', ['backlog', 'ready', 'in-progress', 'in-review', 'done']),
       num('estimate', 'Estimate (points)'),
@@ -913,7 +914,9 @@ export const ENTITIES: EntityDef[] = [
     fields: [
       ref('entityId', 'On', ANY, { required: true }),
       text('author', 'Author'),
+      text('authorId', 'Author account', { hidden: true }),
       long('body', 'Comment', { required: true }),
+      json('mentions', 'Mentioned people', { default: [] }),
       bool('resolved', 'Resolved'),
     ],
   },

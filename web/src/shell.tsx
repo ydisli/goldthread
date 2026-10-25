@@ -215,6 +215,7 @@ function UserMenu({ onNavigate }: { onNavigate: () => void }) {
           <button className="menu-item" onClick={() => go('/workspace/settings?tab=profile', close)}><Icon name="circle-user" size={15} />Profile & preferences</button>
           <button className="menu-item" onClick={() => go('/workspace/settings?tab=connect', close)}><Icon name="plug" size={15} />Connect tools & AI</button>
           <button className="menu-item" onClick={() => go('/tools', close)}><Icon name="pin" size={15} />Choose pinned tools</button>
+          <button className="menu-item" onClick={() => { close(); openShortcuts(); }}><Icon name="keyboard" size={15} />Keyboard shortcuts<kbd style={{ marginLeft: 'auto' }}>?</kbd></button>
           <div className="menu-sep" />
           <div className="menu-label">Theme</div>
           <div style={{ padding: '2px 6px 6px' }}>
@@ -435,5 +436,74 @@ export function MobileNav({ onMenu }: { onMenu: () => void }) {
       <Link to="/stakeholders" className={path.startsWith('/stakeholders') ? 'on' : ''}><Icon name="users" size={20} /><span>People</span></Link>
       <button onClick={onMenu}><Icon name="menu" size={20} /><span>More</span></button>
     </nav>
+  );
+}
+
+// ---------------- keyboard shortcuts ----------------
+
+const GO: Record<string, { to: string; label: string }> = {
+  h: { to: '/today', label: 'Home' },
+  i: { to: '/inbox', label: 'Inbox' },
+  a: { to: '/ask', label: 'Ask' },
+  t: { to: '/tools', label: 'All tools' },
+  l: { to: '/learn', label: 'Learning book' },
+  s: { to: '/workspace/settings', label: 'Settings' },
+};
+
+let shortcutsOpener: (() => void) | null = null;
+export const openShortcuts = () => shortcutsOpener?.();
+
+const typing = (t: EventTarget | null) => {
+  const el = t as HTMLElement | null;
+  return !!el && (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || el.isContentEditable);
+};
+
+/** "?" for the list, "g" then a letter to jump. */
+export function Shortcuts() {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    shortcutsOpener = () => setOpen(true);
+    let pendingG = 0;
+    const onKey = (e: KeyboardEvent) => {
+      if (typing(e.target) || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === '?' || (e.shiftKey && e.code === 'Slash')) { e.preventDefault(); setOpen((o) => !o); return; }
+      if (e.key === 'g') { pendingG = Date.now(); return; }
+      if (pendingG && Date.now() - pendingG < 1200 && GO[e.key]) { e.preventDefault(); pendingG = 0; setOpen(false); navigate(GO[e.key].to); return; }
+      pendingG = 0;
+    };
+    window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('keydown', onKey); shortcutsOpener = null; };
+  }, []);
+  if (!open) return null;
+  const rows: [string[], string][] = [
+    [['⌘', 'K'], 'Search and jump anywhere'],
+    [['c'], 'Capture a signal, note or request'],
+    [['?'], 'Show this list'],
+    ...Object.entries(GO).map(([k, v]): [string[], string] => [['g', k], `Go to ${v.label}`]),
+    [['⌘', '↵'], 'Post a comment, save a capture'],
+    [['@'], 'Mention a teammate in a comment'],
+    [['Esc'], 'Close a drawer, dialog or menu'],
+  ];
+  const canvas: [string[], string][] = [
+    [['Drag'], 'Move a step; drag its handle to connect'],
+    [['↵'], 'Rename the selected step'],
+    [['←', '→', '↑', '↓'], 'Nudge the selected step'],
+    [['Del'], 'Remove the selection'],
+    [['⌘', 'Z'], 'Undo  ·  ⇧⌘Z redo'],
+  ];
+  const table = (list: [string[], string][]) => (
+    <div className="shortcut-list">{list.map(([keys, label]) => (
+      <div key={label} className="shortcut-row"><span>{label}</span><span className="row" style={{ gap: 4 }}>{keys.map((k) => <kbd key={k}>{k}</kbd>)}</span></div>
+    ))}</div>
+  );
+  return (
+    <Modal onClose={() => setOpen(false)} label="Keyboard shortcuts">
+      <div className="col" style={{ padding: 20, gap: 14 }}>
+        <div className="row"><h2 style={{ margin: 0 }}>Keyboard shortcuts</h2><span className="spacer" /><button className="btn btn-ghost btn-icon" onClick={() => setOpen(false)} aria-label="Close"><Icon name="x" /></button></div>
+        {table(rows)}
+        <div className="eyebrow" style={{ marginTop: 4 }}>Process modeller</div>
+        {table(canvas)}
+      </div>
+    </Modal>
   );
 }

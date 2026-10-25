@@ -6,6 +6,7 @@ import { concurrency, forecastScope, scopeCreep } from '../../../../core/engines
 import { evaluateBusinessCase } from '../../../../core/engines/finance.ts';
 import { sampleSizePerVariant, twoProportionTest } from '../../../../core/engines/stats.ts';
 import { daysBetween, isoDate, uniq } from '../../../../core/util.ts';
+import { parseCsv } from '../../../../core/engines/importers.ts';
 import { batch, now, updateEntity, useEntity, useGraph } from '../../store.ts';
 import { Link, navigate, setQuery, useRoute } from '../../router.tsx';
 import { Badge, Card, Empty, Meter, PageHead, Seg, Stat, StatusBadge, Tabs, errorToast, toast } from '../../ui/kit.tsx';
@@ -136,22 +137,6 @@ function Unlinked({ items }: { items: Entity[] }) {
       </div>
     </Card>
   );
-}
-
-function parseCsv(text: string): string[][] {
-  const rows: string[][] = [];
-  let row: string[] = [], cur = '', q = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (q) {
-      if (ch === '"' && text[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch;
-    } else if (ch === '"') q = true;
-    else if (ch === ',' || ch === '\t') { row.push(cur); cur = ''; }
-    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }
-    else cur += ch;
-  }
-  if (cur || row.length) { row.push(cur); rows.push(row); }
-  return rows.filter((r) => r.some((c) => c.trim()));
 }
 
 function ImportSignals() {

@@ -16,6 +16,9 @@ export interface Prefs {
   persona?: Persona;
   pinned?: string[];
   dismissedGuides?: string[];
+  seenMentions?: string[];
+  /** Learning book progress: chapter id → ISO date finished. */
+  book?: Record<string, string>;
   [k: string]: unknown;
 }
 

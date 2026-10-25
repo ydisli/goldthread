@@ -1,4 +1,5 @@
 import type { Graph } from '../graph.ts';
+import type { Entity } from '../schema.ts';
 import { daysBetween, impactText, pluralize } from '../util.ts';
 import { clusterEvidence } from './clustering.ts';
 import { backlogHygiene } from './hygiene.ts';
@@ -132,3 +133,11 @@ export function briefCounts(items: BriefItem[]): Record<BriefSeverity, number> {
   return out;
 }
 
+/** Unresolved comments that mention this person and that they have not cleared yet, newest first. */
+export function openMentions(g: Graph, userId: string | undefined, cleared: readonly string[] = []): Entity[] {
+  if (!userId) return [];
+  const done = new Set(cleared);
+  return g.all('comment')
+    .filter((c) => !c.resolved && !done.has(c.id) && c.authorId !== userId && ((c.mentions ?? []) as string[]).includes(userId))
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}

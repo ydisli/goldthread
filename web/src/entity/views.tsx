@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { defOf, ENTITY_MAP, nameOf, type Entity, type FieldDef } from '../../../core/schema.ts';
-import { api, createEntity, updateEntity, useEntity, useGraph, useSettings, useStore, type Activity } from '../store.ts';
+import { api, useEntity, useGraph, useStore, type Activity } from '../store.ts';
 import { Link, navigate } from '../router.tsx';
 import { Icon } from '../ui/icons.tsx';
 import { Avatar, Card, Empty, PageHead, StatusBadge, copyText, errorToast } from '../ui/kit.tsx';
@@ -8,6 +8,9 @@ import { fmtDateTime, humanize } from '../ui/format.ts';
 import { FieldValue, RefChip } from './fields.tsx';
 import { openEditor } from './editor.tsx';
 import { hrefOf } from './links.ts';
+import { Comments } from './comments.tsx';
+
+export { Comments };
 
 // ---------------- Entity table ----------------
 
@@ -256,40 +259,6 @@ function fmtChange(v: unknown): string {
   if (typeof v === 'object') return '{…}';
   const s = String(v);
   return s.length > 40 ? `${s.slice(0, 39)}…` : s;
-}
-
-export function Comments({ entityId }: { entityId: string }) {
-  const g = useGraph();
-  const settings = useSettings();
-  const [body, setBody] = useState('');
-  const comments = g.referencing(entityId, 'comment', 'entityId').sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-  const add = async () => {
-    if (!body.trim()) return;
-    try {
-      await createEntity('comment', { entityId, body: body.trim(), author: settings.userName ?? 'Me' });
-      setBody('');
-    } catch (err) { errorToast(err); }
-  };
-  return (
-    <Card title={`Comments${comments.length ? ` · ${comments.length}` : ''}`} icon="message-square" flush>
-      <div className="list">
-        {comments.map((c) => (
-          <div key={c.id} className="list-item" style={{ opacity: c.resolved ? 0.55 : 1 }}>
-            <Avatar name={c.author} size="sm" />
-            <div className="grow">
-              <div className="small"><span className="strong">{c.author}</span> <span className="muted">{fmtDateTime(c.createdAt)}</span></div>
-              <div className="pre">{c.body}</div>
-            </div>
-            <button className="btn btn-ghost btn-sm" onClick={() => updateEntity(c.id, { resolved: !c.resolved }).catch(errorToast)}>{c.resolved ? 'Reopen' : 'Resolve'}</button>
-          </div>
-        ))}
-        <div className="list-item">
-          <textarea className="textarea" rows={2} style={{ minHeight: 44 }} placeholder="Add a comment… (⌘↵ to post)" value={body} onChange={(e) => setBody(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) void add(); }} />
-          <button className="btn" onClick={add} disabled={!body.trim()}>Post</button>
-        </div>
-      </div>
-    </Card>
-  );
 }
 
 /** Generic detail page: /e/:type/:id — also used as the base for specialised pages. */

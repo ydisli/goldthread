@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { ENTITIES } from '../../../../core/schema.ts';
-import { api, can, getState, logout, refreshAuth, updateMe, updateSettings, useGraph, useMe, useSettings, useStore, type Persona, type Role } from '../../store.ts';
+import { ENTITIES, ENTITY_MAP, nameOf, type Entity } from '../../../../core/schema.ts';
+import { api, can, getState, logout, refreshAuth, restoreEntity, updateMe, updateSettings, useGraph, useMe, useSettings, useStore, type Persona, type Role } from '../../store.ts';
 import { setQuery, useRoute } from '../../router.tsx';
 import { Avatar, Card, Empty, PageHead, Seg, Tabs, copyText, errorToast, toast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
@@ -532,9 +532,37 @@ function DataTab() {
           <div className="row mt12"><span className="small muted grow">Members and their access stay as they are.</span><button className="btn btn-danger" onClick={reset}>Replace…</button></div>
         </Card>
       )}
+      {canExport && <RecentlyDeleted />}
       <Card title={`What's in here · ${g.byId.size.toLocaleString()} items`}>
         <div className="chips">{counts.map(({ d, n }) => <span key={d.type} className="badge">{d.plural} {n}</span>)}</div>
       </Card>
     </div>
+  );
+}
+
+function RecentlyDeleted() {
+  const [items, setItems] = useState<(Entity & { deletedAt: string })[] | null>(null);
+  const load = useCallback(() => { api<(Entity & { deletedAt: string })[]>('/api/trash?limit=40').then(setItems).catch(errorToast); }, []);
+  useEffect(load, [load]);
+  const restore = async (e: Entity) => {
+    try {
+      await restoreEntity(e.id);
+      toast(`Restored “${nameOf(e)}”`);
+      load();
+    } catch (err) { errorToast(err); }
+  };
+  const shown = (items ?? []).filter((e) => e.type !== 'comment');
+  return (
+    <Card title="Recently deleted" icon="archive-restore" flush sub="Deletes are never final. Bring anything back with its links intact.">
+      {items === null ? <div className="empty">Loading…</div> : shown.length === 0 ? <Empty icon="archive-restore">Nothing has been deleted.</Empty> : (
+        <div className="list">{shown.map((e) => (
+          <div key={e.id} className="list-item" style={{ alignItems: 'center' }}>
+            <Icon name={ENTITY_MAP[e.type]?.icon ?? 'circle-dot'} size={15} className="muted" />
+            <div className="grow"><div className="strong">{nameOf(e)}</div><div className="small muted">{ENTITY_MAP[e.type]?.label ?? e.type} · deleted {fmtDate(e.deletedAt.slice(0, 10))}</div></div>
+            <button className="btn btn-sm" onClick={() => restore(e)}><Icon name="undo-2" size={13} />Restore</button>
+          </div>
+        ))}</div>
+      )}
+    </Card>
   );
 }

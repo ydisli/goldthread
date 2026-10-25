@@ -1,7 +1,7 @@
 import type { Graph } from '../../core/graph.ts';
-import { dailyBrief } from '../../core/engines/brief.ts';
+import { dailyBrief, openMentions } from '../../core/engines/brief.ts';
 import { hubSummary, pendingApprovalsFor } from '../../core/engines/stakeholders.ts';
-import type { Persona } from './store.ts';
+import { getState, type Persona } from './store.ts';
 
 export interface Tool {
   id: string;
@@ -18,8 +18,12 @@ export interface Section { id: string; label: string; icon: string; blurb: strin
 
 export const HOME: Tool = { id: 'home', label: 'Home', to: '/today', icon: 'house', blurb: 'Your day: what is waiting on you, who to reach, what is coming up.', keywords: 'brief today morning',
   count: (g, now) => { const n = dailyBrief(g, now).filter((i) => i.severity === 'critical').length; return n ? { n, alert: true } : null; } };
-export const INBOX: Tool = { id: 'inbox', label: 'Inbox', to: '/inbox', icon: 'inbox', blurb: 'Sign-offs, requests to triage, review questions and your action items.', keywords: 'approvals requests actions',
-  count: (g) => { const n = (g.me ? pendingApprovalsFor(g.me.id, g.all('approval')).length : 0) + g.all('request').filter((r) => r.status === 'new').length; return n ? { n } : null; } };
+export const INBOX: Tool = { id: 'inbox', label: 'Inbox', to: '/inbox', icon: 'inbox', blurb: 'Mentions, sign-offs, requests to triage, review questions and your action items.', keywords: 'approvals requests actions mentions',
+  count: (g) => {
+    const mentions = openMentions(g, g.meUserId, getState().auth?.user?.prefs.seenMentions).length;
+    const n = (g.me ? pendingApprovalsFor(g.me.id, g.all('approval')).length : 0) + g.all('request').filter((r) => r.status === 'new').length + mentions;
+    return n ? { n, alert: mentions > 0 } : null;
+  } };
 export const ASK: Tool = { id: 'ask', label: 'Ask', to: '/ask', icon: 'search', blurb: 'Search everything, or ask a question in plain words.', keywords: 'search question ai' };
 
 export const SECTIONS: Section[] = [

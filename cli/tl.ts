@@ -9,6 +9,7 @@ import { lint, lintSummary, RULE_LABELS } from '../core/engines/lint.ts';
 import { completeness, completenessScore } from '../core/engines/completeness.ts';
 import { reviewSpec, ROLE_INFO } from '../core/engines/review.ts';
 import { prepBrief } from '../core/engines/stakeholders.ts';
+import { parseCsv, planIssueImport } from '../core/engines/importers.ts';
 
 const URL_BASE = (process.env.TL_URL ?? 'http://127.0.0.1:4300').replace(/\/$/, '');
 const TOKEN = process.env.TL_TOKEN ?? '';
@@ -57,6 +58,9 @@ ${bold('Usage')}
   tl prep "<stakeholder name>"     Meeting prep brief for someone
   tl lint <spec.md> [--json] [--max-errors N] [--min-score S]
                                    Lint a spec offline; exits 1 when thresholds are exceeded (CI)
+  tl import <export.csv> [--dry-run] [--no-bugs]
+                                   Import a Jira or Azure DevOps CSV export into the backlog;
+                                   re-running updates stories by key (good for a nightly job)
   tl export                        Print the workspace as JSON
 
 ${bold('Environment')}
@@ -148,6 +152,25 @@ async function main() {
       const maxErrors = Number(flags['max-errors'] ?? 0);
       const minScore = Number(flags['min-score'] ?? 0);
       if (summary.errors > maxErrors || summary.score < minScore) process.exitCode = 1;
+      return;
+    }
+    case 'import': {
+      const file = pos[0];
+      if (!file) throw new Error('Usage: tl import <export.csv> [--dry-run] [--no-bugs]');
+      const stories = await call<Entity[]>('/api/entities?type=story');
+      const plan = planIssueImport(parseCsv(readFileSync(file, 'utf8')), stories, { bugsAsDefects: !flags['no-bugs'] });
+      const source = { jira: 'Jira', ado: 'Azure DevOps', generic: 'CSV' }[plan.source];
+      console.log(`${bold(source)} export: ${green(`${plan.creates.length} new`)}, ${plan.updates.length} updates${plan.defects.length && !flags['no-bugs'] ? `, ${yellow(`${plan.defects.length} defects`)}` : ''}`);
+      for (const s of plan.skipped) console.log(dim(`  skipped ${s.count}: ${s.reason}`));
+      for (const w of plan.warnings) console.log(yellow(`  ! ${w}`));
+      if (flags['dry-run']) { console.log(dim('Dry run — nothing written.')); return; }
+      const ops = [
+        ...plan.creates.map((data) => ({ op: 'create', type: 'story', data })),
+        ...plan.updates.map((u) => ({ op: 'update', id: u.id, data: u.data })),
+        ...(flags['no-bugs'] ? [] : plan.defects.map((data) => ({ op: 'create', type: 'defect', data }))),
+      ];
+      for (let i = 0; i < ops.length; i += 500) await call('/api/batch', { method: 'POST', body: ops.slice(i, i + 500) });
+      console.log(green(`✓ ${ops.length} changes written`));
       return;
     }
     case 'export': {

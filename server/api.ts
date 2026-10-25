@@ -48,6 +48,13 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
   r.add('POST', '/api/entities', 'viewer', async (ctx) => {
     const { type, ...fields } = (await ctx.body()) ?? {};
     if (type !== 'comment' && ctx.ws.role === 'viewer') throw new HttpError(403, 'Your role (viewer) can\'t edit. Comments are fine.');
+    // A comment is always signed by whoever posts it; mentions must be members of this workspace.
+    if (type === 'comment') {
+      fields.author = ctx.user.name;
+      fields.authorId = ctx.user.id;
+      const members = new Set(sys.members(wsId(ctx)).map((m) => m.userId));
+      fields.mentions = Array.isArray(fields.mentions) ? [...new Set(fields.mentions as string[])].filter((id) => members.has(id) && id !== ctx.user.id) : [];
+    }
     const e = ctx.ws.store.create(type, fields, actorOf(ctx));
     broadcast(wsId(ctx), [{ op: 'upsert', entity: e }]);
     return e;
@@ -64,6 +71,15 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
     if (!e) throw new HttpError(404, 'Not found');
     broadcast(wsId(ctx), [{ op: 'delete', id: ctx.params.id }]);
     return { ok: true };
+  });
+
+  r.add('GET', '/api/trash', 'editor', (ctx) => ctx.ws.store.trash(Number(ctx.url.searchParams.get('limit') ?? 50)));
+
+  r.add('POST', '/api/entities/:id/restore', 'editor', (ctx) => {
+    const e = ctx.ws.store.restore(ctx.params.id, actorOf(ctx));
+    if (!e) throw new HttpError(404, 'Nothing to restore');
+    broadcast(wsId(ctx), [{ op: 'upsert', entity: e }]);
+    return e;
   });
 
   /** Several creates/updates/deletes in one transaction. `$n` refers to the id created by op n. */

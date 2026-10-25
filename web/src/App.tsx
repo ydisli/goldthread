@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useStore } from './store.ts';
 import { match, navigate, useRoute } from './router.tsx';
-import { CommandPalette, MobileNav, NewWorkspaceModal, QuickCapture, SectionNav, Sidebar, openCapture } from './shell.tsx';
+import { CommandPalette, MobileNav, NewWorkspaceModal, QuickCapture, SectionNav, Shortcuts, Sidebar, openCapture } from './shell.tsx';
 import { EditorHost } from './entity/editor.tsx';
 import { Toasts, Empty } from './ui/kit.tsx';
 import { Icon } from './ui/icons.tsx';
@@ -57,6 +57,7 @@ export function App() {
       <EditorHost />
       <CommandPalette />
       <QuickCapture />
+      <Shortcuts />
       <Toasts />
     </div>
   );

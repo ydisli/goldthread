@@ -50,6 +50,13 @@ test('store: keys, versioning, soft delete with attributed activity', () => {
   assert.deepEqual(log.map((x) => x.action), ['delete', 'update', 'create', 'create']);
   assert.equal(log[1].actorId, 'u1');
   assert.throws(() => s.create('stakeholder', { power: 9 }), ValidationError);
+  assert.deepEqual(s.trash().map((e) => e.id), [b.id]);
+  const back = s.restore(b.id, 'tester');
+  assert.equal(back?.key, 'REQ-2');
+  assert.equal(s.get(b.id)?.title, 'Import');
+  assert.equal(s.trash().length, 0);
+  assert.equal(s.restore(b.id), undefined, 'only deleted items can be restored');
+  assert.match(s.activity({ entityId: b.id, limit: 1 })[0].summary, /^Restored requirement/);
 });
 
 test('passwords are salted scrypt hashes', () => {
