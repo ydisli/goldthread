@@ -74,7 +74,9 @@ export class SearchIndex {
 }
 
 function snippetFor(fields: [string, string][], terms: string[]): { field: string; snippet: string } {
-  for (const [k, v] of fields) {
+  // Prefer a match in the body over repeating the title.
+  const ordered = [...fields.slice(1), ...fields.slice(0, 1)];
+  for (const [k, v] of ordered) {
     const lower = v.toLowerCase();
     const idx = terms.map((t) => lower.indexOf(t)).filter((i) => i >= 0).sort((a, b) => a - b)[0];
     if (idx !== undefined) {

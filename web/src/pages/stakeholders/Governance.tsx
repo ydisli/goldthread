@@ -290,7 +290,7 @@ export function ConflictsPage() {
             </div>
             {c.resolution && <div className="mt12 small" style={{ background: 'var(--green-soft)', padding: 10, borderRadius: 8 }}><strong>Resolution:</strong> {c.resolution}</div>}
             {c.status !== 'resolved' && (
-              <div className="row mt12">
+              <div className="row-wrap mt12">
                 {c.status === 'open' && <button className="btn btn-sm" onClick={() => updateEntity(c.id, { status: 'negotiating' }).catch(errorToast)}>Start negotiating</button>}
                 <button className="btn btn-sm" onClick={() => openEditor({ type: 'decision', defaults: { title: `Resolve: ${c.title}`, status: 'proposed', relatedIds: [c.id], consultedIds: c.partyIds }, onSaved: (d) => void updateEntity(c.id, { decisionId: d.id }) })}>Draft a decision</button>
                 <button className="btn btn-sm btn-ghost" onClick={() => openEditor({ type: 'conflict', id: c.id })}>Escalate / resolve…</button>

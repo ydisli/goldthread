@@ -119,12 +119,12 @@ export function SpecPage({ id }: { id: string }) {
           <button className="btn" onClick={() => openEditor({ type: 'approval', defaults: { title: `Approve ${spec.title}`, subjectId: spec.id, requestedById: g.me?.id, approvers: [] } })}><Icon name="clipboard-check" size={14} />Request approval</button>
         </>}
       />
-      <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(320px, 440px)', alignItems: 'start' }}>
+      <div className="grid spec-grid">
         <div className="editor">
           <pre className="editor-backdrop" aria-hidden="true">{renderMarks(body, issues, focus)}</pre>
           <textarea ref={taRef} className="editor-text" value={body} spellCheck onChange={(e) => setBody(e.target.value)} aria-label="Spec body (Markdown)" />
         </div>
-        <div style={{ position: 'sticky', top: 64 }}>
+        <div className="spec-side">
           <div className="grid g2 mb12">
             <div className="card stat"><div className="stat-label">Clarity</div><div className="stat-value" style={{ color: summary.score >= 80 ? 'var(--green)' : summary.score >= 60 ? 'var(--amber)' : 'var(--red)' }}>{summary.score}</div><div className="stat-sub">{summary.errors} errors · {summary.warnings} warnings · {summary.words} words</div></div>
             <div className="card stat"><div className="stat-label">Completeness</div><div className="stat-value" style={{ color: compScore >= 80 ? 'var(--green)' : compScore >= 60 ? 'var(--amber)' : 'var(--red)' }}>{compScore}%</div><div className="stat-sub">{comp.filter((c) => c.relevant && !c.covered).length} relevant topics missing</div></div>

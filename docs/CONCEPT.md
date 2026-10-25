@@ -53,7 +53,7 @@ Every client is just a view or a capture point.
 | Surface | Primary jobs | Status in this repo |
 |---|---|---|
 | **Web app** (responsive) | Everything | ✅ built |
-| **Desktop** (installable PWA on macOS/Windows/Linux) | Daily work, offline read, notifications | ✅ PWA manifest + offline shell; native wrapper (Tauri) later for global capture hotkey |
+| **Desktop** (installable PWA on macOS/Windows/Linux) | Daily work, offline read, notifications | ✅ PWA manifest + service worker (offline read-only) + localStorage fallback; native wrapper (Tauri) later for a global capture hotkey |
 | **Mobile** (installable PWA on iOS/Android) | Daily brief, quick capture, approvals, pre-meeting stakeholder brief, log an interaction right after a meeting | ✅ responsive layout + mobile nav |
 | **CLI** (`tl`) | Quick capture, brief, search, scripting, CI checks (e.g. spec lint in a PR) | ✅ built |
 | **Browser extension** | Highlight text on any page (ticket, review, competitor site) → evidence | ✅ minimal Chrome/Edge extension (MV3) |

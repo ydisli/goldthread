@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { Store, ValidationError } from './db.ts';
 import { seedWorkspace } from './seed.ts';
 import { aiRoutes, aiStatus } from './ai.ts';
+import { HttpError } from './http.ts';
 import { Graph } from '../core/graph.ts';
 import { ENTITY_MAP, type Entity } from '../core/schema.ts';
 import { dailyBrief } from '../core/engines/brief.ts';
@@ -52,13 +53,6 @@ setInterval(() => { for (const c of clients) c.write(': ping\n\n'); }, 25_000).u
 
 // ---------------- helpers ----------------
 
-class HttpError extends Error {
-  readonly status: number;
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-  }
-}
 
 function send(res: ServerResponse, status: number, body: unknown, headers: Record<string, string> = {}) {
   const json = JSON.stringify(body);

@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Throughline Capture",
+  "version": "0.1.0",
+  "description": "Send selected text from any page \u2014 a ticket, a review, a competitor site \u2014 to Throughline as a signal or request.",
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "activeTab",
+    "notifications"
+  ],
+  "host_permissions": [
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Capture to Throughline"
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icon-16.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  }
+}

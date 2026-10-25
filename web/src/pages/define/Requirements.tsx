@@ -61,7 +61,7 @@ export function RequirementsPage() {
                 <div className="grid g2">
                   {[a, b].map((r) => <Link key={r.id} to={hrefOf(r)} className="card pad" style={{ color: 'inherit' }}><div className="row"><span className="key">{r.key}</span><span className="strong">{r.title}</span><span className="spacer" /><StatusBadge value={r.status} /></div><div className="small mt8">{r.statement}</div><div className="small muted mt8">Source: {(r.sourceIds ?? []).map((s: string) => nameOf(g.get(s))).join(', ') || '—'}</div></Link>)}
                 </div>
-                <div className="row mt12">
+                <div className="row-wrap mt12">
                   <button className="btn btn-sm" onClick={() => openEditor({ type: 'decision', defaults: { title: `Resolve: ${a.title} vs ${b.title}`, status: 'proposed', relatedIds: [a.id, b.id], context: c.reason } })}>Log a decision</button>
                   <button className="btn btn-sm" onClick={() => openEditor({ type: 'conflict', defaults: { title: `${a.key} vs ${b.key}`, description: c.reason, raisedAt: isoDate(now()), partyIds: [...new Set([...(a.sourceIds ?? []), ...(b.sourceIds ?? [])].filter((x: string) => g.get(x)?.type === 'stakeholder'))] } })}>Open a conflict</button>
                   <button className="btn btn-sm btn-ghost" onClick={() => updateEntity(b.id, { status: 'deprecated' }).then(() => toast(`${b.key} deprecated`)).catch(errorToast)}>Deprecate {b.key}</button>

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Throughline Capture — options</title>
+  <style>
+    body { font: 14px system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 520px; margin: 32px auto; padding: 0 16px; color: #15161c; }
+    label { display: block; font-weight: 600; margin: 14px 0 6px; }
+    input { width: 100%; box-sizing: border-box; border: 1px solid #cfcfd8; border-radius: 7px; padding: 8px 10px; font: inherit; }
+    button { margin-top: 16px; height: 34px; padding: 0 16px; border: 0; border-radius: 7px; background: #4338ca; color: #fff; font-weight: 600; cursor: pointer; }
+    p { color: #4b4d58; }
+  </style>
+</head>
+<body>
+  <h1>Throughline Capture</h1>
+  <p>Find the URL and capture token in Throughline → Settings → Integrations.</p>
+  <label for="url">Throughline URL</label>
+  <input id="url" placeholder="http://127.0.0.1:4300" />
+  <label for="token">Capture token</label>
+  <input id="token" placeholder="32-character token" />
+  <button id="save">Save</button>
+  <span id="msg"></span>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

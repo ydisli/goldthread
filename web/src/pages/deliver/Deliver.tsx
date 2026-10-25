@@ -53,7 +53,7 @@ export function BacklogPage() {
       <div className="grid g2">
         <Section title="Possible duplicates" icon="copy" items={h.duplicates} hint="Similar titles; a duplicate of a done story is probably already delivered." render={(d, i) => (
           <div key={i} className="list-item" style={{ flexDirection: 'column', gap: 6 }}>
-            <div className="row"><RefChip e={d.a} /><span className="muted small">≈ {Math.round(d.similarity * 100)}%</span><RefChip e={d.b} />{d.b.status === 'done' && <Badge tone="green">done</Badge>}</div>
+            <div className="row-wrap"><RefChip e={d.a} /><span className="muted small">≈ {Math.round(d.similarity * 100)}%</span><RefChip e={d.b} />{d.b.status === 'done' && <Badge tone="green">done</Badge>}</div>
             <div className="row"><button className="btn btn-sm" onClick={() => archive(d.a)}>Archive {d.a.key}</button></div>
           </div>
         )} />
@@ -371,7 +371,7 @@ export function RaidPage() {
   return (
     <div className="page">
       <PageHead title="RAID log" sub="Risks, assumptions, issues and dependencies — with owners, exposure and mitigations." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'raid' })}><Icon name="plus" size={14} />New item</button>} />
-      <div className="grid g-side-l mb16" style={{ gridTemplateColumns: '360px minmax(0,1fr)' }}>
+      <div className="grid raid-grid mb16">
         <Card title="Risk exposure" icon="grid-3x3" sub="Click a cell to filter.">
           <RiskMatrix items={risks.map((r) => ({ id: r.id, p: Number(r.probability), i: Number(r.impact), label: r.title }))} selected={cell} onCell={(p, i) => setCell(cell && cell[0] === p && cell[1] === i ? null : [p, i])} />
         </Card>

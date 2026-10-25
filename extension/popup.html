@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { font: 13px system-ui, -apple-system, 'Segoe UI', sans-serif; width: 340px; margin: 0; padding: 14px; color: #15161c; background: #fff; }
+    @media (prefers-color-scheme: dark) { body { color: #ececf1; background: #16171c; } textarea, input, select { background: #1c1d24; color: #ececf1; border-color: #3a3c48; } }
+    h1 { font-size: 14px; margin: 0 0 10px; display: flex; gap: 8px; align-items: center; }
+    h1 img { width: 18px; height: 18px; }
+    label { display: block; font-size: 11.5px; font-weight: 600; margin: 8px 0 4px; }
+    textarea, input, select { width: 100%; box-sizing: border-box; border: 1px solid #cfcfd8; border-radius: 7px; padding: 6px 8px; font: inherit; }
+    textarea { min-height: 90px; resize: vertical; }
+    .row { display: flex; gap: 8px; }
+    .row > * { flex: 1; }
+    button { margin-top: 12px; width: 100%; height: 32px; border: 0; border-radius: 7px; background: #4338ca; color: #fff; font-weight: 600; cursor: pointer; }
+    #msg { margin-top: 10px; font-size: 12px; }
+    a { color: #4338ca; }
+  </style>
+</head>
+<body>
+  <h1><img src="icon-48.png" alt="" />Capture to Throughline</h1>
+  <label for="kind">Type</label>
+  <select id="kind">
+    <option value="evidence">Signal (customer evidence)</option>
+    <option value="request">Stakeholder request</option>
+    <option value="decision">Decision</option>
+  </select>
+  <label for="text">Text</label>
+  <textarea id="text" placeholder="Paste or type… (first line becomes the title)"></textarea>
+  <div class="row">
+    <div><label for="account">Account</label><input id="account" placeholder="e.g. Contoso" /></div>
+    <div><label for="from">From (stakeholder)</label><input id="from" placeholder="name" /></div>
+  </div>
+  <button id="send">Capture</button>
+  <div id="msg"></div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
