@@ -6,8 +6,9 @@ import {
 import { isoDate } from '../../../../core/util.ts';
 import { createEntity, now, useEntity, useGraph } from '../../store.ts';
 import { Link, navigate, setQuery, useRoute } from '../../router.tsx';
-import { Avatar, Badge, Card, Empty, PageHead, Seg, Stat, StatusBadge, Tabs, copyText, errorToast, toast } from '../../ui/kit.tsx';
+import { Avatar, Badge, Card, Empty, PageHead, Seg, Stat, StatusBadge, Tabs, copyText, errorToast, toast, Term } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
+import { ToolGuide } from '../../ui/guide.tsx';
 import { Sparkline } from '../../ui/charts.tsx';
 import { fmtDate, humanize, relDays } from '../../ui/format.ts';
 import { EntityTable } from '../../entity/views.tsx';
@@ -22,7 +23,7 @@ export function StakeholdersPage() {
   const today = now();
   const [q, setQ] = useState<'all' | Quadrant>('all');
   const [kind, setKind] = useState('all');
-  const people = g.all('stakeholder').filter((s) => !s.isMe);
+  const people = g.all('stakeholder').filter((s) => s.id !== g.me?.id);
   const hub = useMemo(() => hubSummary(g, today), [g]); // eslint-disable-line react-hooks/exhaustive-deps
   const interactions = g.all('interaction');
   const rows = people.filter((s) => (q === 'all' || quadrant(s) === q) && (kind === 'all' || (s.kind ?? 'internal') === kind));
@@ -30,7 +31,11 @@ export function StakeholdersPage() {
 
   return (
     <div className="page">
-      <PageHead
+      <PageHead guide={<ToolGuide id="stakeholders" title="Keeping track of people" steps={[
+        <>Add everyone with a stake — sponsors, approvers, users, the delivery team — and rate their <Term explain="How much they can change the outcome.">power</Term> and <Term explain="How much they care about the outcome.">interest</Term> from 1 to 5.</>,
+        <>Set how often you want to talk to each person. Overdue conversations show up on Home.</>,
+        <>Open a person and use <b>Prep</b> before a meeting: their goals, concerns, open asks and what you promised them.</>,
+      ]} />}
         title="Stakeholders"
         sub="Who has power over, interest in, or impact from the product — and where each relationship stands today."
         actions={<>
@@ -88,7 +93,7 @@ export function StakeholderProfilePage({ id }: { id: string }) {
       <div className="row-wrap mb16" style={{ gap: 14, alignItems: 'flex-start' }}>
         <Avatar name={s.name} size="lg" />
         <div style={{ flex: 1, minWidth: 220 }}>
-          <h1>{s.name}{s.isMe && <span className="muted"> (you)</span>}</h1>
+          <h1>{s.name}{s.id === g.me?.id && <span className="muted"> (you)</span>}</h1>
           <div className="muted">{[s.title, s.orgUnit, s.account].filter(Boolean).join(' · ')}</div>
           <div className="row-wrap mt8" style={{ gap: 6 }}>
             <QuadrantBadge s={s} /><SalienceBadge s={s} /><Badge>{humanize(s.kind ?? 'internal')}</Badge>

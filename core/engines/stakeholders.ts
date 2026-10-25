@@ -1,6 +1,7 @@
 import type { Graph } from '../graph.ts';
 import { ENGAGEMENT, nameOf, type Entity } from '../schema.ts';
-import { daysBetween, isoDate, mean, fmtMoney, uniq } from '../util.ts';
+import { daysBetween, impactText, isoDate, mean, uniq } from '../util.ts';
+import { sizeOf } from './clustering.ts';
 import { concurrency, forecastScope } from './forecast.ts';
 
 // ---------------- Power / interest ----------------
@@ -409,7 +410,7 @@ export function alignmentCheck(subject: Entity, g: Graph, now: Date): AlignmentG
   }
   const interactions = g.all('interaction');
   for (const s of g.all('stakeholder')) {
-    if (s.isMe) continue;
+    if (s.id === g.me?.id) continue;
     if (quadrant(s) === 'manage-closely' && !involved.has(s.id)) {
       const t = touchStatus(s, interactions, now);
       if (t.status === 'overdue' || t.status === 'never') add(s, `Key player, and you are ${t.status === 'never' ? 'not in touch' : `${-t.dueIn!} days overdue for a touchpoint`}.`, 'medium');
@@ -459,7 +460,7 @@ export function tailoredUpdate(subject: Entity, audience: Audience, g: Graph, no
   const commitments = g.all('commitment').filter((c) => bets.some((b) => b.id === c.betId) || c.releaseId === subject.id);
   const accounts = uniq([...commitments.map((c) => c.account), ...bets.flatMap((b) => g.all('evidence').filter((e) => (e.opportunityIds ?? []).some((o: string) => (b.opportunityIds ?? []).includes(o))).map((e) => e.account))].filter(Boolean));
   const evidence = bets.flatMap((b) => g.all('evidence').filter((e) => (e.opportunityIds ?? []).some((o: string) => (b.opportunityIds ?? []).includes(o))));
-  const arr = sumArr(evidence);
+  const size = sizeOf(evidence);
   const findings = specs.flatMap((s) => g.referencing(s.id, 'reviewFinding', 'specId'));
   const metric = g.get(bet?.metricId);
   const title = nameOf(subject);
@@ -471,7 +472,7 @@ export function tailoredUpdate(subject: Entity, audience: Audience, g: Graph, no
       L.push(`**Outcome:** ${bet?.hypothesis ?? bet?.title ?? '—'}`);
       if (metric) L.push(`**Metric:** ${metric.name}${bet?.predictedChange ? ` — predicted ${bet.predictedChange}` : ''}`);
       L.push(`**Status:** ${subject.status} · ${done}/${stories.length} stories done · ${when}`);
-      if (arr) L.push(`**Revenue context:** ${accounts.length} accounts / ${fmtMoney(arr)} ARR raised this problem.`);
+      if (size.arr || size.people) L.push(`**Who is affected:** ${accounts.length} accounts or departments raised this — ${impactText(size.arr, size.people)}.`);
       L.push('', '**Top risks**');
       L.push(...(raid.length ? raid.slice(0, 3).map((r) => `- ${r.title} (P${r.probability}×I${r.impact}) — ${r.mitigation ?? 'no mitigation yet'}`) : ['- None open.']));
       L.push('', '**Decisions / approvals needed from you**');
@@ -522,13 +523,6 @@ function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function sumArr(evidence: Entity[]): number {
-  const byAccount = new Map<string, number>();
-  for (const e of evidence) if (e.account) byAccount.set(e.account, Math.max(byAccount.get(e.account) ?? 0, Number(e.arr) || 0));
-  let t = 0;
-  for (const v of byAccount.values()) t += v;
-  return t;
-}
 
 // ---------------- Comms plan ----------------
 
@@ -560,7 +554,7 @@ export interface HubSummary {
 
 export function hubSummary(g: Graph, now: Date): HubSummary {
   const interactions = g.all('interaction');
-  const people = g.all('stakeholder').filter((s) => !s.isMe);
+  const people = g.all('stakeholder').filter((s) => s.id !== g.me?.id);
   const overdue = people.map((s) => ({ s, touch: touchStatus(s, interactions, now) }))
     .filter((x) => x.touch.status === 'overdue' || (x.touch.status === 'never' && quadrant(x.s) !== 'monitor'))
     .sort((a, b) => (a.touch.dueIn ?? -999) - (b.touch.dueIn ?? -999));

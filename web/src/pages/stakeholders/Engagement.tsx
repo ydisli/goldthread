@@ -19,7 +19,7 @@ export function EngagementPage() {
   const today = now();
   const [tab, setTab] = useState<'touch' | 'comms' | 'log'>('touch');
   const interactions = g.all('interaction');
-  const people = g.all('stakeholder').filter((s) => !s.isMe);
+  const people = g.all('stakeholder').filter((s) => s.id !== g.me?.id);
   const rows = people.map((s) => ({ s, t: touchStatus(s, interactions, today), trend: sentimentTrend(s, interactions) }))
     .sort((a, b) => (a.t.dueIn ?? -999) - (b.t.dueIn ?? -999));
   const comms = g.all('commsItem').map((c) => ({ c, due: commsDue(c, today) })).sort((a, b) => (a.due.dueIn ?? 999) - (b.due.dueIn ?? 999));

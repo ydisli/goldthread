@@ -1,100 +1,139 @@
 import type { Graph } from '../../core/graph.ts';
 import { dailyBrief } from '../../core/engines/brief.ts';
 import { hubSummary, pendingApprovalsFor } from '../../core/engines/stakeholders.ts';
-import type { Area } from '../../core/schema.ts';
+import type { Persona } from './store.ts';
 
-export interface NavItem {
+export interface Tool {
+  id: string;
   label: string;
   to: string;
   icon: string;
+  /** One line, in the user's words: what you use it for. */
+  blurb: string;
   keywords?: string;
   count?: (g: Graph, now: Date) => { n: number; alert?: boolean } | null;
 }
 
-export interface NavArea { id: Area; label: string; items: NavItem[] }
+export interface Section { id: string; label: string; icon: string; blurb: string; tools: Tool[] }
 
-export const NAV: NavArea[] = [
+export const HOME: Tool = { id: 'home', label: 'Home', to: '/today', icon: 'house', blurb: 'Your day: what is waiting on you, who to reach, what is coming up.', keywords: 'brief today morning',
+  count: (g, now) => { const n = dailyBrief(g, now).filter((i) => i.severity === 'critical').length; return n ? { n, alert: true } : null; } };
+export const INBOX: Tool = { id: 'inbox', label: 'Inbox', to: '/inbox', icon: 'inbox', blurb: 'Sign-offs, requests to triage, review questions and your action items.', keywords: 'approvals requests actions',
+  count: (g) => { const n = (g.me ? pendingApprovalsFor(g.me.id, g.all('approval')).length : 0) + g.all('request').filter((r) => r.status === 'new').length; return n ? { n } : null; } };
+export const ASK: Tool = { id: 'ask', label: 'Ask', to: '/ask', icon: 'search', blurb: 'Search everything, or ask a question in plain words.', keywords: 'search question ai' };
+
+export const SECTIONS: Section[] = [
   {
-    id: 'today', label: 'Today', items: [
-      { label: 'Daily brief', to: '/today', icon: 'house', keywords: 'home morning attention', count: (g, now) => { const b = dailyBrief(g, now).filter((i) => i.severity === 'critical' || i.severity === 'high').length; return b ? { n: b, alert: true } : null; } },
-      { label: 'Inbox', to: '/inbox', icon: 'inbox', keywords: 'requests approvals findings', count: (g) => {
-        const me = g.me;
-        const n = (me ? pendingApprovalsFor(me.id, g.all('approval')).length : 0) + g.all('request').filter((r) => r.status === 'new').length;
-        return n ? { n } : null;
-      } },
-      { label: 'Ask Throughline', to: '/ask', icon: 'sparkles', keywords: 'search question ai' },
+    id: 'people', label: 'People', icon: 'users', blurb: 'Stakeholders, relationships, promises and sign-offs.',
+    tools: [
+      { id: 'stakeholders', label: 'Stakeholders', to: '/stakeholders', icon: 'users', blurb: 'Everyone with a stake, and where each relationship stands.', keywords: 'registry people 360 prep' },
+      { id: 'maps', label: 'Maps', to: '/stakeholders/maps', icon: 'radar', blurb: 'Power/interest, salience, engagement and influence at a glance.', keywords: 'power interest grid salience influence' },
+      { id: 'engagement', label: 'Engagement', to: '/stakeholders/engagement', icon: 'message-square', blurb: 'Who you are overdue to talk to, comms plan and interaction log.', keywords: 'touchpoints cadence sentiment comms',
+        count: (g, now) => { const h = hubSummary(g, now); const n = h.overdue.length + h.overdueComms.length; return n ? { n } : null; } },
+      { id: 'requests', label: 'Requests', to: '/stakeholders/requests', icon: 'inbox', blurb: 'Asks from stakeholders — triage, answer, and close the loop.', keywords: 'asks intake',
+        count: (g) => { const n = g.all('request').filter((r) => ['new', 'triaging'].includes(r.status)).length; return n ? { n } : null; } },
+      { id: 'commitments', label: 'Promises', to: '/stakeholders/commitments', icon: 'handshake', blurb: 'What was promised to whom, checked against the delivery forecast.', keywords: 'commitments promise ledger',
+        count: (g, now) => { const n = hubSummary(g, now).riskyCommitments.length; return n ? { n, alert: true } : null; } },
+      { id: 'raci', label: 'RACI', to: '/stakeholders/raci', icon: 'grid-3x3', blurb: 'Who is responsible, accountable, consulted and informed.', keywords: 'responsible accountable' },
+      { id: 'approvals', label: 'Approvals', to: '/stakeholders/approvals', icon: 'clipboard-check', blurb: 'Sign-offs with an audit trail.', keywords: 'sign-off',
+        count: (g) => { const n = g.all('approval').filter((a) => a.status === 'pending').length; return n ? { n } : null; } },
+      { id: 'conflicts', label: 'Conflicts', to: '/stakeholders/conflicts', icon: 'gavel', blurb: 'Competing positions, the interests behind them, and resolutions.', keywords: 'negotiation escalation' },
     ],
   },
   {
-    id: 'strategy', label: 'Strategy', items: [
-      { label: 'Vision & OKRs', to: '/strategy', icon: 'compass', keywords: 'objectives key results vision board' },
-      { label: 'Metric tree', to: '/strategy/metrics', icon: 'chart-line', keywords: 'north star kpi tracking plan' },
-      { label: 'Business cases', to: '/strategy/business-cases', icon: 'briefcase-business', keywords: 'npv roi payback cost of delay' },
-      { label: 'Market', to: '/strategy/market', icon: 'swords', keywords: 'competitors win loss' },
-      { label: 'Capacity & portfolio', to: '/strategy/capacity', icon: 'layers', keywords: 'teams allocation tech debt' },
+    id: 'discovery', label: 'Discovery', icon: 'lightbulb', blurb: 'What users need, what we believe, and what we are testing.',
+    tools: [
+      { id: 'signals', label: 'Signals', to: '/discover/signals', icon: 'quote', blurb: 'Feedback, tickets and data, grouped into themes.', keywords: 'evidence feedback clusters' },
+      { id: 'opportunities', label: 'Opportunities', to: '/discover/opportunities', icon: 'lightbulb', blurb: 'Problems worth solving, with how strong the evidence is.', keywords: 'opportunity solution tree' },
+      { id: 'bets', label: 'Bets', to: '/discover/bets', icon: 'rocket', blurb: 'Initiatives as hypotheses, with a metric and a date to check.', keywords: 'initiatives hypotheses epics' },
+      { id: 'assumptions', label: 'Assumptions', to: '/discover/assumptions', icon: 'brain', blurb: 'What must be true — riskiest first.', keywords: 'leap of faith' },
+      { id: 'experiments', label: 'Experiments', to: '/discover/experiments', icon: 'flask-conical', blurb: 'Sample sizes and significance, without a statistician.', keywords: 'ab test' },
+      { id: 'customers', label: 'Personas & journeys', to: '/discover/customers', icon: 'book-user', blurb: 'Who you build for and where they struggle.', keywords: 'personas journeys jtbd users' },
+      { id: 'research', label: 'Research', to: '/e/study', icon: 'binoculars', blurb: 'Interview plans, guides and findings.', keywords: 'interviews studies' },
     ],
   },
   {
-    id: 'stakeholders', label: 'Stakeholders', items: [
-      { label: 'Overview', to: '/stakeholders', icon: 'users', keywords: 'registry people' },
-      { label: 'Maps', to: '/stakeholders/maps', icon: 'radar', keywords: 'power interest grid salience influence engagement matrix' },
-      { label: 'Engagement', to: '/stakeholders/engagement', icon: 'message-square', keywords: 'touchpoints interactions comms plan cadence sentiment', count: (g, now) => { const h = hubSummary(g, now); const n = h.overdue.length + h.overdueComms.length; return n ? { n } : null; } },
-      { label: 'Requests', to: '/stakeholders/requests', icon: 'inbox', keywords: 'asks intake', count: (g) => { const n = g.all('request').filter((r) => ['new', 'triaging'].includes(r.status)).length; return n ? { n } : null; } },
-      { label: 'Commitments', to: '/stakeholders/commitments', icon: 'handshake', keywords: 'promises ledger', count: (g, now) => { const n = hubSummary(g, now).riskyCommitments.length; return n ? { n, alert: true } : null; } },
-      { label: 'RACI', to: '/stakeholders/raci', icon: 'grid-3x3', keywords: 'responsible accountable consulted informed' },
-      { label: 'Approvals', to: '/stakeholders/approvals', icon: 'clipboard-check', keywords: 'sign-off', count: (g) => { const n = g.all('approval').filter((a) => a.status === 'pending').length; return n ? { n } : null; } },
-      { label: 'Conflicts', to: '/stakeholders/conflicts', icon: 'gavel', keywords: 'negotiation escalation', count: (g) => { const n = g.all('conflict').filter((c) => c.status !== 'resolved').length; return n ? { n } : null; } },
+    id: 'specs', label: 'Specs & analysis', icon: 'file-text', blurb: 'Write it down so it can be built, tested and audited.',
+    tools: [
+      { id: 'specs', label: 'Spec Studio', to: '/define/specs', icon: 'file-text', blurb: 'PRDs with live checks for vague wording and gaps, plus a review board.', keywords: 'prd lint review' },
+      { id: 'requirements', label: 'Requirements', to: '/define/requirements', icon: 'list-checks', blurb: 'Managed requirements, baselines, changes and contradictions.', keywords: 'baselines change requests' },
+      { id: 'decisions', label: 'Decisions', to: '/define/decisions', icon: 'git-branch', blurb: 'Why we decided what we decided.', keywords: 'decision log adr' },
+      { id: 'decision-tables', label: 'Business rules', to: '/define/decision-tables', icon: 'table-2', blurb: 'Decision tables checked for gaps, with tests generated.', keywords: 'decision tables dmn rules' },
+      { id: 'process', label: 'Process models', to: '/define/process', icon: 'workflow', blurb: 'Draw as-is and to-be processes with drag and drop.', keywords: 'bpmn swimlane flow' },
+      { id: 'story-map', label: 'Story map', to: '/define/story-map', icon: 'map', blurb: 'The user journey, sliced into releases.', keywords: 'user story mapping' },
+      { id: 'toolkit', label: 'BA toolkit', to: '/define/toolkit', icon: 'combine', blurb: 'Elicitation, use cases, states, data, gaps, capabilities, SWOT, root cause.', keywords: 'use cases state models data dictionary elicitation gap swot' },
+      { id: 'glossary', label: 'Glossary', to: '/define/glossary', icon: 'book-open', blurb: 'One term, one meaning — enforced in every spec.', keywords: 'terms language' },
     ],
   },
   {
-    id: 'discover', label: 'Discover', items: [
-      { label: 'Signals', to: '/discover/signals', icon: 'quote', keywords: 'evidence feedback clusters' },
-      { label: 'Opportunities', to: '/discover/opportunities', icon: 'lightbulb', keywords: 'opportunity solution tree' },
-      { label: 'Bets', to: '/discover/bets', icon: 'rocket', keywords: 'initiatives hypotheses' },
-      { label: 'Assumptions', to: '/discover/assumptions', icon: 'brain', keywords: 'leap of faith map' },
-      { label: 'Experiments', to: '/discover/experiments', icon: 'flask-conical', keywords: 'ab test sample size significance' },
-      { label: 'Customers', to: '/discover/customers', icon: 'book-user', keywords: 'personas journeys jtbd' },
-      { label: 'Research', to: '/e/study', icon: 'binoculars', keywords: 'interviews studies' },
+    id: 'delivery', label: 'Delivery', icon: 'route', blurb: 'From backlog to release, with honest dates.',
+    tools: [
+      { id: 'roadmap', label: 'Roadmap', to: '/deliver/roadmap', icon: 'route', blurb: 'Now / Next / Later with forecast dates, not promises.', keywords: 'timeline' },
+      { id: 'prioritize', label: 'Prioritize', to: '/deliver/prioritize', icon: 'arrow-up-down', blurb: 'RICE or WSJF, and what would change the order.', keywords: 'rice wsjf sensitivity' },
+      { id: 'backlog', label: 'Backlog health', to: '/deliver/backlog', icon: 'kanban', blurb: 'Duplicates, stale items, missing acceptance criteria.', keywords: 'stories hygiene invest' },
+      { id: 'releases', label: 'Releases', to: '/deliver/releases', icon: 'party-popper', blurb: 'Launch readiness, rollout, rollback and release notes.', keywords: 'launch gtm' },
+      { id: 'pulse', label: 'Forecast', to: '/deliver/pulse', icon: 'activity', blurb: 'When will it be done — from real throughput.', keywords: 'delivery pulse monte carlo scope creep' },
+      { id: 'raid', label: 'RAID log', to: '/deliver/raid', icon: 'triangle-alert', blurb: 'Risks, assumptions, issues and dependencies.', keywords: 'risks issues dependencies' },
+      { id: 'uat', label: 'UAT & quality', to: '/deliver/uat', icon: 'circle-check', blurb: 'Acceptance tests, sign-off and defects by root cause.', keywords: 'tests defects' },
+      { id: 'trace', label: 'Traceability', to: '/deliver/trace', icon: 'network', blurb: 'Requirement → story → test → release, and what a change affects.', keywords: 'rtm impact analysis audit' },
     ],
   },
   {
-    id: 'define', label: 'Define', items: [
-      { label: 'Spec Studio', to: '/define/specs', icon: 'file-text', keywords: 'prd lint review board' },
-      { label: 'Requirements', to: '/define/requirements', icon: 'list-checks', keywords: 'baselines change requests contradictions' },
-      { label: 'Decisions', to: '/define/decisions', icon: 'git-branch', keywords: 'decision log adr' },
-      { label: 'Decision tables', to: '/define/decision-tables', icon: 'table-2', keywords: 'business rules dmn' },
-      { label: 'Process models', to: '/define/process', icon: 'workflow', keywords: 'bpmn swimlane as-is to-be' },
-      { label: 'Story map', to: '/define/story-map', icon: 'map', keywords: 'user story mapping slices' },
-      { label: 'BA toolkit', to: '/define/toolkit', icon: 'combine', keywords: 'use cases state models data dictionary elicitation gap capability swot root cause' },
-      { label: 'Glossary', to: '/define/glossary', icon: 'book-open', keywords: 'ubiquitous language terms' },
+    id: 'strategy', label: 'Strategy', icon: 'compass', blurb: 'Where the product is going and why.',
+    tools: [
+      { id: 'vision', label: 'Vision & OKRs', to: '/strategy', icon: 'compass', blurb: 'The vision board and this quarter\'s outcomes.', keywords: 'objectives key results' },
+      { id: 'metrics', label: 'Metric tree', to: '/strategy/metrics', icon: 'chart-line', blurb: 'How everyday metrics roll up to the north star.', keywords: 'kpi tracking plan' },
+      { id: 'business-cases', label: 'Business cases', to: '/strategy/business-cases', icon: 'briefcase-business', blurb: 'NPV, ROI, payback and cost of delay.', keywords: 'finance' },
+      { id: 'market', label: 'Alternatives', to: '/strategy/market', icon: 'swords', blurb: 'Competitors, vendors and build-vs-buy, capability by capability.', keywords: 'market competitors vendors win loss' },
+      { id: 'capacity', label: 'Capacity', to: '/strategy/capacity', icon: 'layers', blurb: 'Planned vs actual allocation, and the tech-debt register.', keywords: 'teams tech debt portfolio' },
     ],
   },
   {
-    id: 'deliver', label: 'Deliver', items: [
-      { label: 'Backlog health', to: '/deliver/backlog', icon: 'kanban', keywords: 'stories hygiene invest' },
-      { label: 'Prioritize', to: '/deliver/prioritize', icon: 'arrow-up-down', keywords: 'rice wsjf sensitivity' },
-      { label: 'Roadmap', to: '/deliver/roadmap', icon: 'route', keywords: 'now next later timeline' },
-      { label: 'Releases', to: '/deliver/releases', icon: 'party-popper', keywords: 'launch readiness gtm release notes' },
-      { label: 'Delivery pulse', to: '/deliver/pulse', icon: 'activity', keywords: 'forecast monte carlo scope creep' },
-      { label: 'RAID log', to: '/deliver/raid', icon: 'triangle-alert', keywords: 'risks assumptions issues dependencies' },
-      { label: 'UAT & quality', to: '/deliver/uat', icon: 'circle-check', keywords: 'tests defects sign-off' },
-      { label: 'Traceability', to: '/deliver/trace', icon: 'network', keywords: 'rtm impact analysis' },
+    id: 'learning', label: 'Learning', icon: 'target', blurb: 'Did it work? What did we learn?',
+    tools: [
+      { id: 'ledger', label: 'Bet ledger', to: '/learn/ledger', icon: 'target', blurb: 'Predicted vs actual, and how calibrated your confidence is.', keywords: 'outcomes calibration' },
+      { id: 'features', label: 'Feature catalog', to: '/learn/features', icon: 'star', blurb: 'What exists today, who uses it, what to retire.', keywords: 'lifecycle adoption sunset' },
     ],
   },
   {
-    id: 'learn', label: 'Learn', items: [
-      { label: 'Bet ledger', to: '/learn/ledger', icon: 'target', keywords: 'outcomes calibration learnings' },
-      { label: 'Feature catalog', to: '/learn/features', icon: 'star', keywords: 'lifecycle adoption sunset' },
-    ],
-  },
-  {
-    id: 'workspace', label: 'Workspace', items: [
-      { label: 'Meetings', to: '/workspace/meetings', icon: 'calendar', keywords: 'ceremonies refinement steering notes' },
-      { label: 'Documents', to: '/workspace/docs', icon: 'file-text', keywords: 'prd brd prfaq steering pack generator' },
-      { label: 'Activity', to: '/workspace/activity', icon: 'history', keywords: 'audit trail changes' },
-      { label: 'Settings', to: '/workspace/settings', icon: 'settings', keywords: 'integrations cli extension import export' },
+    id: 'meetings', label: 'Meetings & docs', icon: 'calendar', blurb: 'Notes that turn into decisions, and documents that write themselves.',
+    tools: [
+      { id: 'meetings', label: 'Meetings', to: '/workspace/meetings', icon: 'calendar', blurb: 'Agendas and notes; decisions, actions and risks extracted.', keywords: 'refinement steering notes' },
+      { id: 'docs', label: 'Documents', to: '/workspace/docs', icon: 'file-text', blurb: 'PRD, BRD, PR/FAQ, steering pack and release notes.', keywords: 'generator' },
     ],
   },
 ];
 
-export const ALL_NAV: NavItem[] = NAV.flatMap((a) => a.items);
+export const ALL_TOOLS: Tool[] = [HOME, INBOX, ASK, ...SECTIONS.flatMap((s) => s.tools)];
+
+/** Sensible starting pins for each role; people can change them any time. */
+export const DEFAULT_PINS: Record<Persona, string[]> = {
+  po: ['roadmap', 'prioritize', 'stakeholders', 'signals', 'bets', 'releases', 'commitments', 'meetings'],
+  ba: ['specs', 'requirements', 'process', 'decision-tables', 'toolkit', 'trace', 'uat', 'glossary'],
+  both: ['specs', 'stakeholders', 'roadmap', 'requirements', 'signals', 'process', 'releases', 'meetings'],
+};
+
+export function sectionOf(path: string): { section: Section; tool: Tool } | null {
+  let best: { section: Section; tool: Tool; len: number } | null = null;
+  for (const section of SECTIONS) {
+    for (const tool of section.tools) {
+      const exact = path === tool.to;
+      const nested = path.startsWith(`${tool.to}/`) && tool.to.split('/').length > 2;
+      const special = tool.id === 'stakeholders' && path.startsWith('/stakeholders/p/');
+      if ((exact || nested || special) && (!best || tool.to.length > best.len)) best = { section, tool, len: tool.to.length };
+    }
+  }
+  // Detail pages that live under a section without their own tool.
+  if (!best) {
+    const prefixes: [string, string][] = [['/define/', 'specs'], ['/deliver/', 'delivery'], ['/discover/', 'discovery'], ['/strategy/', 'strategy'], ['/learn/', 'learning'], ['/workspace/meetings', 'meetings']];
+    for (const [p, id] of prefixes) {
+      if (path.startsWith(p)) {
+        const section = SECTIONS.find((s) => s.id === id)!;
+        const tool = section.tools.find((t) => path.startsWith(t.to)) ?? section.tools[0];
+        return { section, tool };
+      }
+    }
+    return null;
+  }
+  return { section: best.section, tool: best.tool };
+}

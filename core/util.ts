@@ -79,6 +79,14 @@ export function fmtMoney(n: number | undefined | null, currency = '$'): string {
   return `${sign}${currency}${Math.round(a)}`;
 }
 
+/** "$1.2M ARR · 340 people" — whichever measures of impact are present. */
+export function impactText(arr: number, people: number): string {
+  const parts: string[] = [];
+  if (people > 0) parts.push(`${people.toLocaleString('en-US')} ${people === 1 ? 'person' : 'people'}`);
+  if (arr > 0) parts.push(`${fmtMoney(arr)} ARR`);
+  return parts.join(' · ') || 'impact not sized';
+}
+
 export function pluralize(n: number, one: string, many = `${one}s`): string {
   return `${n} ${n === 1 ? one : many}`;
 }

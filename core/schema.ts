@@ -50,7 +50,6 @@ export interface Entity {
 
 export const ENGAGEMENT = ['unaware', 'resistant', 'neutral', 'supportive', 'leading'] as const;
 export const CHANNELS = ['meeting', 'email', 'slack', 'teams', 'phone', 'async-doc'] as const;
-export const SEGMENTS = ['smb', 'mid-market', 'enterprise', 'public-sector'] as const;
 export const MOSCOW = ['must', 'should', 'could', 'wont'] as const;
 export const REVIEW_ROLES = ['developer', 'qa', 'security', 'privacy', 'support', 'data', 'legal', 'accessibility', 'finance', 'ux'] as const;
 
@@ -159,8 +158,8 @@ export const ENTITIES: EntityDef[] = [
     ],
   },
   {
-    type: 'competitor', label: 'Competitor', plural: 'Competitors', area: 'strategy', icon: 'swords',
-    description: 'Competitive landscape and capability comparison.',
+    type: 'competitor', label: 'Alternative', plural: 'Alternatives', area: 'strategy', icon: 'swords',
+    description: 'Competitors, vendors or build-vs-buy alternatives, compared capability by capability.',
     titleField: 'name', columns: ['name', 'positioning', 'threat'],
     fields: [
       text('name', 'Name', { required: true }),
@@ -200,6 +199,8 @@ export const ENTITIES: EntityDef[] = [
       pct('targetFeature', 'Target: new value', { default: 60 }),
       pct('targetDebt', 'Target: tech debt', { default: 25 }),
       pct('targetMaintenance', 'Target: maintenance', { default: 15 }),
+      ref('leadId', 'Team lead', 'stakeholder'),
+      json('memberUserIds', 'Members', { default: [] }),
     ],
   },
   {
@@ -228,7 +229,7 @@ export const ENTITIES: EntityDef[] = [
       text('title', 'Role / title'),
       text('orgUnit', 'Org unit'),
       en('kind', 'Type', ['internal', 'customer', 'partner', 'regulator', 'vendor', 'investor']),
-      text('account', 'Account', { help: 'For customer stakeholders.' }),
+      text('account', 'Account / company', { help: 'For customers, vendors and partners.' }),
       text('email', 'Email'),
       scale('power', 'Power / influence', 1, 5, { default: 3 }),
       scale('interest', 'Interest', 1, 5, { default: 3 }),
@@ -242,7 +243,7 @@ export const ENTITIES: EntityDef[] = [
       num('cadenceDays', 'Touchpoint every (days)', { help: 'Leave empty to derive from power/interest quadrant.' }),
       text('timezone', 'Timezone'),
       refs('influencedBy', 'Influenced by', 'stakeholder'),
-      bool('isMe', 'This is me', { hidden: true }),
+      text('userId', 'Linked user account', { hidden: true }),
       tags(),
     ],
   },
@@ -355,17 +356,18 @@ export const ENTITIES: EntityDef[] = [
 
   // ===== Discover =====
   {
-    type: 'evidence', label: 'Evidence', plural: 'Signals', area: 'discover', icon: 'quote',
-    description: 'Customer and market signals: quotes, tickets, calls, analytics.',
-    titleField: 'title', columns: ['title', 'source', 'account', 'segment', 'arr', 'date'],
+    type: 'evidence', label: 'Signal', plural: 'Signals', area: 'discover', icon: 'quote',
+    description: 'Signals from users, customers and the business: quotes, tickets, survey answers, analytics.',
+    titleField: 'title', columns: ['title', 'source', 'account', 'reach', 'date'],
     fields: [
       text('title', 'Signal', { required: true, help: 'A quote or one-line summary.' }),
       long('detail', 'Detail'),
-      en('source', 'Source', ['support', 'sales-call', 'interview', 'survey', 'analytics', 'app-review', 'nps', 'internal', 'social', 'competitor']),
+      en('source', 'Source', ['support', 'interview', 'survey', 'analytics', 'sales-call', 'app-review', 'nps', 'internal', 'audit', 'monitoring', 'social', 'competitor']),
       en('kind', 'Kind', ['said', 'did'], { help: 'Said = opinion/quote; did = observed behaviour/data.' }),
-      text('account', 'Account'),
-      en('segment', 'Segment', SEGMENTS),
-      money('arr', 'Account ARR'),
+      text('account', 'Account / department', { help: 'Customer account, business unit or department the signal came from.' }),
+      text('segment', 'Segment / group', { placeholder: 'e.g. enterprise, frontline staff, EMEA' }),
+      num('reach', 'People affected', { help: 'Users or employees who have this problem.' }),
+      money('arr', 'Revenue at stake (ARR)', { help: 'For customer-facing products.' }),
       date('date', 'Date'),
       scale('sentiment', 'Sentiment', -2, 2, { default: -1 }),
       url('url', 'Link'),
@@ -468,7 +470,7 @@ export const ENTITIES: EntityDef[] = [
     fields: [
       text('name', 'Name', { required: true }),
       text('role', 'Role'),
-      en('segment', 'Segment', SEGMENTS),
+      text('segment', 'Segment / group'),
       long('goals', 'Goals'),
       long('pains', 'Pains'),
       long('jobs', 'Jobs to be done', { placeholder: 'When …, I want to …, so I can …' }),
@@ -619,6 +621,7 @@ export const ENTITIES: EntityDef[] = [
     fields: [
       text('title', 'Process', { required: true }),
       en('variant', 'Variant', ['as-is', 'to-be']),
+      en('orientation', 'Lanes', ['horizontal', 'vertical']),
       ref('counterpartId', 'Compare with', 'processModel'),
       long('notes', 'Notes'),
       json('lanes', 'Lanes', { default: [] }),

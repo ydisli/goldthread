@@ -41,6 +41,7 @@ export interface Cluster {
   items: Entity[];
   accounts: string[];
   arr: number;
+  people: number;
   segments: string[];
   recent: number;
   previous: number;
@@ -49,6 +50,26 @@ export interface Cluster {
   didShare: number;
   /** Most common linked opportunity, if any. */
   opportunityId?: string;
+}
+
+/**
+ * Size of the problem: ARR and people affected, counted once per account or
+ * department (the largest figure reported for it), so repeat signals from the
+ * same place don't inflate the total.
+ */
+export function sizeOf(items: Entity[]): { arr: number; people: number } {
+  const arrBy = new Map<string, number>();
+  const peopleBy = new Map<string, number>();
+  let loosePeople = 0;
+  for (const e of items) {
+    const key = e.account || '';
+    if (key) {
+      arrBy.set(key, Math.max(arrBy.get(key) ?? 0, Number(e.arr) || 0));
+      peopleBy.set(key, Math.max(peopleBy.get(key) ?? 0, Number(e.reach) || 0));
+    } else loosePeople = Math.max(loosePeople, Number(e.reach) || 0);
+  }
+  const total = (m: Map<string, number>) => [...m.values()].reduce((a, b) => a + b, 0);
+  return { arr: total(arrBy), people: total(peopleBy) + loosePeople };
 }
 
 const textOf = (e: Entity) => `${e.title ?? ''} ${e.title ?? ''} ${e.detail ?? ''} ${(e.tags ?? []).join(' ')}`;
@@ -79,14 +100,13 @@ export function clusterEvidence(evidence: Entity[], now: Date, threshold = 0.18)
   }
   return clusters
     .map((c, ci) => describe(`c${ci}`, c.members.map((i) => evidence[i]), c.centroid, now))
-    .sort((a, b) => b.items.length - a.items.length || b.arr - a.arr);
+    .sort((a, b) => b.items.length - a.items.length || b.people - a.people || b.arr - a.arr);
 }
 
 function describe(id: string, items: Entity[], centroid: Vec, now: Date): Cluster {
   const terms = [...centroid.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([t]) => t);
   const accounts = uniq(items.map((e) => e.account).filter(Boolean)) as string[];
-  const arrByAccount = new Map<string, number>();
-  for (const e of items) if (e.account) arrByAccount.set(e.account, Math.max(arrByAccount.get(e.account) ?? 0, Number(e.arr) || 0));
+  const { arr, people } = sizeOf(items);
   const recent = items.filter((e) => e.date && daysBetween(e.date, now) <= 30 && daysBetween(e.date, now) >= 0).length;
   const previous = items.filter((e) => e.date && daysBetween(e.date, now) > 30 && daysBetween(e.date, now) <= 60).length;
   const trend = previous === 0 ? (recent > 0 && items.length === recent ? 'new' : recent > 0 ? 'rising' : 'steady') : recent >= previous * 1.5 ? 'rising' : recent <= previous * 0.5 ? 'falling' : 'steady';
@@ -97,7 +117,7 @@ function describe(id: string, items: Entity[], centroid: Vec, now: Date): Cluste
   return {
     id, terms, items, accounts,
     label: terms.slice(0, 3).join(' · '),
-    arr: [...arrByAccount.values()].reduce((a, b) => a + b, 0),
+    arr, people,
     segments: uniq(items.map((e) => e.segment).filter(Boolean)) as string[],
     recent, previous, trend,
     sentiment: sentiments.length ? sentiments.reduce((a, b) => a + b, 0) / sentiments.length : 0,
@@ -114,6 +134,7 @@ export interface EvidenceStrength {
   didShare: number;
   recentShare: number;
   arr: number;
+  people: number;
   loudest?: { account: string; share: number };
   verdict: 'strong' | 'moderate' | 'weak' | 'anecdotal';
   breakdown: { label: string; points: number; max: number }[];
@@ -127,9 +148,7 @@ export function evidenceStrength(items: Entity[], now: Date): EvidenceStrength {
   const segments = new Set(items.map((e) => e.segment).filter(Boolean)).size;
   const didShare = count ? items.filter((e) => e.kind === 'did').length / count : 0;
   const recentShare = count ? items.filter((e) => e.date && daysBetween(e.date, now) <= 90).length / count : 0;
-  const arrByAccount = new Map<string, number>();
-  for (const e of items) if (e.account) arrByAccount.set(e.account, Math.max(arrByAccount.get(e.account) ?? 0, Number(e.arr) || 0));
-  const arr = [...arrByAccount.values()].reduce((a, b) => a + b, 0);
+  const { arr, people } = sizeOf(items);
   const counts = new Map<string, number>();
   for (const a of accountsList) counts.set(a, (counts.get(a) ?? 0) + 1);
   const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
@@ -144,7 +163,7 @@ export function evidenceStrength(items: Entity[], now: Date): EvidenceStrength {
   let score = Math.round(breakdown.reduce((s, b) => s + b.points, 0));
   if (loudest) score = Math.round(score * (1 - (loudest.share - 0.3)));
   const verdict = score >= 70 ? 'strong' : score >= 45 ? 'moderate' : score >= 20 ? 'weak' : 'anecdotal';
-  return { score, count, accounts, segments, didShare, recentShare, arr, loudest, verdict, breakdown };
+  return { score, count, accounts, segments, didShare, recentShare, arr, people, loudest, verdict, breakdown };
 }
 
 /** Suggest opportunities an unlinked piece of evidence most likely belongs to. */

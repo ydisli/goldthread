@@ -6,6 +6,7 @@ import { createEntity, now, updateEntity, useEntity, useGraph } from '../../stor
 import { Link, navigate, useRoute } from '../../router.tsx';
 import { Avatar, Badge, Card, Empty, PageHead, Seg, StatusBadge, copyText, errorToast, toast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
+import { ToolGuide } from '../../ui/guide.tsx';
 import { fmtDate, relDays } from '../../ui/format.ts';
 import { EntityPicker, RefChip } from '../../entity/fields.tsx';
 import { EntityHeader } from '../../entity/views.tsx';
@@ -30,7 +31,11 @@ export function RaciListPage() {
   };
   return (
     <div className="page">
-      <PageHead title="RACI matrices" sub="Who is Responsible, Accountable, Consulted and Informed — validated so every activity has exactly one owner and nobody drowns in consultation." actions={<button className="btn btn-primary" onClick={create}><Icon name="plus" size={14} />New RACI</button>} />
+      <PageHead guide={<ToolGuide id="raci" title="RACI in one minute" steps={[
+        <><b>R</b>esponsible does the work · <b>A</b>ccountable owns the outcome and signs off — exactly one per activity · <b>C</b>onsulted gives input before · <b>I</b>nformed hears after.</>,
+        <>Open a matrix and click a cell to cycle R → A → C → I.</>,
+        <>Activities with no A, or more than one, are flagged — that is usually where decisions stall.</>,
+      ]} />} title="RACI matrices" sub="Who is Responsible, Accountable, Consulted and Informed — validated so every activity has exactly one owner and nobody drowns in consultation." actions={<button className="btn btn-primary" onClick={create}><Icon name="plus" size={14} />New RACI</button>} />
       <div className="grid g2">
         {g.all('raci').map((m) => {
           const issues = validateRaci(m.activities ?? [], m.memberIds ?? [], m.assignments ?? {}, (id) => nameOf(g.get(id)));
@@ -224,10 +229,10 @@ function ApprovalCard({ a, focused, today }: { a: Entity; focused: boolean; toda
               <StatusBadge value={x.status} />
               {x.status === 'pending' && (
                 <div className="row">
-                  <button className="btn btn-sm" onClick={() => respond(i, 'approved')} title={s?.isMe ? 'Approve' : `Record ${s?.name}'s approval`}>Approve</button>
+                  <button className="btn btn-sm" onClick={() => respond(i, 'approved')} title={s?.id === g.me?.id ? 'Approve' : `Record ${s?.name}'s approval`}>Approve</button>
                   <button className="btn btn-sm" onClick={() => respond(i, 'changes-requested')}>Changes</button>
                   <button className="btn btn-sm btn-ghost btn-danger" onClick={() => respond(i, 'rejected')}>Reject</button>
-                  {!s?.isMe && <button className="btn btn-sm btn-ghost" title="Copy a reminder" onClick={() => remind(s)}><Icon name="send" size={13} /></button>}
+                  {s?.id !== g.me?.id && <button className="btn btn-sm btn-ghost" title="Copy a reminder" onClick={() => remind(s)}><Icon name="send" size={13} /></button>}
                 </div>
               )}
             </div>

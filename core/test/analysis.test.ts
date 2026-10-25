@@ -146,6 +146,7 @@ test('clustering groups similar evidence and computes strength', () => {
   const c = clusterEvidence(ev, NOW);
   assert.equal(c[0].items.length, 3);
   assert.equal(c[0].arr, 600);
+  assert.equal(c[0].people, 0);
   assert.equal(c[1].items.length, 2);
   const s = evidenceStrength(c[0].items, NOW);
   assert.equal(s.accounts, 3);

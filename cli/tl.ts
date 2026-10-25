@@ -61,7 +61,8 @@ ${bold('Usage')}
 
 ${bold('Environment')}
   TL_URL    server URL (default ${URL_BASE})
-  TL_TOKEN  capture token (Settings → Integrations in the web app)
+  TL_TOKEN  personal access token (web app → Settings → Tokens & integrations;
+            use a read & write token for capture)
 `;
 
 async function main() {

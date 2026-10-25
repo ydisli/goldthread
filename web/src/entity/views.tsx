@@ -293,12 +293,13 @@ export function Comments({ entityId }: { entityId: string }) {
 }
 
 /** Generic detail page: /e/:type/:id — also used as the base for specialised pages. */
-export function EntityPage({ id, children, side, headerActions, sub, hideFields }: { id: string; children?: ReactNode; side?: ReactNode; headerActions?: ReactNode; sub?: ReactNode; hideFields?: boolean }) {
+export function EntityPage({ id, children, side, headerActions, sub, hideFields, wide }: { id: string; children?: ReactNode; side?: ReactNode; headerActions?: ReactNode; sub?: ReactNode; hideFields?: boolean; wide?: ReactNode }) {
   const e = useEntity(id);
   if (!e) return <div className="page"><Empty icon="search">This item does not exist or was deleted. <Link to="/today">Back to today</Link></Empty></div>;
   return (
-    <div className="page">
+    <div className={`page ${wide ? 'page-wide' : ''}`}>
       <EntityHeader e={e} actions={headerActions} sub={sub} />
+      {wide}
       <div className="grid g-side">
         <div className="stack">
           {!hideFields && <Card title="Details" icon={defOf(e.type).icon}><FieldGrid e={e} /></Card>}

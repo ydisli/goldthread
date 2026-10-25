@@ -5,7 +5,8 @@ import {
   Layers, Lightbulb, Link as LinkIcon, ListChecks, ListTree, Map as MapIcon, Megaphone, Menu, MessageSquare, Milestone, Moon, Network,
   PartyPopper, Pencil, Plus, Quote, Radar, Rocket, Route, Scale, Search, Send, Settings, ShieldAlert, SlidersHorizontal, Sparkles, Split,
   Star, Sun, Swords, Table2, Target, Trash2, TrendingDown, TrendingUp, TriangleAlert, Upload, UserRound, Users, WandSparkles, Workflow,
-  X, Zap, Boxes, Gauge, Flag, type LucideIcon,
+  X, Zap, Boxes, Gauge, Flag,
+  ChevronsUpDown, Pin, PinOff, Plug, CircleUser, LogOut, UserPlus, Ellipsis, KeyRound, Shield, Mail, Undo2, Redo2, ZoomIn, ZoomOut, Maximize, GripVertical, Circle, Diamond, Square, Move, Rows3, Columns3, Eye, Lock, LayoutGrid, ArrowLeft, Play, CircleStop, Spline, Hand, RefreshCw, ArrowRightLeft, Terminal, Server, Puzzle, type LucideIcon,
 } from 'lucide-react';
 
 const MAP: Record<string, LucideIcon> = {
@@ -22,6 +23,7 @@ const MAP: Record<string, LucideIcon> = {
   'sliders-horizontal': SlidersHorizontal, sparkles: Sparkles, split: Split, star: Star, sun: Sun, swords: Swords, 'table-2': Table2,
   target: Target, 'trash-2': Trash2, 'trending-down': TrendingDown, 'trending-up': TrendingUp, 'triangle-alert': TriangleAlert, upload: Upload,
   'user-round': UserRound, users: Users, 'wand-sparkles': WandSparkles, workflow: Workflow, x: X, zap: Zap, boxes: Boxes, gauge: Gauge, flag: Flag,
+  'chevrons-up-down': ChevronsUpDown, 'pin': Pin, 'pin-off': PinOff, 'plug': Plug, 'circle-user': CircleUser, 'log-out': LogOut, 'user-plus': UserPlus, 'ellipsis': Ellipsis, 'key-round': KeyRound, 'shield': Shield, 'mail': Mail, 'undo-2': Undo2, 'redo-2': Redo2, 'zoom-in': ZoomIn, 'zoom-out': ZoomOut, 'maximize': Maximize, 'grip-vertical': GripVertical, 'circle': Circle, 'diamond': Diamond, 'square': Square, 'move': Move, 'rows-3': Rows3, 'columns-3': Columns3, 'eye': Eye, 'lock': Lock, 'layout-grid': LayoutGrid, 'arrow-left': ArrowLeft, 'play': Play, 'circle-stop': CircleStop, 'spline': Spline, 'hand': Hand, 'refresh-cw': RefreshCw, 'arrow-right-left': ArrowRightLeft, 'terminal': Terminal, 'server': Server, 'puzzle': Puzzle,
 };
 
 export function Icon({ name, size = 16, className, strokeWidth = 1.9 }: { name: string; size?: number; className?: string; strokeWidth?: number }) {

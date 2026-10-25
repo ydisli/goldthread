@@ -11,15 +11,15 @@ export function Badge({ children, tone, title }: { children: ReactNode; tone?: T
 /** Badge for an enum/status value, coloured by meaning. */
 export function StatusBadge({ value, label }: { value: unknown; label?: string }) {
   if (value === undefined || value === null || value === '') return <span className="muted">—</span>;
-  return <Badge tone={toneOf(value)}>{label ?? humanize(value)}</Badge>;
+  return <span className={`status ${toneOf(value)}`}>{label ?? humanize(value)}</span>;
 }
 
-export function Card({ title, icon, actions, children, flush, className, sub }: { title?: ReactNode; icon?: string; actions?: ReactNode; children?: ReactNode; flush?: boolean; className?: string; sub?: ReactNode }) {
+/** A card. `icon` is accepted for compatibility but intentionally not drawn — headings carry the meaning. */
+export function Card({ title, actions, children, flush, className, sub }: { title?: ReactNode; icon?: string; actions?: ReactNode; children?: ReactNode; flush?: boolean; className?: string; sub?: ReactNode }) {
   return (
     <section className={`card ${className ?? ''}`}>
       {(title || actions) && (
         <div className="card-head">
-          {icon && <Icon name={icon} size={16} className="muted" />}
           <div style={{ flex: 1, minWidth: 0 }}>
             {typeof title === 'string' ? <h2>{title}</h2> : title}
             {sub && <div className="small muted">{sub}</div>}
@@ -182,8 +182,9 @@ export function downloadFile(name: string, content: string, type = 'text/markdow
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
-export function PageHead({ title, sub, actions, crumbs }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode; crumbs?: ReactNode }) {
+export function PageHead({ title, sub, actions, crumbs, guide }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode; crumbs?: ReactNode; guide?: ReactNode }) {
   return (
+    <>
     <div className="page-head">
       <div style={{ minWidth: 0, flex: 1 }}>
         {crumbs && <div className="crumbs">{crumbs}</div>}
@@ -192,5 +193,56 @@ export function PageHead({ title, sub, actions, crumbs }: { title: ReactNode; su
       </div>
       {actions && <div className="row-wrap">{actions}</div>}
     </div>
+    {guide}
+    </>
   );
+}
+
+// ---------------- menus ----------------
+
+/** A dropdown anchored to a trigger; closes on outside click or Escape. */
+export function Dropdown({ trigger, children, align = 'left', up = false, width }: { trigger: (open: () => void, isOpen: boolean) => ReactNode; children: (close: () => void) => ReactNode; align?: 'left' | 'right'; up?: boolean; width?: number }) {
+  const [isOpen, setOpen] = useState(false);
+  const ref = useOutsideClick<HTMLDivElement>(() => setOpen(false));
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen]);
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      {trigger(() => setOpen((o) => !o), isOpen)}
+      {isOpen && (
+        <div className="menu" style={{ [align]: 0, ...(up ? { bottom: 'calc(100% + 6px)' } : { top: 'calc(100% + 6px)' }), ...(width ? { width } : {}) }}>
+          {children(() => setOpen(false))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------- guides & terms ----------------
+
+/**
+ * A short "how this works" panel at the top of a tool. Dismissed per person;
+ * the state lives in their account preferences.
+ */
+export function Guide({ id, title, steps, dismissed, onDismiss }: { id: string; title: string; steps: ReactNode[]; dismissed: boolean; onDismiss: (id: string) => void }) {
+  if (dismissed) return null;
+  return (
+    <div className="guide" role="note">
+      <Icon name="lightbulb" size={18} className="muted" />
+      <div style={{ flex: 1 }}>
+        <div className="t">{title}</div>
+        <ol>{steps.map((s, i) => <li key={i}>{s}</li>)}</ol>
+      </div>
+      <button className="btn btn-ghost btn-sm" onClick={() => onDismiss(id)}>Got it</button>
+    </div>
+  );
+}
+
+/** A jargon term with an explanation on hover. */
+export function Term({ children, explain }: { children: ReactNode; explain: string }) {
+  return <span className="term" tabIndex={0} data-tip={explain} aria-label={`${typeof children === 'string' ? children : ''}: ${explain}`}>{children}</span>;
 }

@@ -14,7 +14,6 @@ import { EntityPicker, RefChip } from '../../entity/fields.tsx';
 import { openEditor } from '../../entity/editor.tsx';
 import { hrefOf } from '../../entity/links.ts';
 import { ExtractPanel } from '../define/Toolkit.tsx';
-import { useTheme } from '../../shell.tsx';
 
 // ---------------- Meetings ----------------
 
@@ -92,7 +91,7 @@ export function MeetingPage({ id }: { id: string }) {
           <Card title="Attendees" icon="users" sub="Open a prep brief for anyone before the meeting." flush>
             <div className="list">{(m.attendeeIds ?? []).map((sid: string) => {
               const s = g.get(sid);
-              return <div key={sid} className="list-item" style={{ alignItems: 'center' }}><Avatar name={s?.name} size="sm" /><span className="grow">{s?.name}<div className="small muted">{s?.title}</div></span>{s && !s.isMe && <Link className="btn btn-sm" to={`/stakeholders/p/${sid}?tab=prep`}>Prep</Link>}</div>;
+              return <div key={sid} className="list-item" style={{ alignItems: 'center' }}><Avatar name={s?.name} size="sm" /><span className="grow">{s?.name}<div className="small muted">{s?.title}</div></span>{s && s.id !== g.me?.id && <Link className="btn btn-sm" to={`/stakeholders/p/${sid}?tab=prep`}>Prep</Link>}</div>;
             })}</div>
           </Card>
           <Backlinks id={m.id} />
@@ -159,87 +158,6 @@ export function ActivityPage() {
   );
 }
 
-// ---------------- Settings ----------------
-
-export function SettingsPage() {
-  const s = useStore();
-  const settings = useSettings();
-  const g = useGraph();
-  const [theme, setTheme] = useTheme();
-  const [token, setToken] = useState<string>('');
-  const [form, setForm] = useState({ workspaceName: settings.workspaceName, productName: settings.productName, userName: settings.userName ?? '' });
-  useEffect(() => { api<{ captureToken: string }>('/api/settings').then((x) => setToken(x.captureToken)).catch(() => {}); }, []);
-  const origin = location.origin;
-  const save = async () => {
-    try {
-      await updateSettings(form);
-      const me = g.me;
-      if (me && form.userName && me.name !== form.userName) await updateEntity(me.id, { name: form.userName });
-      toast('Settings saved');
-    } catch (err) { errorToast(err); }
-  };
-  const importFile = async (file: File) => {
-    try {
-      const dump = JSON.parse(await file.text());
-      if (!confirm(`Replace the whole workspace with ${dump.entities?.length ?? 0} entities from ${file.name}?`)) return;
-      await api('/api/import', { method: 'POST', json: dump });
-      toast('Workspace imported');
-    } catch (err) { errorToast(err); }
-  };
-  const reset = async (empty: boolean) => {
-    if (!confirm(empty ? 'Start with an empty workspace? Everything is removed.' : 'Reset to the Northwind Pay demo workspace? Your changes are removed.')) return;
-    try { await api('/api/reset', { method: 'POST', json: { empty } }); toast('Workspace reset'); } catch (err) { errorToast(err); }
-  };
-  const counts = ENTITIES.map((d) => ({ d, n: g.all(d.type).length })).filter((x) => x.n > 0);
-  return (
-    <div className="page">
-      <PageHead title="Settings" sub="Workspace, appearance, integrations across platforms, AI, and your data." />
-      <div className="grid g2">
-        <Card title="Workspace" icon="settings">
-          <div className="form-grid">
-            <div className="field"><label>Workspace name</label><input className="input" value={form.workspaceName} onChange={(e) => setForm({ ...form, workspaceName: e.target.value })} /></div>
-            <div className="field"><label>Product name</label><input className="input" value={form.productName} onChange={(e) => setForm({ ...form, productName: e.target.value })} /></div>
-            <div className="field full"><label>Your name</label><input className="input" value={form.userName} onChange={(e) => setForm({ ...form, userName: e.target.value })} /><span className="help">Recorded on every change you make (audit trail). Also renames your own stakeholder record.</span></div>
-          </div>
-          <div className="row mt12"><span className="spacer" /><button className="btn btn-primary" onClick={save}>Save</button></div>
-        </Card>
-        <Card title="Appearance" icon="sun">
-          <Seg value={theme} onChange={setTheme} options={[{ id: 'system', label: 'System' }, { id: 'light', label: 'Light' }, { id: 'dark', label: 'Dark' }]} />
-          <div className="small muted mt12">Install Throughline as an app: in Chrome/Edge use “Install app” in the address bar; in Safari use File → Add to Dock (macOS) or Share → Add to Home Screen (iOS). It works offline in read-only mode.</div>
-        </Card>
-        <Card title="Integrations — capture from anywhere" icon="zap">
-          <div className="label">Capture token</div>
-          <div className="row mt8"><input className="input mono" readOnly value={token ? token : 'loading…'} /><button className="btn" onClick={() => copyText(token, 'Token copied')}><Icon name="copy" size={14} /></button></div>
-          <div className="small muted mt8">Required by the CLI, the browser extension and any external tool calling the capture API. Keep it private.</div>
-          <div className="label mt16">CLI</div>
-          <pre className="md" style={{ margin: '6px 0' }}><code>{`export TL_URL=${origin}\nexport TL_TOKEN=${token || '<token>'}\nnode cli/tl.ts capture "Customer wants SFTP export" --account Contoso\nnode cli/tl.ts brief\nnode cli/tl.ts lint docs/my-spec.md   # exits 1 on errors (CI)`}</code></pre>
-          <div className="label mt12">Browser extension</div>
-          <div className="small">Load the <code>extension/</code> folder in Chrome → Extensions → Developer mode → “Load unpacked”. Paste the URL and token in its options; then right-click any selected text → “Send to Throughline”.</div>
-          <div className="label mt12">REST API</div>
-          <pre className="md" style={{ margin: '6px 0' }}><code>{`curl -X POST ${origin}/api/capture \\\n  -H "Content-Type: application/json" -H "X-TL-Token: ${token || '<token>'}" \\\n  -d '{"kind":"evidence","text":"Exports time out","account":"Fabrikam","source":"support"}'`}</code></pre>
-        </Card>
-        <Card title="AI" icon="sparkles">
-          {s.ai.enabled ? <div className="row"><Badge tone="green">Claude enabled</Badge><span className="small muted">{s.ai.model}</span></div> : <Badge>Deterministic engines only</Badge>}
-          <div className="small muted mt12">Every analysis works offline with deterministic, explainable engines. Set <code>ANTHROPIC_API_KEY</code> before starting the server to add Claude-powered deep review, Ask and extraction. Claude only proposes; nothing is written without your click.</div>
-        </Card>
-        <Card title="Your data" icon="boxes">
-          <div className="row-wrap">
-            <a className="btn" href="/api/export" download><Icon name="download" size={14} />Export JSON</a>
-            <label className="btn" style={{ cursor: 'pointer' }}><Icon name="upload" size={14} />Import JSON<input type="file" accept="application/json" hidden onChange={(e) => e.target.files?.[0] && void importFile(e.target.files[0])} /></label>
-            <button className="btn btn-ghost" onClick={() => reset(false)}>Reset demo</button>
-            <button className="btn btn-ghost btn-danger" onClick={() => reset(true)}>Start empty</button>
-          </div>
-          <div className="chips mt12">{counts.map(({ d, n }) => <span key={d.type} className="badge">{d.plural} {n}</span>)}</div>
-        </Card>
-        <Card title="About" icon="compass">
-          <div className="small">Throughline keeps the chain of intent — strategy → evidence → bet → requirement → story → release → outcome — and the people around it in one graph. Stored locally in SQLite (<code>data/throughline.db</code>).</div>
-          <div className="small muted mt8">{g.byId.size.toLocaleString()} entities · {s.live ? 'live sync on' : 'live sync off'}</div>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
 // ---------------- Ask ----------------
 
 export function AskPage() {
@@ -257,7 +175,7 @@ export function AskPage() {
     setBusy(true);
     try { setAi(await api('/api/ai/ask', { method: 'POST', json: { question: q } })); } catch (err) { errorToast(err); } finally { setBusy(false); }
   };
-  const SUGGESTIONS = ['Why did we decide on XLSX only?', 'What do enterprise customers complain about?', 'export retention', 'type:request PDF', 'Who is resistant?'];
+  const SUGGESTIONS = ['Why is Workday the source of truth?', 'What does the service desk complain about?', 'mailbox retention', 'type:request access', 'Who is resistant?'];
   return (
     <div className="page">
       <PageHead title="Ask Throughline" sub="Search everything — decisions, evidence, requirements, people. Every answer links to its source." />

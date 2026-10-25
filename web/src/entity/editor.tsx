@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { defaultsFor, defOf, nameOf, type Entity } from '../../../core/schema.ts';
-import { createEntity, deleteEntity, updateEntity, useEntity } from '../store.ts';
+import { can, createEntity, deleteEntity, updateEntity, useEntity } from '../store.ts';
 import { navigate } from '../router.tsx';
 import { Drawer, errorToast, toast } from '../ui/kit.tsx';
 import { Icon } from '../ui/icons.tsx';
@@ -44,6 +44,7 @@ function EntityForm({ req, onClose }: { req: EditorRequest; onClose: () => void 
   const [busy, setBusy] = useState(false);
   useEffect(() => setData(initial), [initial]);
 
+  const readOnly = !can('editor') && req.type !== 'comment';
   const fields = def.fields.filter((f) => !f.hidden && f.kind !== 'json' && (!req.only || req.only.includes(f.key)));
   const set = (k: string, v: unknown) => setData((d) => ({ ...d, [k]: v }));
 
@@ -86,18 +87,20 @@ function EntityForm({ req, onClose }: { req: EditorRequest; onClose: () => void 
 
   return (
     <Drawer
-      title={<span className="row"><Icon name={def.icon} />{existing ? `Edit ${def.label.toLowerCase()}` : `New ${def.label.toLowerCase()}`}{existing?.key && <span className="key">{existing.key}</span>}</span>}
+      title={<span className="row">{readOnly ? def.label : existing ? `Edit ${def.label.toLowerCase()}` : `New ${def.label.toLowerCase()}`}{existing?.key && <span className="key">{existing.key}</span>}</span>}
       onClose={onClose}
-      footer={
+      footer={readOnly ? <><span className="spacer" /><button className="btn" onClick={onClose}>Close</button></> : (
         <>
           {existing && <button className="btn btn-ghost btn-danger" onClick={remove}><Icon name="trash-2" size={14} />Delete</button>}
           <span className="spacer" />
           <button className="btn" onClick={onClose}>Cancel</button>
           <button className="btn btn-primary" onClick={save} disabled={busy}>{busy ? 'Saving…' : existing ? 'Save' : 'Create'}</button>
         </>
-      }
+      )}
     >
-      <form className="form-grid" onSubmit={(e) => { e.preventDefault(); void save(); }}>
+      {readOnly && <div className="readonly-note" style={{ marginBottom: 14 }}><Icon name="eye" size={14} />You have view access here. Ask an admin for editor access to make changes.</div>}
+      <fieldset disabled={readOnly} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
+      <form className="form-grid" onSubmit={(e) => { e.preventDefault(); if (!readOnly) void save(); }}>
         {!existing && <p className="full small muted" style={{ margin: 0 }}>{def.description}</p>}
         {fields.map((f) => {
           const wide = ['longtext', 'markdown', 'refs', 'tags', 'scale'].includes(f.kind) || f.key === def.titleField || (f.kind === 'ref' && f.ref === '*');
@@ -112,6 +115,7 @@ function EntityForm({ req, onClose }: { req: EditorRequest; onClose: () => void 
         {errors.length > 0 && <div className="full err">{errors.join(' · ')}</div>}
         <button type="submit" hidden />
       </form>
+      </fieldset>
     </Drawer>
   );
 }

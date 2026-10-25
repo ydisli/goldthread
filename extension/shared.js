@@ -21,10 +21,10 @@ export function guessSource(pageUrl) {
 
 export async function capture(payload) {
   const { url, token } = await settings();
-  if (!token) throw new Error('Set the capture token in the extension options first.');
+  if (!token) throw new Error('Paste an access token in the extension options first.');
   const res = await fetch(`${url}/api/capture`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-TL-Token': token, 'X-TL-Actor': 'extension' },
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, 'X-TL-Actor': 'extension' },
     body: JSON.stringify({ actor: 'extension', ...payload }),
   });
   const body = await res.json().catch(() => ({}));

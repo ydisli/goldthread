@@ -10,6 +10,7 @@ import { api, batch, createEntity, updateEntity, useEntity, useGraph, useStore }
 import { Link, setQuery, useRoute } from '../../router.tsx';
 import { Badge, Card, Empty, Markdown, PageHead, StatusBadge, Tabs, errorToast, toast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
+import { ToolGuide } from '../../ui/guide.tsx';
 import { EntityTable, EntityHeader } from '../../entity/views.tsx';
 import { RefChip } from '../../entity/fields.tsx';
 import { openEditor } from '../../entity/editor.tsx';
@@ -20,7 +21,11 @@ export function SpecsPage() {
   const glossary = g.all('glossaryTerm');
   return (
     <div className="page">
-      <PageHead title="Spec Studio" sub="Write PRDs that engineers, QA, security and support can't poke holes in: live ambiguity linting, completeness checks, a review board of role agents and one-click requirement extraction." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'spec', defaults: { body: TEMPLATE } })}><Icon name="plus" size={14} />New spec</button>} />
+      <PageHead guide={<ToolGuide id="specs" title="Writing with Spec Studio" steps={[
+        <>Write or paste Markdown. Vague words — “fast”, “user-friendly”, “etc.” — are flagged as you type, with a suggestion.</>,
+        <>The completeness check lists what a reviewer will ask about: non-functional needs, errors, permissions, data, rollout.</>,
+        <>Run the review board to get the questions engineering, QA, security, legal and support would raise — before the meeting.</>,
+      ]} />} title="Spec Studio" sub="Write PRDs that engineers, QA, security and support can't poke holes in: live ambiguity linting, completeness checks, a review board of role agents and one-click requirement extraction." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'spec', defaults: { body: TEMPLATE } })}><Icon name="plus" size={14} />New spec</button>} />
       <Card flush>
         <EntityTable type="spec" columns={[
           'title', 'betId', 'status', 'ownerId',

@@ -9,12 +9,15 @@ import { ApprovalsPage, ConflictsPage, RaciListPage, RaciPage } from './pages/st
 import { BusinessCasePage, BusinessCasesPage, CapacityPage, MarketPage, MetricsPage, VisionPage } from './pages/strategy/Strategy.tsx';
 import { SpecPage, SpecsPage } from './pages/define/SpecStudio.tsx';
 import { BaselinePage, ChangeRequestPanel, DecisionPage, DecisionsPage, RequirementPage, RequirementsPage } from './pages/define/Requirements.tsx';
-import { DecisionTablePage, DecisionTablesPage, ProcessListPage, ProcessPage, StateModelPage } from './pages/define/Rules.tsx';
+import { DecisionTablePage, DecisionTablesPage, StateModelPage } from './pages/define/Rules.tsx';
+import { ProcessListPage, ProcessPage } from './pages/define/Process.tsx';
 import { StoryMapPage, StoryMapsPage, StoryPage } from './pages/define/StoryMap.tsx';
 import { DataEntityPage, ElicitationPage, GlossaryPage, RootCausePage, ToolkitPage } from './pages/define/Toolkit.tsx';
 import { BacklogPage, PrioritizePage, PulsePage, RaidPage, ReleasePage, ReleasesPage, RoadmapPage, TracePage, UatPage } from './pages/deliver/Deliver.tsx';
 import { FeaturesPage, LedgerPage } from './pages/learn/Learn.tsx';
-import { ActivityPage, AskPage, DocsPage, MeetingPage, MeetingsPage, SettingsPage } from './pages/workspace/Workspace.tsx';
+import { ActivityPage, AskPage, DocsPage, MeetingPage, MeetingsPage } from './pages/workspace/Workspace.tsx';
+import { SettingsPage } from './pages/settings/Settings.tsx';
+import { SectionPage, ToolsPage } from './pages/tools/Tools.tsx';
 import { AssumptionsPage, BetPage, BetsPage, CustomersPage, ExperimentPage, ExperimentsPage, JourneyPage, OpportunitiesPage, SignalsPage } from './pages/discover/Discover.tsx';
 
 export interface Route { path: string; render: (p: Record<string, string>, q: URLSearchParams) => ReactNode }
@@ -22,6 +25,8 @@ export interface Route { path: string; render: (p: Record<string, string>, q: UR
 export const ROUTES: Route[] = [
   { path: '/today', render: () => <TodayPage /> },
   { path: '/inbox', render: () => <InboxPage /> },
+  { path: '/tools', render: () => <ToolsPage /> },
+  { path: '/s/:id', render: (p) => <SectionPage key={p.id} id={p.id} /> },
   // Stakeholders
   { path: '/stakeholders', render: () => <StakeholdersPage /> },
   { path: '/stakeholders/p/:id', render: (p) => <StakeholderProfilePage key={p.id} id={p.id} /> },

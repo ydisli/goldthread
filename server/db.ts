@@ -1,5 +1,4 @@
 import { DatabaseSync } from 'node:sqlite';
-import { randomBytes } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { defaultsFor, ENTITY_MAP, validate, type Entity } from '../core/schema.ts';
@@ -7,10 +6,16 @@ import { approvalStatus, type Approver } from '../core/engines/stakeholders.ts';
 import { versionPatch } from '../core/engines/requirements.ts';
 import { newId } from '../core/util.ts';
 
+/** Who made a change: a person (with user id) or a system process. */
+export type Actor = string | { id?: string; name: string };
+const actorName = (a: Actor) => (typeof a === 'string' ? a : a.name);
+const actorId = (a: Actor) => (typeof a === 'string' ? null : a.id ?? null);
+
 export interface Activity {
   id: number;
   at: string;
   actor: string;
+  actorId?: string;
   entityId: string;
   entityType: string;
   action: 'create' | 'update' | 'delete';
@@ -21,7 +26,6 @@ export interface Activity {
 export interface Settings {
   workspaceName: string;
   productName: string;
-  captureToken: string;
   currency: string;
   [k: string]: unknown;
 }
@@ -58,7 +62,13 @@ export class Store {
       CREATE TABLE IF NOT EXISTS counters (prefix TEXT PRIMARY KEY, n INTEGER NOT NULL);
       CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
     `);
-    if (!this.getSetting('captureToken')) this.setSettings({ captureToken: randomBytes(16).toString('hex') });
+    // Migration: attribute changes to user accounts.
+    const cols = this.db.prepare('PRAGMA table_info(activity)').all() as { name: string }[];
+    if (!cols.some((c) => c.name === 'actor_id')) this.db.exec('ALTER TABLE activity ADD COLUMN actor_id TEXT');
+  }
+
+  close() {
+    this.db.close();
   }
 
   isEmpty(): boolean {
@@ -86,7 +96,7 @@ export class Store {
     return `${prefix}-${row.n}`;
   }
 
-  create(type: string, input: Record<string, unknown>, actor = 'system', opts: { id?: string; createdAt?: string; skipActivity?: boolean } = {}): Entity {
+  create(type: string, input: Record<string, unknown>, actor: Actor = 'system', opts: { id?: string; createdAt?: string; skipActivity?: boolean } = {}): Entity {
     const def = ENTITY_MAP[type];
     if (!def) throw new ValidationError([`Unknown type "${type}"`]);
     const data: Record<string, unknown> = { ...defaultsFor(type) };
@@ -104,7 +114,7 @@ export class Store {
     return e;
   }
 
-  update(id: string, patch: Record<string, unknown>, actor = 'system'): Entity {
+  update(id: string, patch: Record<string, unknown>, actor: Actor = 'system'): Entity {
     const current = this.get(id);
     if (!current) throw new ValidationError([`Not found: ${id}`]);
     const def = ENTITY_MAP[current.type];
@@ -131,7 +141,7 @@ export class Store {
     return next;
   }
 
-  delete(id: string, actor = 'system'): Entity | undefined {
+  delete(id: string, actor: Actor = 'system'): Entity | undefined {
     const current = this.get(id);
     if (!current) return undefined;
     this.db.prepare('UPDATE entities SET deleted = 1, updated_at = ? WHERE id = ?').run(new Date().toISOString(), id);
@@ -139,9 +149,9 @@ export class Store {
     return current;
   }
 
-  private log(actor: string, e: Entity, action: Activity['action'], summary: string, changes?: Activity['changes']) {
-    this.db.prepare('INSERT INTO activity(at, actor, entity_id, entity_type, action, summary, changes) VALUES (?, ?, ?, ?, ?, ?, ?)')
-      .run(new Date().toISOString(), actor, e.id, e.type, action, summary, changes ? JSON.stringify(changes) : null);
+  private log(actor: Actor, e: Entity, action: Activity['action'], summary: string, changes?: Activity['changes']) {
+    this.db.prepare('INSERT INTO activity(at, actor, actor_id, entity_id, entity_type, action, summary, changes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+      .run(new Date().toISOString(), actorName(actor), actorId(actor), e.id, e.type, action, summary, changes ? JSON.stringify(changes) : null);
   }
 
   activity(opts: { entityId?: string; limit?: number } = {}): Activity[] {
@@ -149,7 +159,7 @@ export class Store {
     const rows = (opts.entityId
       ? this.db.prepare('SELECT * FROM activity WHERE entity_id = ? ORDER BY id DESC LIMIT ?').all(opts.entityId, limit)
       : this.db.prepare('SELECT * FROM activity ORDER BY id DESC LIMIT ?').all(limit)) as any[];
-    return rows.map((r) => ({ id: r.id, at: r.at, actor: r.actor, entityId: r.entity_id, entityType: r.entity_type, action: r.action, summary: r.summary, changes: r.changes ? JSON.parse(r.changes) : undefined }));
+    return rows.map((r) => ({ id: r.id, at: r.at, actor: r.actor, actorId: r.actor_id ?? undefined, entityId: r.entity_id, entityType: r.entity_type, action: r.action, summary: r.summary, changes: r.changes ? JSON.parse(r.changes) : undefined }));
   }
 
   getSetting(key: string): unknown {
@@ -181,18 +191,16 @@ export class Store {
     }
   }
 
-  /** Wipe all entities and activity (keeps the capture token). */
+  /** Wipe all entities and activity. */
   clear() {
     this.db.exec('DELETE FROM entities; DELETE FROM activity; DELETE FROM counters;');
   }
 
   exportAll(): { version: 1; exportedAt: string; settings: Settings; entities: Entity[] } {
-    const settings = this.settings();
-    const { captureToken: _t, ...safe } = settings;
-    return { version: 1, exportedAt: new Date().toISOString(), settings: safe as Settings, entities: this.all() };
+    return { version: 1, exportedAt: new Date().toISOString(), settings: this.settings(), entities: this.all() };
   }
 
-  importAll(dump: { settings?: Record<string, unknown>; entities: Entity[] }, actor = 'import') {
+  importAll(dump: { settings?: Record<string, unknown>; entities: Entity[] }, actor: Actor = 'import') {
     this.transaction(() => {
       this.clear();
       if (dump.settings) {
@@ -208,7 +216,7 @@ export class Store {
           if (n) this.db.prepare('INSERT INTO counters(prefix, n) VALUES (?, ?) ON CONFLICT(prefix) DO UPDATE SET n = MAX(n, excluded.n)').run(def.keyPrefix, n);
         }
       }
-      this.db.prepare('INSERT INTO activity(at, actor, entity_id, entity_type, action, summary) VALUES (?, ?, ?, ?, ?, ?)').run(new Date().toISOString(), actor, '-', 'workspace', 'create', `Imported ${dump.entities.length} entities`);
+      this.db.prepare('INSERT INTO activity(at, actor, entity_id, entity_type, action, summary) VALUES (?, ?, ?, ?, ?, ?)').run(new Date().toISOString(), actorName(actor), '-', 'workspace', 'create', `Imported ${dump.entities.length} entities`);
     });
   }
 }

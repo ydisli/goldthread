@@ -6,8 +6,9 @@ import { impactSummary, traceMatrix } from '../../../../core/engines/traceabilit
 import { isoDate } from '../../../../core/util.ts';
 import { createEntity, now, updateEntity, useEntity, useGraph } from '../../store.ts';
 import { Link, navigate, setQuery, useRoute } from '../../router.tsx';
-import { Badge, Card, Empty, Markdown, PageHead, Stat, StatusBadge, Tabs, errorToast, toast } from '../../ui/kit.tsx';
+import { Badge, Card, Empty, Markdown, PageHead, Stat, StatusBadge, Tabs, errorToast, toast, Term } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
+import { ToolGuide } from '../../ui/guide.tsx';
 import { fmtDate, humanize, relDays } from '../../ui/format.ts';
 import { EntityTable, EntityPage } from '../../entity/views.tsx';
 import { RefChip, RefChips } from '../../entity/fields.tsx';
@@ -26,7 +27,11 @@ export function RequirementsPage() {
   const [specFilter, setSpecFilter] = useState('');
   return (
     <div className="page">
-      <PageHead title="Requirements" sub="Managed requirements with MoSCoW, versions, baselines, change control and automatic contradiction detection." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'requirement' })}><Icon name="plus" size={14} />New requirement</button>} />
+      <PageHead guide={<ToolGuide id="requirements" title="Managing requirements" steps={[
+        <>Each requirement has a <Term explain="Must have, Should have, Could have, Won't have (this time).">MoSCoW</Term> priority, a status and a version. Editing an approved one creates a new version.</>,
+        <>A <Term explain="A frozen snapshot of what was agreed, usually at sign-off. Later changes are compared against it.">baseline</Term> freezes what was agreed; change requests track what moved after that.</>,
+        <>Contradictions — say, 15 minutes in one requirement and 5 in another — are detected automatically.</>,
+      ]} />} title="Requirements" sub="Managed requirements with MoSCoW, versions, baselines, change control and automatic contradiction detection." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'requirement' })}><Icon name="plus" size={14} />New requirement</button>} />
       <div className="grid g4 mb16">
         <Stat label="Requirements" value={reqs.filter((r) => r.status !== 'deprecated').length} sub={`${reqs.filter((r) => r.priority === 'must').length} must-haves`} />
         <Stat label="Contradictions" value={contradictions.length} tone={contradictions.length ? 'red' : undefined} />

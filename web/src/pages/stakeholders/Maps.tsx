@@ -3,8 +3,9 @@ import { ENGAGEMENT, type Entity } from '../../../../core/schema.ts';
 import { QUADRANTS, SALIENCE, engagementGap, engagementIndex, influenceNetwork, pathToInfluence, quadrant, salience } from '../../../../core/engines/stakeholders.ts';
 import { updateEntity, useGraph } from '../../store.ts';
 import { setQuery, useRoute } from '../../router.tsx';
-import { Card, PageHead, Tabs, errorToast } from '../../ui/kit.tsx';
+import { Card, PageHead, Tabs, errorToast, Term } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
+import { ToolGuide } from '../../ui/guide.tsx';
 import { Legend, Network, QuadrantScatter } from '../../ui/charts.tsx';
 import { humanize } from '../../ui/format.ts';
 import { ENGAGEMENT_COLOR, EngagementShift, PersonLink, QuadrantBadge } from './common.tsx';
@@ -17,7 +18,11 @@ export function StakeholderMapsPage() {
   const tab = (query.get('tab') ?? 'grid') as MapTab;
   return (
     <div className="page">
-      <PageHead title="Stakeholder maps" sub="Four lenses on the same people: power & interest, salience, engagement gaps and who influences whom." />
+      <PageHead guide={<ToolGuide id="maps" title="Reading the maps" steps={[
+        <><b>Power / interest:</b> people top-right are key players — manage them closely; top-left keep satisfied; bottom-right keep informed.</>,
+        <><Term explain="Mitchell's model: does the person have power, a legitimate claim, and urgency? Those with all three are 'definitive' stakeholders.">Salience</Term> shows who needs attention first.</>,
+        <><b>Engagement</b> compares where someone is today (say, resistant) with where you need them (supportive). The gap is your work.</>,
+      ]} />} title="Stakeholder maps" sub="Four lenses on the same people: power & interest, salience, engagement gaps and who influences whom." />
       <Tabs value={tab} onChange={(t) => setQuery({ tab: t })} tabs={[
         { id: 'grid', label: <><Icon name="grid-3x3" size={14} />Power / interest</> },
         { id: 'salience', label: <><Icon name="target" size={14} />Salience</> },
@@ -36,7 +41,7 @@ const engagementLegend = ENGAGEMENT.map((l) => ({ label: humanize(l), color: ENG
 
 function PowerInterest() {
   const g = useGraph();
-  const people = g.all('stakeholder').filter((s) => !s.isMe);
+  const people = g.all('stakeholder').filter((s) => s.id !== g.me?.id);
   const points = people.map((s) => ({
     id: s.id, x: Number(s.interest) || 3, y: Number(s.power) || 3, label: String(s.name).split(' ')[0], color: ENGAGEMENT_COLOR[s.currentEngagement ?? 'neutral'],
     tip: <><div className="t-title">{s.name}</div><div>{s.title}</div><div>Power {s.power} · interest {s.interest}</div><div>{humanize(s.currentEngagement)} → {humanize(s.desiredEngagement)}</div><div className="muted">{QUADRANTS[quadrant(s)].strategy}</div></>,
@@ -63,7 +68,7 @@ function PowerInterest() {
 
 function Salience() {
   const g = useGraph();
-  const people = g.all('stakeholder').filter((s) => !s.isMe);
+  const people = g.all('stakeholder').filter((s) => s.id !== g.me?.id);
   const order = ['definitive', 'dominant', 'dangerous', 'dependent', 'dormant', 'discretionary', 'demanding', 'none'];
   const toggle = async (s: Entity, key: 'legitimacy' | 'urgency') => {
     try { await updateEntity(s.id, { [key]: !s[key] }); } catch (err) { errorToast(err); }
@@ -97,7 +102,7 @@ function Salience() {
 
 function EngagementMatrix() {
   const g = useGraph();
-  const people = g.all('stakeholder').filter((s) => !s.isMe).sort((a, b) => engagementGap(b).gap - engagementGap(a).gap || (Number(b.power) || 0) - (Number(a.power) || 0));
+  const people = g.all('stakeholder').filter((s) => s.id !== g.me?.id).sort((a, b) => engagementGap(b).gap - engagementGap(a).gap || (Number(b.power) || 0) - (Number(a.power) || 0));
   const set = async (s: Entity, key: 'currentEngagement' | 'desiredEngagement', level: string) => {
     try { await updateEntity(s.id, { [key]: level }); } catch (err) { errorToast(err); }
   };
@@ -148,7 +153,7 @@ function Influence() {
   }));
   const edges = people.flatMap((s) => ((s.influencedBy ?? []) as string[]).map((from) => ({ from, to: s.id })));
   const top = [...net.values()].filter((x) => x.score > 0).sort((a, b) => b.score - a.score).slice(0, 6);
-  const targets = people.filter((s) => !s.isMe && quadrant(s) !== 'monitor' && engagementGap(s).gap > 0 && net.get(s.id)?.influencedBy.length);
+  const targets = people.filter((s) => s.id !== g.me?.id && quadrant(s) !== 'monitor' && engagementGap(s).gap > 0 && net.get(s.id)?.influencedBy.length);
   return (
     <div className="grid g-side">
       <Card title="Who influences whom" icon="network" sub="Arrows point from influencer to influenced. Node size = power, colour = engagement. Hover to isolate.">

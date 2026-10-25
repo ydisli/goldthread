@@ -6,7 +6,6 @@ export interface Settings {
   workspaceName: string;
   productName: string;
   currency: string;
-  userName?: string;
   ourCapabilities?: Record<string, number>;
   [k: string]: unknown;
 }
@@ -15,6 +14,7 @@ export interface Activity {
   id: number;
   at: string;
   actor: string;
+  actorId?: string;
   entityId: string;
   entityType: string;
   action: 'create' | 'update' | 'delete';
@@ -22,22 +22,47 @@ export interface Activity {
   changes?: Record<string, { from: unknown; to: unknown }>;
 }
 
-type Status = 'loading' | 'ready' | 'offline' | 'error';
+export type Role = 'owner' | 'admin' | 'editor' | 'viewer';
+export type Persona = 'po' | 'ba' | 'both';
+export const ROLE_RANK: Record<Role, number> = { viewer: 1, editor: 2, admin: 3, owner: 4 };
+
+export interface Prefs { persona?: Persona; pinned?: string[]; dismissedGuides?: string[]; [k: string]: unknown }
+export interface Me { id: string; email: string; name: string; title?: string; demo: boolean; prefs: Prefs }
+export interface WorkspaceRef { id: string; name: string; kind: 'personal' | 'team'; demo: boolean; role: Role }
+export interface Member { userId: string; name: string; email: string; role: Role }
+export interface DemoAccount { id: string; name: string; title?: string; role: Role }
+
+export interface AuthState {
+  user: Me | null;
+  workspaces: WorkspaceRef[];
+  current: WorkspaceRef | null;
+  signup: 'open' | 'invite-only';
+  demo: DemoAccount[];
+  firstRun: boolean;
+}
+
+type Status = 'loading' | 'auth' | 'ready' | 'offline' | 'error';
 
 interface State {
   status: Status;
   error?: string;
+  auth: AuthState | null;
   entities: Map<string, Entity>;
   settings: Settings;
-  ai: { enabled: boolean; model?: string };
+  members: Member[];
+  role: Role;
+  ai: { enabled: boolean; provider?: string; model?: string };
   version: number;
   live: boolean;
 }
 
 let state: State = {
   status: 'loading',
+  auth: null,
   entities: new Map(),
   settings: { workspaceName: 'Throughline', productName: '', currency: '$' },
+  members: [],
+  role: 'viewer',
   ai: { enabled: false },
   version: 0,
   live: false,
@@ -58,58 +83,157 @@ export class ApiError extends Error {
   }
 }
 
+const WS_KEY = 'tl.workspace';
+let currentWs: string | null = (() => { try { return localStorage.getItem(WS_KEY); } catch { return null; } })();
+
 export async function api<T = any>(path: string, init: RequestInit & { json?: unknown } = {}): Promise<T> {
   const { json, ...rest } = init;
   const res = await fetch(path, {
     ...rest,
-    headers: { 'Content-Type': 'application/json', 'X-TL-Actor': state.settings.userName ?? 'web', ...(rest.headers ?? {}) },
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', ...(currentWs ? { 'X-TL-Workspace': currentWs } : {}), ...(rest.headers ?? {}) },
     body: json !== undefined ? JSON.stringify(json) : rest.body,
   });
   const text = await res.text();
-  const body = text ? JSON.parse(text) : undefined;
+  let body: any;
+  try { body = text ? JSON.parse(text) : undefined; } catch { body = undefined; }
+  if (res.status === 401 && !path.startsWith('/api/auth/') && !path.startsWith('/api/invites/')) {
+    void boot();
+  }
   if (!res.ok) throw new ApiError(res.status, body?.error ?? res.statusText, body?.errors);
   return body as T;
 }
 
-// ---------------- load & live sync ----------------
+// ---------------- boot, auth & workspace loading ----------------
 
-const CACHE_KEY = 'tl.workspace.v1';
+const CACHE_KEY = 'tl.workspace.cache.v2';
 
-export async function load() {
+export async function boot() {
+  let auth: AuthState;
   try {
-    const ws = await api<{ settings: Settings; entities: Entity[]; ai: State['ai'] }>('/api/workspace');
-    set({ status: 'ready', entities: new Map(ws.entities.map((e) => [e.id, e])), settings: ws.settings, ai: ws.ai, error: undefined });
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ settings: ws.settings, entities: ws.entities })); } catch { /* storage unavailable */ }
+    auth = await api<AuthState>('/api/auth/state');
   } catch (err) {
-    // Offline: fall back to the last cached workspace (read-only).
-    try {
-      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) ?? 'null');
-      if (cached) {
-        set({ status: 'offline', entities: new Map((cached.entities as Entity[]).map((e) => [e.id, e])), settings: cached.settings });
-        return;
-      }
-    } catch { /* ignore */ }
-    set({ status: 'error', error: (err as Error).message });
+    return offlineFallback(err);
+  }
+  if (!auth.user) {
+    disconnectLive();
+    set({ status: 'auth', auth, entities: new Map(), members: [] });
+    return;
+  }
+  const preferred = auth.workspaces.find((w) => w.id === currentWs) ?? auth.current ?? auth.workspaces[0];
+  setCurrentWs(preferred?.id ?? null);
+  set({ auth: { ...auth, current: preferred ?? null } });
+  if (!preferred) { set({ status: 'ready', entities: new Map() }); return; }
+  await loadWorkspace();
+  connectLive();
+}
+
+function setCurrentWs(id: string | null) {
+  currentWs = id;
+  try { if (id) localStorage.setItem(WS_KEY, id); else localStorage.removeItem(WS_KEY); } catch { /* storage unavailable */ }
+}
+
+export async function loadWorkspace() {
+  try {
+    const ws = await api<{ settings: Settings; entities: Entity[]; ai: State['ai']; role: Role; members: Member[] }>('/api/workspace');
+    set({ status: 'ready', entities: new Map(ws.entities.map((e) => [e.id, e])), settings: ws.settings, ai: ws.ai, role: ws.role, members: ws.members, error: undefined });
+    document.documentElement.dataset.role = ws.role;
+    try { localStorage.setItem(`${CACHE_KEY}.${currentWs}`, JSON.stringify({ settings: ws.settings, entities: ws.entities, members: ws.members })); } catch { /* quota or private mode */ }
+  } catch (err) {
+    if ((err as ApiError).status === 403) {
+      // Removed from this workspace — fall back to another one.
+      setCurrentWs(null);
+      return boot();
+    }
+    offlineFallback(err);
   }
 }
 
+function offlineFallback(err: unknown) {
+  try {
+    const cached = JSON.parse(localStorage.getItem(`${CACHE_KEY}.${currentWs}`) ?? 'null');
+    if (cached) {
+      set({ status: 'offline', entities: new Map((cached.entities as Entity[]).map((e) => [e.id, e])), settings: cached.settings, members: cached.members ?? [] });
+      return;
+    }
+  } catch { /* ignore */ }
+  set({ status: 'error', error: (err as Error).message });
+}
+
+export async function switchWorkspace(id: string) {
+  await api('/api/session/workspace', { method: 'POST', json: { workspaceId: id } });
+  setCurrentWs(id);
+  disconnectLive();
+  set({ status: 'loading', auth: state.auth ? { ...state.auth, current: state.auth.workspaces.find((w) => w.id === id) ?? null } : null });
+  await boot();
+}
+
+export async function login(email: string, password: string) {
+  const r = await api<{ workspaceId?: string }>('/api/auth/login', { method: 'POST', json: { email, password } });
+  setCurrentWs(r.workspaceId ?? null);
+  await boot();
+}
+
+export async function demoLogin(userId: string) {
+  const r = await api<{ workspaceId?: string }>('/api/auth/demo', { method: 'POST', json: { userId } });
+  setCurrentWs(r.workspaceId ?? null);
+  await boot();
+}
+
+export async function signup(data: { name: string; email: string; password: string; persona: Persona; sample: string; workspaceName?: string; title?: string }) {
+  const r = await api<{ workspaceId: string }>('/api/auth/signup', { method: 'POST', json: data });
+  setCurrentWs(r.workspaceId);
+  await boot();
+}
+
+export async function acceptInvite(token: string, data: Record<string, unknown>) {
+  const r = await api<{ workspaceId: string }>(`/api/invites/${encodeURIComponent(token)}/accept`, { method: 'POST', json: data });
+  setCurrentWs(r.workspaceId);
+  await boot();
+}
+
+export async function logout() {
+  await api('/api/auth/logout', { method: 'POST' }).catch(() => {});
+  setCurrentWs(null);
+  disconnectLive();
+  await boot();
+}
+
+export async function updateMe(patch: { name?: string; title?: string; prefs?: Prefs }) {
+  const me = await api<Me>('/api/me', { method: 'PATCH', json: patch });
+  if (state.auth) set({ auth: { ...state.auth, user: me } });
+  return me;
+}
+
+export async function refreshAuth() {
+  const auth = await api<AuthState>('/api/auth/state');
+  set({ auth: { ...auth, current: auth.workspaces.find((w) => w.id === currentWs) ?? auth.current } });
+}
+
+// ---------------- live sync ----------------
+
 let source: EventSource | null = null;
 export function connectLive() {
-  if (source) return;
-  source = new EventSource('/api/events');
+  if (source || !currentWs) return;
+  source = new EventSource(`/api/events?ws=${encodeURIComponent(currentWs)}`);
   source.onopen = () => set({ live: true });
   source.onerror = () => set({ live: false });
   source.onmessage = (ev) => {
-    const changes = JSON.parse(ev.data) as ({ op: 'upsert'; entity: Entity } | { op: 'delete'; id: string } | { op: 'reset' } | { op: 'settings' })[];
+    const changes = JSON.parse(ev.data) as ({ op: 'upsert'; entity: Entity } | { op: 'delete'; id: string } | { op: 'reset' } | { op: 'settings' } | { op: 'members' })[];
     let entities: Map<string, Entity> | null = null;
     for (const c of changes) {
-      if (c.op === 'reset' || c.op === 'settings') { void load(); return; }
+      if (c.op === 'reset' || c.op === 'settings' || c.op === 'members') { void loadWorkspace(); void refreshAuth(); return; }
       entities ??= new Map(state.entities);
       if (c.op === 'upsert') entities.set(c.entity.id, c.entity);
       else entities.delete(c.id);
     }
     if (entities) set({ entities });
   };
+}
+
+function disconnectLive() {
+  source?.close();
+  source = null;
 }
 
 // ---------------- mutations ----------------
@@ -169,9 +293,13 @@ export function useStore(): State {
   return useSyncExternalStore(subscribe, () => state);
 }
 
+export function getState(): State {
+  return state;
+}
+
 let graphCache: { version: number; graph: Graph } | null = null;
 export function getGraph(): Graph {
-  if (!graphCache || graphCache.version !== state.version) graphCache = { version: state.version, graph: new Graph(state.entities.values()) };
+  if (!graphCache || graphCache.version !== state.version) graphCache = { version: state.version, graph: new Graph(state.entities.values(), { meUserId: state.auth?.user?.id }) };
   return graphCache.graph;
 }
 
@@ -188,6 +316,19 @@ export function useEntity(id: string | undefined): Entity | undefined {
 
 export function useSettings(): Settings {
   return useStore().settings;
+}
+
+export function useMe(): Me | null {
+  return useStore().auth?.user ?? null;
+}
+
+/** Does the signed-in person have at least this role here? */
+export function useCan(role: Role): boolean {
+  return ROLE_RANK[useStore().role] >= ROLE_RANK[role];
+}
+
+export function can(role: Role): boolean {
+  return ROLE_RANK[state.role] >= ROLE_RANK[role];
 }
 
 /** "Now" for all analyses. */

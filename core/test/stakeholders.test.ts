@@ -67,7 +67,7 @@ test('approval status aggregation', () => {
 });
 
 function world() {
-  const me = e('stakeholder', { id: 'me', name: 'Pat Product', isMe: true, power: 3, interest: 5 });
+  const me = e('stakeholder', { id: 'me', name: 'Pat Product', userId: 'u_me', power: 3, interest: 5 });
   const cfo = e('stakeholder', { id: 'cfo', name: 'Maya Chen', title: 'CFO', power: 5, interest: 4, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Close the books in 3 days', concerns: 'Audit trail for exports' });
   const sales = e('stakeholder', { id: 'sales', name: 'Tom Okafor', power: 4, interest: 5, currentEngagement: 'resistant', desiredEngagement: 'supportive' });
   const team = e('team', { id: 't1', name: 'Payments' });
@@ -87,7 +87,7 @@ function world() {
     e('interaction', { stakeholderIds: ['cfo'], date: '2026-10-01', sentiment: 1 }),
     e('interaction', { stakeholderIds: ['sales'], date: '2026-10-23', sentiment: -1 }),
   ];
-  return new Graph([me, cfo, sales, team, bet, ...stories, req, tc, request, commitment, approval, raci, decision, ...interactions]);
+  return new Graph([me, cfo, sales, team, bet, ...stories, req, tc, request, commitment, approval, raci, decision, ...interactions], { meUserId: 'u_me' });
 }
 
 test('commitment risk uses the forecast', () => {

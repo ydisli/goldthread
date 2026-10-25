@@ -1,5 +1,5 @@
 import type { Graph } from '../graph.ts';
-import { daysBetween, fmtMoney, pluralize } from '../util.ts';
+import { daysBetween, impactText, pluralize } from '../util.ts';
 import { clusterEvidence } from './clustering.ts';
 import { backlogHygiene } from './hygiene.ts';
 import { commsDue, hubSummary, pendingApprovalsFor, QUADRANTS, quadrant } from './stakeholders.ts';
@@ -67,7 +67,7 @@ export function dailyBrief(g: Graph, now: Date): BriefItem[] {
   // Signals
   const clusters = clusterEvidence(g.all('evidence'), now);
   for (const c of clusters.filter((c) => (c.trend === 'rising' || c.trend === 'new') && c.recent >= 3).slice(0, 3)) {
-    items.push({ id: `sig-${c.id}`, area: 'discover', severity: c.arr > 250_000 ? 'high' : 'medium', title: `Rising signal: ${c.label}`, detail: `${c.recent} signals in 30 days (vs ${c.previous}) · ${pluralize(c.accounts.length, 'account')} · ${fmtMoney(c.arr)} ARR`, href: '/discover/signals' });
+    items.push({ id: `sig-${c.id}`, area: 'discover', severity: c.arr > 250_000 || c.people > 500 ? 'high' : 'medium', title: `Rising signal: ${c.label}`, detail: `${c.recent} signals in 30 days (vs ${c.previous}) · ${pluralize(c.accounts.length, 'source')} · ${impactText(c.arr, c.people)}`, href: '/discover/signals' });
   }
   const unlinked = g.all('evidence').filter((e) => !(e.opportunityIds ?? []).length && e.date && daysBetween(e.date, now) <= 14);
   if (unlinked.length >= 3) items.push({ id: 'sig-unlinked', area: 'discover', severity: 'low', title: `${unlinked.length} new signals not linked to an opportunity`, href: '/discover/signals' });

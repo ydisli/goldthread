@@ -17,7 +17,7 @@ export class Graph {
   private readonly back = new Map<string, Link[]>();
   readonly me: Entity | undefined;
 
-  constructor(entities: Iterable<Entity>) {
+  constructor(entities: Iterable<Entity>, opts: { meUserId?: string } = {}) {
     for (const e of entities) {
       this.byId.set(e.id, e);
       const list = this.byType.get(e.type);
@@ -40,7 +40,8 @@ export class Graph {
         }
       }
     }
-    this.me = this.all('stakeholder').find((s) => s.isMe);
+    // "Me" is the stakeholder record linked to the signed-in user.
+    this.me = opts.meUserId ? this.all('stakeholder').find((s) => s.userId === opts.meUserId) : undefined;
   }
 
   get(id: string | undefined | null): Entity | undefined {

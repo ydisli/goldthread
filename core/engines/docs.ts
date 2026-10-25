@@ -1,6 +1,6 @@
 import type { Graph } from '../graph.ts';
 import { nameOf, type Entity } from '../schema.ts';
-import { fmtMoney, isoDate } from '../util.ts';
+import { fmtMoney, impactText, isoDate } from '../util.ts';
 import { clusterEvidence, evidenceStrength } from './clustering.ts';
 import { evaluateBusinessCase } from './finance.ts';
 import { concurrency, forecastScope } from './forecast.ts';
@@ -55,7 +55,7 @@ function prd(g: Graph, spec: Entity, now: Date): string {
     L.push(`- Success metric: ${nameOf(g.get(bet.metricId))}${bet.predictedChange ? ` (predicted ${bet.predictedChange})` : ''}`);
     L.push(`- Confidence: ${bet.confidence ?? '—'}% · Measure on ${bet.checkDate ?? '—'}`, '');
   }
-  L.push('## Evidence', `${strength.count} signals from ${strength.accounts} accounts (${fmtMoney(strength.arr)} ARR) — evidence strength **${strength.score}/100 (${strength.verdict})**.`, '');
+  L.push('## Evidence', `${strength.count} signals from ${strength.accounts} sources (${impactText(strength.arr, strength.people)}) — evidence strength **${strength.score}/100 (${strength.verdict})**.`, '');
   for (const e of ev.slice(0, 5)) L.push(`> "${e.title}" — ${e.account ?? e.source}${e.segment ? `, ${e.segment}` : ''}`, '');
   L.push(spec.body ?? '', '');
   L.push('## Managed requirements', table(['Key', 'Requirement', 'Priority', 'Status'], reqs.map((r) => [r.key, r.statement ?? r.title, r.priority, r.status])), '');
@@ -141,6 +141,6 @@ function steering(g: Graph, now: Date): string {
   const approvals = g.all('approval').filter((a) => a.status === 'pending');
   L.push('', '## Decisions & approvals needed', table(['Item', 'Due'], approvals.map((a) => [a.title, a.dueDate])));
   const clusters = clusterEvidence(g.all('evidence'), now).slice(0, 3);
-  L.push('', '## What customers are telling us', ...clusters.map((c) => `- **${c.label}** — ${c.items.length} signals, ${c.accounts.length} accounts, ${fmtMoney(c.arr)} ARR (${c.trend})`));
+  L.push('', '## What customers are telling us', ...clusters.map((c) => `- **${c.label}** — ${c.items.length} signals, ${c.accounts.length} sources, ${impactText(c.arr, c.people)} (${c.trend})`));
   return L.join('\n');
 }

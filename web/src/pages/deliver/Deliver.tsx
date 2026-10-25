@@ -8,8 +8,9 @@ import { AUDIENCES, commitmentRisk, tailoredUpdate, type Audience } from '../../
 import { addDays, daysBetween, isoDate } from '../../../../core/util.ts';
 import { deleteEntity, now, updateEntity, useEntity, useGraph } from '../../store.ts';
 import { Link, navigate, setQuery, useRoute } from '../../router.tsx';
-import { Badge, Card, Markdown, Meter, PageHead, Seg, Stat, StatusBadge, Tabs, copyText, errorToast, toast } from '../../ui/kit.tsx';
+import { Badge, Card, Markdown, Meter, PageHead, Seg, Stat, StatusBadge, Tabs, copyText, errorToast, toast, Term } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
+import { ToolGuide } from '../../ui/guide.tsx';
 import { HBars, Legend, LineChart, RiskMatrix, SERIES, useTooltip } from '../../ui/charts.tsx';
 import { fmtDate, humanize, relDays } from '../../ui/format.ts';
 import { EntityPage, EntityTable } from '../../entity/views.tsx';
@@ -86,7 +87,11 @@ export function PrioritizePage() {
   const set = (b: Entity, k: string, v: string) => updateEntity(b.id, { [k]: v === '' ? null : Number(v) }).catch(errorToast);
   return (
     <div className="page">
-      <PageHead title="Prioritize" sub="Scores are only as good as their inputs — so this shows how fragile the ranking is, and which single assumption would change it." actions={<Seg value={method} onChange={setMethod} options={[{ id: 'rice', label: 'RICE' }, { id: 'wsjf', label: 'WSJF' }]} />} />
+      <PageHead guide={<ToolGuide id="prioritize" title="How the ranking works" steps={[
+        <>Pick <Term explain="Reach × Impact × Confidence ÷ Effort. Value per unit of work.">RICE</Term> or <Term explain="Weighted Shortest Job First: cost of delay (business value + time criticality + risk reduction) ÷ job size. Common in SAFe.">WSJF</Term> — whichever your organisation uses.</>,
+        <>Change an estimate right in the table and the ranking updates straight away.</>,
+        <><b>What would change the order</b> shows how far an estimate must move before the ranking flips, so you know which estimates are worth arguing about.</>,
+      ]} />} title="Prioritize" sub="Scores are only as good as their inputs — so this shows how fragile the ranking is, and which single assumption would change it." actions={<Seg value={method} onChange={setMethod} options={[{ id: 'rice', label: 'RICE' }, { id: 'wsjf', label: 'WSJF' }]} />} />
       <Card flush className="mb16">
         <div className="table-wrap">
           <table className="table">
@@ -318,7 +323,11 @@ export function PulsePage() {
   const promises = g.all('commitment').filter((c) => c.status === 'open').map((c) => ({ c, r: commitmentRisk(c, g, today) }));
   return (
     <div className="page">
-      <PageHead title="Delivery pulse" sub="Probabilistic forecasts from real throughput (no story-point theatre), scope creep, dependencies and promises vs forecast." />
+      <PageHead guide={<ToolGuide id="forecast" title="Forecasts, not promises" steps={[
+        <>Throughline replays your team's real weekly throughput thousands of times (a <Term explain="Simulating many possible futures from past data to get a range of outcomes instead of one guess.">Monte Carlo</Term> simulation) to see when the remaining work is likely done.</>,
+        <>Promise the <b>85% date</b>: in 85 of 100 simulated futures the work is done by then. The 50% date is a coin flip.</>,
+        <>Scope added after the start is tracked separately, so you can show why a date moved.</>,
+      ]} />} title="Delivery pulse" sub="Probabilistic forecasts from real throughput (no story-point theatre), scope creep, dependencies and promises vs forecast." />
       <Card title="Throughput — stories finished per week" icon="activity" className="mb16">
         <LineChart series={series} xLabels={xLabels} />
         <div className="mt8"><Legend items={series.map((s) => ({ label: s.label, color: s.color, shape: 'line' }))} /></div>
@@ -455,7 +464,11 @@ export function TracePage() {
   };
   return (
     <div className="page page-wide">
-      <PageHead title="Traceability & impact" sub="The requirements traceability matrix is generated from the graph — never maintained by hand. Pick anything to see what a change would ripple into." actions={<button className="btn" onClick={exportCsv}><Icon name="download" size={14} />Export RTM (CSV)</button>} />
+      <PageHead guide={<ToolGuide id="trace" title="Traceability" steps={[
+        <>Every requirement should trace back to a source and forward to a story, a test and a release.</>,
+        <>Gaps are listed per requirement — this is the view auditors and change boards ask for.</>,
+        <>Use <b>Impact</b> on any item to see what a change would touch and who to tell.</>,
+      ]} />} title="Traceability & impact" sub="The requirements traceability matrix is generated from the graph — never maintained by hand. Pick anything to see what a change would ripple into." actions={<button className="btn" onClick={exportCsv}><Icon name="download" size={14} />Export RTM (CSV)</button>} />
       <Card title="Impact analysis" icon="network" className="mb16">
         <div className="mb12" style={{ maxWidth: 520 }}><EntityPicker targets="*" value={impactId ? [impactId] : []} onChange={(ids) => setQuery({ impact: ids[0] })} single placeholder="What would change? Pick a requirement, decision, bet, story…" /></div>
         {impact ? (

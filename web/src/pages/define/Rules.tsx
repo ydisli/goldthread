@@ -5,6 +5,7 @@ import { batch, updateEntity, useEntity, useGraph } from '../../store.ts';
 import { Link } from '../../router.tsx';
 import { Badge, Card, Empty, PageHead, Seg, Stat, errorToast, toast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
+import { ToolGuide } from '../../ui/guide.tsx';
 import { useTooltip } from '../../ui/charts.tsx';
 import { EntityPage, EntityTable } from '../../entity/views.tsx';
 import { RefChip } from '../../entity/fields.tsx';
@@ -17,7 +18,11 @@ export function DecisionTablesPage() {
   const g = useGraph();
   return (
     <div className="page">
-      <PageHead title="Decision tables" sub="Business rules as tables (DMN-style): every combination checked for gaps and conflicts, and tests generated automatically." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'decisionTable', defaults: { conditions: [{ name: 'Condition', values: ['yes', 'no'] }], actions: [{ name: 'Outcome' }], rules: [] } })}><Icon name="plus" size={14} />New table</button>} />
+      <PageHead guide={<ToolGuide id="decision-tables" title="Business rules as tables" steps={[
+        <>Each column is a condition and each row a rule. Throughline checks every combination of inputs.</>,
+        <><b>Gaps</b> (no rule applies) and <b>overlaps</b> (two rules disagree) are flagged with the exact inputs.</>,
+        <>Test cases are generated for you — hand them to QA as they are.</>,
+      ]} />} title="Decision tables" sub="Business rules as tables (DMN-style): every combination checked for gaps and conflicts, and tests generated automatically." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'decisionTable', defaults: { conditions: [{ name: 'Condition', values: ['yes', 'no'] }], actions: [{ name: 'Outcome' }], rules: [] } })}><Icon name="plus" size={14} />New table</button>} />
       <Card flush>
         <EntityTable type="decisionTable" columns={['title', 'requirementId', 'hitPolicy', { key: 'state', label: 'Analysis', render: (d) => {
           const a = analyzeDecisionTable(d.conditions ?? [], d.actions ?? [], d.rules ?? [], d.hitPolicy);
@@ -155,161 +160,6 @@ export function DecisionTablePage({ id }: { id: string }) {
         </div>
       </Card>
     </div>
-  );
-}
-
-// ---------------- Process models ----------------
-
-interface Step { id: string; lane: string; label: string; kind: 'start' | 'task' | 'decision' | 'end'; next: string[] }
-
-function layout(steps: Step[]) {
-  const col = new Map<string, number>();
-  const start = steps.find((s) => s.kind === 'start') ?? steps[0];
-  if (start) {
-    col.set(start.id, 0);
-    const queue = [start.id];
-    while (queue.length) {
-      const id = queue.shift()!;
-      const s = steps.find((x) => x.id === id);
-      for (const n of s?.next ?? []) if (!col.has(n)) { col.set(n, (col.get(id) ?? 0) + 1); queue.push(n); }
-    }
-  }
-  let extra = Math.max(0, ...col.values()) + 1;
-  for (const s of steps) if (!col.has(s.id)) col.set(s.id, extra++);
-  return col;
-}
-
-export function processMetrics(steps: Step[]) {
-  const byId = new Map(steps.map((s) => [s.id, s]));
-  let handoffs = 0, loops = 0;
-  const col = layout(steps);
-  for (const s of steps) for (const n of s.next) {
-    const t = byId.get(n);
-    if (!t) continue;
-    if (t.lane !== s.lane) handoffs++;
-    if ((col.get(n) ?? 0) <= (col.get(s.id) ?? 0)) loops++;
-  }
-  return { steps: steps.filter((s) => s.kind === 'task').length, decisions: steps.filter((s) => s.kind === 'decision').length, handoffs, loops, lanes: new Set(steps.map((s) => s.lane)).size };
-}
-
-export function Swimlane({ lanes, steps }: { lanes: string[]; steps: Step[] }) {
-  const tt = useTooltip();
-  const col = layout(steps);
-  const LW = 120, CW = 176, LH = 92, BW = 144, BH = 46;
-  const cols = Math.max(1, ...[...col.values()].map((c) => c + 1));
-  // Avoid two steps in the same lane+column.
-  const pos = new Map<string, { x: number; y: number }>();
-  const taken = new Set<string>();
-  for (const s of [...steps].sort((a, b) => (col.get(a.id) ?? 0) - (col.get(b.id) ?? 0))) {
-    let c = col.get(s.id) ?? 0;
-    const li = Math.max(0, lanes.indexOf(s.lane));
-    while (taken.has(`${li}:${c}`)) c++;
-    taken.add(`${li}:${c}`);
-    pos.set(s.id, { x: LW + c * CW + (CW - BW) / 2, y: li * LH + (LH - BH) / 2 });
-  }
-  const W = LW + Math.max(cols, ...[...taken].map((k) => Number(k.split(':')[1]) + 1)) * CW + 20, H = lanes.length * LH;
-  return (
-    <div className="chart" style={{ overflowX: 'auto' }}>
-      <svg viewBox={`0 0 ${W} ${H}`} style={{ minWidth: W, width: W, height: H }} role="img" aria-label="Swimlane process diagram">
-        <defs><marker id="parrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--text-2)" /></marker></defs>
-        {lanes.map((l, i) => (
-          <g key={l}>
-            <rect x={0} y={i * LH} width={W} height={LH} fill={i % 2 ? 'var(--surface-2)' : 'transparent'} />
-            <line x1={0} x2={W} y1={(i + 1) * LH} y2={(i + 1) * LH} className="grid-line" />
-            <text x={10} y={i * LH + LH / 2 + 4} style={{ fill: 'var(--text)', fontWeight: 600, fontSize: 12 }}>{l}</text>
-          </g>
-        ))}
-        <line x1={LW - 8} x2={LW - 8} y1={0} y2={H} className="axis-line" />
-        {steps.flatMap((s) => s.next.map((n) => {
-          const a = pos.get(s.id), b = pos.get(n);
-          if (!a || !b) return null;
-          const back = b.x <= a.x;
-          const x1 = a.x + BW, y1 = a.y + BH / 2, x2 = b.x, y2 = b.y + BH / 2;
-          const d = back ? `M${a.x + BW / 2},${a.y + BH} C${a.x + BW / 2},${a.y + BH + 40} ${b.x + BW / 2},${b.y + BH + 40} ${b.x + BW / 2},${b.y + BH + 2}` : `M${x1},${y1} C${x1 + 30},${y1} ${x2 - 30},${y2} ${x2 - 2},${y2}`;
-          return <path key={`${s.id}-${n}`} d={d} fill="none" stroke="var(--text-2)" strokeWidth={1.5} markerEnd="url(#parrow)" strokeDasharray={back ? '4 3' : undefined} />;
-        }))}
-        {steps.map((s) => {
-          const p = pos.get(s.id)!;
-          const cx = p.x + BW / 2, cy = p.y + BH / 2;
-          const tip = <><div className="t-title">{s.label}</div><div>{s.lane} · {s.kind}</div></>;
-          return (
-            <g key={s.id} onPointerMove={(e) => tt.show(e, tip)} onPointerLeave={tt.hide}>
-              {s.kind === 'start' || s.kind === 'end' ? (
-                <circle cx={cx} cy={cy} r={18} fill={s.kind === 'start' ? 'var(--green-soft)' : 'var(--red-soft)'} stroke={s.kind === 'start' ? 'var(--good)' : 'var(--critical)'} strokeWidth={s.kind === 'end' ? 3 : 2} />
-              ) : s.kind === 'decision' ? (
-                <path d={`M${cx},${p.y - 4} L${p.x + BW - 30},${cy} L${cx},${p.y + BH + 4} L${p.x + 30},${cy} Z`} fill="var(--amber-soft)" stroke="var(--warning)" strokeWidth={1.5} />
-              ) : (
-                <rect x={p.x} y={p.y} width={BW} height={BH} rx={8} fill="var(--surface)" stroke="var(--border-strong)" strokeWidth={1.5} />
-              )}
-              <foreignObject x={s.kind === 'start' || s.kind === 'end' ? cx - 70 : p.x + 4} y={s.kind === 'start' || s.kind === 'end' ? cy + 18 : p.y + 2} width={s.kind === 'start' || s.kind === 'end' ? 140 : BW - 8} height={s.kind === 'start' || s.kind === 'end' ? 30 : BH - 4}>
-                <div style={{ fontSize: 11, lineHeight: 1.25, height: '100%', display: 'flex', alignItems: s.kind === 'start' || s.kind === 'end' ? 'flex-start' : 'center', justifyContent: 'center', textAlign: 'center', color: 'var(--text)', overflow: 'hidden' }}>{s.label}</div>
-              </foreignObject>
-            </g>
-          );
-        })}
-      </svg>
-      {tt.node}
-    </div>
-  );
-}
-
-export function ProcessListPage() {
-  return (
-    <div className="page">
-      <PageHead title="Process models" sub="Swimlane models of how work flows today (as-is) and after the change (to-be) — compared step by step." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'processModel', defaults: { lanes: ['User', 'System'], steps: [{ id: 's1', lane: 'User', label: 'Start', kind: 'start', next: ['s2'] }, { id: 's2', lane: 'System', label: 'Do something', kind: 'task', next: ['s3'] }, { id: 's3', lane: 'User', label: 'Done', kind: 'end', next: [] }] } })}><Icon name="plus" size={14} />New process</button>} />
-      <Card flush><EntityTable type="processModel" columns={['title', 'variant', 'counterpartId', { key: 'm', label: 'Steps · handoffs', render: (p) => { const m = processMetrics(p.steps ?? []); return `${m.steps} · ${m.handoffs}`; } }]} /></Card>
-    </div>
-  );
-}
-
-export function ProcessPage({ id }: { id: string }) {
-  const pm = useEntity(id);
-  const g = useGraph();
-  if (!pm) return <EntityPage id={id} />;
-  const steps: Step[] = pm.steps ?? [];
-  const lanes: string[] = pm.lanes ?? [];
-  const other = g.get(pm.counterpartId);
-  const save = (patch: Record<string, unknown>) => updateEntity(pm.id, patch).catch(errorToast);
-  const setStep = (i: number, k: keyof Step, v: unknown) => save({ steps: steps.map((s, x) => (x === i ? { ...s, [k]: v } : s)) });
-  const addStep = () => {
-    const id = `s${Date.now().toString(36)}`;
-    save({ steps: [...steps, { id, lane: lanes[0] ?? 'Lane', label: 'New step', kind: 'task', next: [] }] });
-  };
-  const removeStep = (sid: string) => save({ steps: steps.filter((s) => s.id !== sid).map((s) => ({ ...s, next: s.next.filter((n) => n !== sid) })) });
-  const m = processMetrics(steps);
-  const om = other ? processMetrics(other.steps ?? []) : null;
-  const labels = new Set(steps.map((s) => s.label.toLowerCase()));
-  const otherLabels = new Set(((other?.steps ?? []) as Step[]).map((s) => s.label.toLowerCase()));
-  return (
-    <EntityPage id={id} hideFields>
-      <Card title={`${pm.title} (${pm.variant})`} icon="workflow" sub={pm.notes}><Swimlane lanes={lanes} steps={steps} /></Card>
-      {other && om && (
-        <Card title={`Compared with ${other.variant}`} icon="git-compare" actions={<Link className="btn btn-sm" to={hrefOf(other)}>Open {other.variant}</Link>}>
-          <div className="table-wrap"><table className="table">
-            <thead><tr><th>Measure</th><th className="num">{pm.variant}</th><th className="num">{other.variant}</th><th className="num">Δ</th></tr></thead>
-            <tbody>{(['steps', 'handoffs', 'decisions', 'loops', 'lanes'] as const).map((k) => <tr key={k}><td>{k === 'steps' ? 'Task steps' : k === 'handoffs' ? 'Handoffs between lanes' : k === 'decisions' ? 'Decision points' : k === 'loops' ? 'Rework loops' : 'Lanes involved'}</td><td className="num">{m[k]}</td><td className="num">{om[k]}</td><td className="num">{m[k] - om[k] > 0 ? '+' : ''}{m[k] - om[k]}</td></tr>)}</tbody>
-          </table></div>
-          <div className="grid g2 mt12">
-            <div><div className="label mb8">Only in {pm.variant}</div>{steps.filter((s) => s.kind === 'task' && !otherLabels.has(s.label.toLowerCase())).map((s) => <div key={s.id} className="small">• {s.label} <span className="muted">({s.lane})</span></div>)}</div>
-            <div><div className="label mb8">Only in {other.variant}</div>{((other.steps ?? []) as Step[]).filter((s) => s.kind === 'task' && !labels.has(s.label.toLowerCase())).map((s) => <div key={s.id} className="small">• {s.label} <span className="muted">({s.lane})</span></div>)}</div>
-          </div>
-        </Card>
-      )}
-      <Card title="Steps" icon="list-checks" actions={<><button className="btn btn-sm" onClick={() => { const l = prompt('New lane name'); if (l) save({ lanes: [...lanes, l] }); }}>+ Lane</button><button className="btn btn-sm" onClick={addStep}>+ Step</button></>} flush>
-        <div className="table-wrap"><table className="table">
-          <thead><tr><th>Step</th><th>Lane</th><th>Kind</th><th>Goes to</th><th /></tr></thead>
-          <tbody>{steps.map((s, i) => (
-            <tr key={s.id}>
-              <td><input className="input input-sm" defaultValue={s.label} onBlur={(e) => e.target.value !== s.label && setStep(i, 'label', e.target.value)} /></td>
-              <td><select className="select input-sm" value={s.lane} onChange={(e) => setStep(i, 'lane', e.target.value)}>{lanes.map((l) => <option key={l}>{l}</option>)}</select></td>
-              <td><select className="select input-sm" value={s.kind} onChange={(e) => setStep(i, 'kind', e.target.value)}>{['start', 'task', 'decision', 'end'].map((k) => <option key={k}>{k}</option>)}</select></td>
-              <td><div className="row-wrap" style={{ gap: 4 }}>{steps.filter((x) => x.id !== s.id).map((x) => <label key={x.id} className="chip" style={{ cursor: 'pointer', background: s.next.includes(x.id) ? 'var(--accent-soft)' : undefined }}><input type="checkbox" checked={s.next.includes(x.id)} onChange={(e) => setStep(i, 'next', e.target.checked ? [...s.next, x.id] : s.next.filter((n) => n !== x.id))} style={{ display: 'none' }} />{x.label}</label>)}</div></td>
-              <td className="tight"><button className="btn btn-ghost btn-sm btn-icon" onClick={() => removeStep(s.id)}><Icon name="trash-2" size={13} /></button></td>
-            </tr>
-          ))}</tbody>
-        </table></div>
-      </Card>
-    </EntityPage>
   );
 }
 

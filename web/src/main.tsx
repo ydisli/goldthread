@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App.tsx';
-import { connectLive, load } from './store.ts';
+import { boot } from './store.ts';
 import './styles.css';
 
 try {
@@ -9,7 +9,7 @@ try {
   if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
 } catch { /* storage unavailable */ }
 
-void load().then(connectLive);
+void boot();
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
 
