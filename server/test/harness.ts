@@ -5,6 +5,7 @@ import { SystemDB } from '../system.ts';
 import { Workspaces } from '../workspaces.ts';
 import { accountRoutes } from '../account.ts';
 import { apiRoutes } from '../api.ts';
+import { aiRoutes } from '../ai.ts';
 import { authenticate } from '../auth.ts';
 import { HttpError, Router, type Ctx } from '../http.ts';
 
@@ -16,6 +17,7 @@ export function harness() {
   const router = new Router();
   accountRoutes(router, sys, ws);
   apiRoutes(router, sys, ws);
+  aiRoutes(router, sys);
   const call = async (method: string, path: string, opts: { session?: string; workspace?: string; body?: unknown } = {}) => {
     const url = new URL(`http://localhost${path}`);
     const hit = router.match(method, url.pathname);
