@@ -26,6 +26,9 @@ const PORT = Number(process.env.PORT ?? opt('port', '4300'));
 const HOST = process.env.HOST ?? opt('host', '127.0.0.1');
 const DATA = resolve(process.env.TL_DATA ?? opt('data', join(ROOT, 'data')));
 
+// Demo accounts share a published password, so they are on for development only unless asked for.
+if (process.env.TL_DEMO === undefined) process.env.TL_DEMO = DEV || flag('reset-only') ? '1' : '0';
+
 export const sys = new SystemDB(DATA);
 export const workspaces = new Workspaces(sys, DATA);
 ensureDemo(sys, workspaces);

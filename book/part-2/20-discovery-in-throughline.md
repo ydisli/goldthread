@@ -70,7 +70,7 @@ A bet's page brings together its evidence, assumptions, experiments, specs, stor
 
 The map plots importance against evidence. **Top-left (important but unproven) is where your leaps of faith live.** Test those first.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > The map for SSPR shows *Frontline staff can verify without a company phone* in the top-left: importance 5, evidence 1. *Office staff will register for MFA* has moved to the right after the Finance pilot (72% completion). That's exactly the picture from [Chapter 5](guide:discovery), drawn from the data.
 
 ## Experiments
@@ -86,7 +86,7 @@ The map plots importance against evidence. **Top-left (important but unproven) i
 
 **Discovery → Personas & journeys** holds evidence-backed **personas**: who they are, their goals, pains and jobs-to-be-done, linked to the signals that support them. Personas without evidence are guesses; the link keeps them honest.
 
-**Journeys** map a persona's experience stage by stage: what they do, think and feel, where the pain is, and which opportunities each pain links to. Northwind's *First week of a new sales rep* journey is the problem statement from [Chapter 2](guide:problems-first), told as a story.
+**Journeys** map a persona's experience stage by stage: what they do, think and feel, where the pain is, and which opportunities each pain links to. Ashgrove's *First week of a new sales rep* journey is the problem statement from [Chapter 2](guide:problems-first), told as a story.
 
 ## Research
 

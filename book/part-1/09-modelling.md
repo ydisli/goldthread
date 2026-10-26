@@ -51,7 +51,7 @@ Draw the **as-is** process (what really happens, not the official version) and t
 - **Manual copying.** Someone retyping data from one system to another is both a delay and an error source.
 - **Dead ends.** Paths that never reach an end: what happens then, really?
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Jordan's as-is onboarding model has five lanes: HR, hiring manager, service desk, endpoint team and new hire. The flow: HR enters the hire; the manager **emails IT a list of systems**; the service desk **creates accounts by hand** and **adds groups one by one**; in parallel the endpoint team **images the laptop** (three hours) and ships it; the new hire hits "Access complete?" and, if not, the manager **chases missing access** and the loop goes back to the service desk.
 >
 > Counted: four handoffs on the main path and a rework loop that, from the ticket data, runs about 1.6 times per hire. The to-be model, with JML, moves account creation and access packages into an automated **ServiceHub** lane, leaves the manager only one decision (*Extra access needed?*) and has no rework loop. The difference between the two diagrams is the business case in a picture.
@@ -73,7 +73,7 @@ A **decision table** lays out rules as rows:
 - **Actions** across the right: what happens.
 - Each **row** is a rule: for this combination of condition values, take these actions. A dash (–) means "any value".
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Access approval routing:
 >
 > | Rule | Access type | Data | Requester | Approvals | Expires after |
@@ -105,7 +105,7 @@ Then a bonus: **each rule is a test case.** A complete decision table gives test
 
 Some things in your system have a lifecycle: an access request, an account, a laptop, an approval. A **state model** shows every state the thing can be in and every allowed transition between states, with the event that triggers it.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > An access request moves through: *draft → submitted → pending manager → (pending owner) → approved → provisioned*, and can end as *rejected*, *expired* or *revoked*. Transitions have triggers (*manager approves*) and sometimes guards (*only if the data is confidential or restricted*).
 >
 > Drawing it out shows a problem: the state *pending security* exists, because R4 in the routing table requires security approval for privileged access, but **no transition leads into it**. The model is unreachable as designed. Either privileged requests skip security (a control failure) or the transition is missing. Found on a whiteboard, it's a five-minute fix.
@@ -128,7 +128,7 @@ Many IT requirements are really about data: what it means, where it comes from, 
 - **Sensitivity:** personal data? Confidential? Regulated?
 - **Retention:** how long it's kept and why.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > The **Identity** entity: worker ID (from Workday; the rehire problem lives here), legal and preferred name, job code, manager, start date (defined in the glossary as the HR contract start, not the first day in the office), termination time, employment type. Recording **Workday as the source of truth** was itself a significant decision: three systems previously held conflicting job data.
 
 You don't need a full enterprise data model. You need enough to stop people using the same word for different data, or changing data in a system that isn't the source of truth.
@@ -137,7 +137,7 @@ You don't need a full enterprise data model. You need enough to stop people usin
 
 A **use case** describes how an actor uses the system to reach a goal: preconditions, a numbered main flow, alternate flows (other ways to succeed) and exception flows (ways it fails), and postconditions. It's more structured than a user story and works well for complex interactions where the alternatives matter, such as an access request that may hit segregation-of-duties rules or an absent approver.
 
-A **customer journey** is the opposite in spirit: it follows a person through an experience, step by step, recording what they do, think and feel, and where the pain is. It's a discovery and empathy tool rather than a specification. Northwind's journey for Sam, a new sales rep, ends with "Productive on day 4: lost three days of ramp-up", which is the problem statement in story form.
+A **customer journey** is the opposite in spirit: it follows a person through an experience, step by step, recording what they do, think and feel, and where the pain is. It's a discovery and empathy tool rather than a specification. Ashgrove's journey for Sam, a new sales rep, ends with "Productive on day 4: lost three days of ramp-up", which is the problem statement in story form.
 
 ## Keeping models useful
 

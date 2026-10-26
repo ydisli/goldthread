@@ -61,7 +61,7 @@ export function GuidePage() {
       <header className="guide-cover">
         <div className="eyebrow">Field guide</div>
         <h1>The Field Guide</h1>
-        <p className="guide-lede">A practical book for Product Owners and Business Analysts. Part I teaches the craft, in any tool or none. Part II shows how to do it in Throughline. Every chapter uses the same running example: ServiceHub, Northwind's internal IT service platform.</p>
+        <p className="guide-lede">A practical book for Product Owners and Business Analysts. Part I teaches the craft, in any tool or none. Part II shows how to do it in Throughline. Every chapter uses the same running example: ServiceHub, Ashgrove's internal IT service platform.</p>
         <div className="guide-progress">
           <div className="meter" style={{ maxWidth: 320 }}><span style={{ width: `${(doneCount / Math.max(1, main.length)) * 100}%` }} /></div>
           <span className="small muted">{doneCount} of {main.length} chapters finished</span>

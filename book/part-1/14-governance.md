@@ -27,7 +27,7 @@ A **decision record** is a short note capturing a significant decision:
 
 Not every decision needs a record. Write one when the decision is **hard to reverse**, **likely to be questioned later**, **affects other teams**, or **was contested**. A useful test: would someone joining in six months benefit from knowing why?
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Some of the decisions in ServiceHub's log: *Workday is the source of truth for identity* (three systems held conflicting job data). *Use the identity platform's access packages, not custom role tables.* *Create accounts three business days before the start date* (endpoint needs accounts to pre-enrol laptops). *Defer contractor lifecycle to Q1* (contractors aren't in Workday yet). Each takes five minutes to write and has already saved hours of re-debate.
 
 ### Decision rights
@@ -53,7 +53,7 @@ Check your matrix for common problems:
 - **Too many Cs:** every C is a meeting and a delay. Ask whether each is really needed before the decision, or could be an I.
 - **A person with an A on everything:** a bottleneck, usually the sponsor. Delegate.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > The first draft of the JML RACI had both Dana and Priya as **A** for "Define birthright access". Writing it down exposed the disagreement: Priya thought it was a technical configuration; Dana thought it was a security policy. The resolution: Dana is accountable for **which** access is birthright (a policy), Priya is accountable for **implementing** it, and they became two rows instead of one.
 
 ## Approvals and sign-off
@@ -88,7 +88,7 @@ Internal IT is heavily audited, and the same few control areas come up again and
 
 Notice how closely these map to IT product work. JML is literally an access management control. The CAB is a change management control. Leaver mailbox retention is a GDPR question.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Kim Lee (internal audit) asks for evidence that leavers lose access within one hour, as the control description states. With traceability in place, Jordan can show: **REQ-5** (Leaver deprovisioning: accounts disabled within one hour of the HR termination time), its source and rationale; the four **stories** that implement it; the **tests** that verify it, with results and dates; the **release** that delivered it, with its change approval; and the **production log** sample showing actual deprovisioning times. That's an evidence pack assembled in an hour rather than a fortnight of archaeology, and it's what makes "pass the audit without findings" achievable.
 
 ### Compliance as a source of requirements

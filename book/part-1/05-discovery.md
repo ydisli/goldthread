@@ -72,7 +72,7 @@ And a few habits:
 - **Two people if you can:** one asks, one takes notes. Write down exact phrases. The words people use become the words in your product.
 - **Five to eight interviews per segment** usually surfaces the main patterns. Stop when you stop hearing new things.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Jordan interviews 14 recent hires and 6 hiring managers about their first week. Nobody says "access requests bounce between approvers". They say things like "my manager emailed IT a list on Monday and I got Salesforce on Wednesday" and "I didn't know which systems I needed, so I just asked my desk neighbour what they had." The second quote turns into an important insight: managers don't know what access a role needs, so a catalog of packages by job role is part of the solution, not just faster approvals.
 
 ### Observation
@@ -107,10 +107,10 @@ by [check date].
 Confidence: [%]
 ```
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > "We believe **self-service reset and unlock with MFA** for **all employees** will **cut password tickets**, measured by password and lockout tickets moving **from 1,450 to 300 a month** within **60 days of rollout**. Confidence: 75%."
 
-Writing the confidence down feels uncomfortable at first. Do it anyway. Over time, comparing your stated confidence with what actually happened is how you learn to calibrate (Chapter 15). Northwind's chatbot was bet at 85% confidence and deflected 4% of tickets instead of 30%. That's a lesson worth having written down.
+Writing the confidence down feels uncomfortable at first. Do it anyway. Over time, comparing your stated confidence with what actually happened is how you learn to calibrate (Chapter 15). Ashgrove's chatbot was bet at 85% confidence and deflected 4% of tickets instead of 30%. That's a lesson worth having written down.
 
 ## Assumptions: what must be true
 
@@ -125,7 +125,7 @@ Sort assumptions into four kinds:
 
 Then rate each on **importance** (how badly the bet fails if this is wrong) and **evidence** (how much you actually know). The assumptions that are important and poorly evidenced are your **leap-of-faith** assumptions. Test those first.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > For SSPR, "office staff will register for MFA" is important but well evidenced: a pilot showed 72% completion without help. "Frontline staff can verify without a company phone" is just as important and has almost no evidence. Warehouse associates don't have company phones, and many share scanners. If this assumption is wrong, SSPR doesn't work for a third of the workforce. Jordan designs a prototype test before anything is built: PIN plus badge on a shared scanner, with five associates, success meaning sign-in within 30 seconds.
 
 ## Experiments that fit IT
@@ -137,7 +137,7 @@ Commercial products run A/B tests on millions of users. Internal IT rarely has t
 - **Concierge tests:** do it by hand before automating. Before building automated access packages, have a person provision access from job codes for one month's hires and see how often the packages are wrong.
 - **Data analysis:** test a feasibility assumption against existing data. Compare the access that job codes would generate with the actual access of 100 current employees.
 - **Fake doors:** put a link or button in the portal for a feature that doesn't exist yet, and measure clicks. Use sparingly and honestly ("coming soon, tell us what you need").
-- **A/B tests** where you do have volume, for example manager notifications. Northwind compared a Teams card with an email for the access summary: 52% of managers reviewed within two days with Teams, against 35% with email.
+- **A/B tests** where you do have volume, for example manager notifications. Ashgrove compared a Teams card with an email for the access summary: 52% of managers reviewed within two days with Teams, against 35% with email.
 
 ### How much evidence is enough?
 

@@ -94,11 +94,11 @@ Most writing about product ownership assumes a commercial product: customers who
 
 None of this makes the job less of a product job. It makes it a product job with more stakeholders, quieter users and stricter proof.
 
-## Meet Northwind
+## Meet Ashgrove
 
 Every chapter in this book uses one running example, and the sample workspace in Throughline contains the same story, so you can open what you read about.
 
-**Northwind** is a mid-sized company with about 1,900 employees and contractors across offices, sales teams and warehouses, hiring around 600 people a year. Its IT department runs **ServiceHub**, the internal platform employees use to get set up, request access, reset passwords and get help.
+**Ashgrove** is a mid-sized company with about 1,900 employees and contractors across offices, sales teams and warehouses, hiring around 600 people a year. Its IT department runs **ServiceHub**, the internal platform employees use to get set up, request access, reset passwords and get help.
 
 - **Alex Rivera** is the Product Owner for Employee IT Services.
 - **Jordan Kim** is the Business Analyst for Identity & Access.
@@ -116,7 +116,7 @@ Alex and Jordan's big bets for the quarter are **automated joiner–mover–leav
 
 ## How to use this book
 
-**Part I, The craft,** is about the job and works without any tool. Each chapter covers one area, shows it applied at Northwind, names the common traps and ends with a few questions to check yourself. Read it in order if you're new to the role; dip in by topic if you're not.
+**Part I, The craft,** is about the job and works without any tool. Each chapter covers one area, shows it applied at Ashgrove, names the common traps and ends with a few questions to check yourself. Read it in order if you're new to the role; dip in by topic if you're not.
 
 **Part II, Working in Throughline,** maps the craft onto the tool: where each technique lives, how the pieces connect, and recipes for a real working week. Read it once you're using Throughline, or alongside Part I. Each craft chapter links to the tools it uses.
 
@@ -130,7 +130,7 @@ Throughout, callouts mark four kinds of aside:
 > [!trap]
 > A mistake people make often enough to name.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > The technique applied to the running example.
 
 > [!try]

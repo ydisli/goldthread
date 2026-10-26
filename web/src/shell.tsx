@@ -401,7 +401,7 @@ export function QuickCapture() {
                   {ENTITY_MAP.evidence.fields.find((f) => f.key === 'source')!.options!.map((o) => <option key={o} value={o}>{o.replace('-', ' ')}</option>)}
                 </select>
               </div>
-              <div className="field"><label>Account</label><input className="input" value={account} onChange={(e) => setAccount(e.target.value)} placeholder="e.g. Contoso" /></div>
+              <div className="field"><label>Account</label><input className="input" value={account} onChange={(e) => setAccount(e.target.value)} placeholder="e.g. Halcyon Foods" /></div>
             </>
           )}
           {kind === 'interaction' && (

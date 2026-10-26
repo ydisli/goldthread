@@ -66,7 +66,7 @@ The forecast needs **done dates**. If you import from Jira or Azure DevOps, incl
 
 **Delivery → Releases** holds releases and launches: version, target date, tier (major launch, normal, silent), goals, the bets included, the **rollout plan** and **rollback criteria** ([Chapter 13](guide:delivery)).
 
-The **launch readiness** checklist holds the operational readiness items from [Chapter 13](guide:delivery), grouped by area, each with an owner. Type *Area: item* to add one, for example *Support: Brief the service desk*. Northwind's JML release has items for the service desk, CAB approval, security sign-off, the DPO's review of mailbox retention, a pilot briefing for Sales managers, the rollback runbook and a load test of 150 hires in one run. A release page also shows:
+The **launch readiness** checklist holds the operational readiness items from [Chapter 13](guide:delivery), grouped by area, each with an owner. Type *Area: item* to add one, for example *Support: Brief the service desk*. Ashgrove's JML release has items for the service desk, CAB approval, security sign-off, the DPO's review of mailbox retention, a pilot briefing for Sales managers, the rollback runbook and a load test of 150 hires in one run. A release page also shows:
 
 - its scope, with counts of stories done, tests passing and defects still open, so you can see what isn't finished or tested,
 - an **alignment check** for stakeholders who might be surprised,
@@ -91,7 +91,7 @@ Generate test cases from decision tables (Chapter 21) and link each to the rule 
 
 **Impact analysis** works on any item: pick a requirement, decision, story or bet and see everything a change would ripple into (dependent requirements, stories, tests, releases, promises and the stakeholders to tell). Use it before deciding a change request.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Open **Traceability** in the sample and select REQ-5 (*Leaver deprovisioning*). The chain from requirement to stories, tests and release is what Jordan showed Kim Lee for the audit in [Chapter 14](guide:governance). Then run **Impact** on REQ-4 (*Provisioning time*) to see what Daniel's 5-minute change request would affect.
 
 ## Check yourself

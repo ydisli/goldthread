@@ -71,7 +71,7 @@ Useful slicing patterns:
 | **Manual first** | Flag rehires for manual matching; automate matching later |
 | **Spike** | Time-boxed investigation of the CRM connector before estimating the real work |
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > "Automated JML" started as one epic estimated at "about a quarter". Sliced by workflow and rule variation, the first releasable slice was: *create accounts and birthright groups for employee joiners three days before start, from clean HR records.* Small enough to ship in three weeks, valuable on its own (the service desk stops creating accounts by hand) and a solid foundation for the rest. Movers, leavers, packages and contractors followed as their own slices, each releasable.
 
 A good slice is still a **story**: it has a user, a benefit and acceptance criteria. "Set up the Workday connector" isn't a slice; it's a task.
@@ -88,7 +88,7 @@ The most useful single idea in prioritisation is **cost of delay**: how much val
 
 This is sometimes called **CD3** (cost of delay divided by duration). The logic is simple: a short item with a high cost of delay should jump the queue, because doing it first costs the other items little delay while capturing a lot of value early.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > SSPR has a cost of delay of about $4k a week and takes about 3 weeks. JML costs about $12k a week of delay and takes about 10 weeks. Access reviews cost about $5k a week, rising sharply as the audit date approaches, and take about 6 weeks.
 >
 > CD3: SSPR ≈ 1.3, JML ≈ 1.2, reviews ≈ 0.8 now (but higher in a month). The numbers say SSPR and JML are close, and reviews can wait a little but not long. That matches intuition, but now Alex can explain it.

@@ -24,7 +24,7 @@ Open a person and you get:
 - **Interactions:** the log of conversations, with sentiment over time. A run of negative sentiment is an early warning.
 - **Details:** all their fields.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Before meeting Daniel, Alex opens his **Meeting prep**. It shows one open request (pre-approval for the January cohort), one promise at risk (the forecast gives it about 2%), no approvals waiting on Daniel, and a suggested talking point: renegotiate the January promise with the batch-provisioning fallback. Prep took two minutes.
 
 ## Maps
@@ -74,7 +74,7 @@ Every response is kept as an audit trail: who approved which version, when. Requ
 
 **People → Conflicts & escalations** records disagreements the way [Chapter 4](guide:relationships) recommends: the parties, their **positions**, their underlying **interests**, the **options** considered, and the **resolution** or escalation. Link conflicting requirements to the conflict so the resolution and the requirements stay together.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Two conflicts are open in the sample: *MFA on every sign-in vs fast shift starts* (Dana versus Olivia) and *Leaver mailboxes: 30 days (DPO) vs 90 days (handover)* (Elena versus Tomás). A third, *Retire the chatbot*, is resolved, with the resolution recorded.
 
 ## Alignment checks

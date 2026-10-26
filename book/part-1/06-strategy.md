@@ -21,7 +21,7 @@ A product vision describes the future you're working towards, in a sentence or t
 - **About the people you serve,** not about your technology.
 - **Ambitious but believable.** A destination for two or three years, not next quarter.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > ServiceHub's vision: **"Every employee is productive from minute one, and never has to wait on IT."**
 >
 > It's repeatable. It rules things out: a beautiful new ticket form doesn't serve "never has to wait", but removing the need for the ticket does. And it points at measurable things: time to productive, waiting time, tickets that shouldn't exist.
@@ -55,7 +55,7 @@ The single most important rule: **key results are outcomes, not tasks.**
 
 Strong key results have a **baseline**, a **target** and a **current value** you can check weekly. They leave the "how" open, which is the point: if SSPR doesn't move password tickets enough, the team is free to try something else.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > **Objective:** New hires are productive on day one. (Pillar: Day-one ready; owner: Alex.)
 > - Time to productive from 72h to 24h. *Currently 54h.*
 > - 95% of hires have laptop and access on day one. *Currently 61%.*
@@ -75,7 +75,7 @@ The outcome you care about most is usually slow and influenced by many things. T
 
 At the top sits one **north star** metric: the best single measure of the value your product delivers. Below it, **input metrics** that drive it and that teams can influence directly. Alongside, **guardrails** that must not get worse while you push the north star, and **health** metrics that tell you the product is in good shape overall.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > - **North star:** Time to productive for new hires (hours from HR start time to laptop, accounts and access all ready). 72h → 24h.
 >   - **Input:** Access request lead time (median request → provisioned). 46h → 4h.
 >   - **Input:** Laptops ready on day one (%).
@@ -103,7 +103,7 @@ A business case needs:
 - **Payback period:** how long until cumulative benefits exceed cumulative costs.
 - **Assumptions,** written out, each one challengeable.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Automated JML: one-time cost $220k, running cost $30k a year, full annual benefit $640k with a 35% / 80% / 100% ramp. The benefit assumptions are written out:
 > - Productivity: 600 hires × 1.5 days saved × $400/day ≈ $360k
 > - Service desk: 2,000 fewer tickets × $25 ≈ $50k
@@ -140,15 +140,15 @@ Internal IT constantly faces the question of whether to build something, buy a p
 
 Compare alternatives **capability by capability**, not by brochure. List the capabilities you need, weighted by importance, and score each option honestly, including your current platform and "build". Add total cost of ownership over three to five years and the cost of switching later.
 
-> [!example] At Northwind
-> For identity governance and the portal, the alternatives are ServiceNow (the "buy" option: mature but expensive, with a long implementation), Jira Service Management (already licensed for engineering, cheap, but weaker on identity lifecycle) and Freshservice (good portal UX, limited integration with the identity platform), compared against configuring the existing identity platform plus a thin custom portal. Scoring by capability shows the existing platform covers lifecycle and access packages well; the portal is where the options differ. That narrows the decision to one capability rather than a whole-platform choice.
+> [!example] At Ashgrove
+> For identity governance and the portal, the alternatives in the sample are three fictional vendors: Stratus ITSM (the "buy" option: mature but expensive, with a long implementation), Trackwell Service Desk (already licensed for engineering, cheap, but weaker on identity lifecycle) and Breezedesk (good portal UX, limited integration with the identity platform), compared against configuring the existing identity platform plus a thin custom portal. Scoring by capability shows the existing platform covers lifecycle and access packages well; the portal is where the options differ. That narrows the decision to one capability rather than a whole-platform choice.
 
 ## Capacity: the strategy you can afford
 
 A strategy that ignores capacity is a wish list. Two capacity questions matter to a PO:
 
 - **How is the team's time split?** Between new features, technical debt and maintenance or operational work. Agree target percentages with the engineering lead, then compare with actuals. If "features: 60%" turns out to be 35% because incidents eat the rest, your roadmap is fiction.
-- **What technical debt is charging interest?** Keep a register: the debt, its business impact, and how much it slows or endangers delivery. Northwind's legacy LDAP sync scripts (fourteen cron jobs, no monitoring) fail silently and block reliable JML. That's not a developer preference; it's a strategic risk with a cost.
+- **What technical debt is charging interest?** Keep a register: the debt, its business impact, and how much it slows or endangers delivery. Ashgrove's legacy LDAP sync scripts (fourteen cron jobs, no monitoring) fail silently and block reliable JML. That's not a developer preference; it's a strategic risk with a cost.
 
 > [!tip] Make debt a business conversation
 > "The LDAP scripts are bad" won't win budget. "The LDAP scripts fail silently about twice a month, each failure leaves leavers with active accounts for up to a week, and the auditors test exactly that control" will.

@@ -34,7 +34,7 @@ When the check date arrives, compare the outcome with the prediction and classif
 
 Then write down **what actually happened** in numbers, and **what you learned** in a sentence or two.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Three of ServiceHub's past bets, recorded honestly:
 >
 > **Service catalog redesign** (confidence 70%). Predicted: misrouted tickets −25%. Actual: −31%. **Success.** Learning: task-based wording ("I need to…") worked better than system names.
@@ -60,7 +60,7 @@ You don't need academic rigour, but you do need to be honest about doubt. "Ticke
 
 Every bet has a confidence attached. Over time, you can check whether your confidence means anything. If you say 70% about ten bets, roughly seven should succeed. If only three do, you're **overconfident**. If all ten do, you're underconfident, and probably not taking enough risk.
 
-This is **calibration**, and it's one of the most valuable things a product team can learn about itself. Most teams are overconfident, especially about their favourite ideas. Northwind bet on the chatbot at 85% and it failed. That's not a disaster on its own (85% means one in seven should fail) but if the team's 80%+ bets fail half the time, something is wrong with how they judge.
+This is **calibration**, and it's one of the most valuable things a product team can learn about itself. Most teams are overconfident, especially about their favourite ideas. Ashgrove bet on the chatbot at 85% and it failed. That's not a disaster on its own (85% means one in seven should fail) but if the team's 80%+ bets fail half the time, something is wrong with how they judge.
 
 A simple score for calibration is the **Brier score**: for each bet, take (confidence − outcome)², where outcome is 1 for success and 0 for failure, and average them. 0 is perfect; 0.25 is what you'd get by always saying 50%. You don't need to compute it by hand; the point is the habit of comparing prediction with result.
 
@@ -94,7 +94,7 @@ Things with low adoption, high cost and poor fit are candidates for **retirement
 
 Retire deliberately: decide, communicate, provide alternatives, set a date, then remove it. Half-retired features that linger are the worst of both worlds.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > After the chatbot failed, Tomás wanted it removed immediately; Alex wanted to keep it until something replaced it. The resolution, recorded as a decision: retire the chatbot once answer-first search ships, moving its content into knowledge articles. A dated plan, not a debate that drags on.
 
 ## Learning beyond the metric

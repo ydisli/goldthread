@@ -12,7 +12,7 @@ export function loadBook(dir = BOOK_DIR): Chapter[] {
     for (const entry of readdirSync(d, { withFileTypes: true })) {
       const p = join(d, entry.name);
       if (entry.isDirectory()) walk(p);
-      else if (entry.name.endsWith('.md')) files.push(p);
+      else if (/^\d+-.*\.md$/.test(entry.name)) files.push(p);
     }
   };
   try { walk(dir); } catch { return []; }

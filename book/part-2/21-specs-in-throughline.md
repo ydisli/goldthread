@@ -50,7 +50,7 @@ Open review questions appear in the Inbox and on the spec until resolved.
 
 **Preview** shows the rendered spec. **Request approval** creates an approval for the people who must sign off (Chapter 19). From **Meetings & docs → Documents** you can generate a PRD or BRD that pulls in the spec, its bet, evidence, requirements and decisions.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Open *Access request portal: draft* in the sample. The quality check flags vague wording in the draft, the completeness check shows missing error handling and notifications, and the review board raises the absent-approver question from [Chapter 10](guide:specs-and-reviews). That's the same set of gaps Jordan found, surfaced automatically.
 
 ## Requirements
@@ -79,7 +79,7 @@ Throughline checks **every combination** of inputs:
 
 It then **generates test cases** with the expected outcome for each: every combination for small tables, or a **pairwise** set (every pair of condition values covered at least once) for larger ones, which keeps the number of tests manageable without missing interactions between any two conditions. Hand them to testers or turn them into test cases in UAT & quality.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Open *Access approval routing*. The analysis shows the overlap between R3 and R5 for an employee requesting standard access to confidential data, and the gaps for restricted data and contractor birthright access, exactly as [Chapter 9](guide:modelling) describes.
 
 ## Process models

@@ -1,7 +1,7 @@
 import { PARTS, parseChapter, sortChapters, type BookPart, type Chapter } from '../../../../core/book.ts';
 
-// Chapters are plain Markdown in /book, bundled into the guide's own chunk.
-const files = import.meta.glob('../../../../book/**/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+// Chapters are plain Markdown in /book (numbered files only), bundled into the guide's own chunk.
+const files = import.meta.glob('../../../../book/**/[0-9]*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 
 export const CHAPTERS: Chapter[] = sortChapters(Object.entries(files).map(([path, raw]) => parseChapter(raw, path)));
 export const CHAPTER_MAP = new Map(CHAPTERS.map((c) => [c.id, c]));

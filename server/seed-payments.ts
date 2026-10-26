@@ -3,7 +3,7 @@ import type { SeedPeople } from './seed.ts';
 import { addDays, seededRandom } from '../core/util.ts';
 
 /**
- * SaaS sample workspace: "Northwind Pay", a fictional accounts-payable
+ * SaaS sample workspace: "Ledgerly", a fictional accounts-payable
  * product sold to finance teams. All names and companies are fictional. Dates
  * are relative to `now`, so overdue touchpoints and at-risk promises are live.
  */
@@ -15,15 +15,15 @@ export function seedPaymentsWorkspace(store: Store, now: Date, people: SeedPeopl
 
   store.transaction(() => {
     store.setSettings({
-      workspaceName: 'Northwind Pay', productName: 'Northwind Pay', currency: '$',
+      workspaceName: 'Ledgerly', productName: 'Ledgerly', currency: '$',
       ourCapabilities: { 'Scheduled export': 1, 'SSO / SAML': 0, 'Audit log': 1, 'Auto payment matching': 0, 'Multi-entity': 0, 'Mobile approvals': 1, 'Supplier portal': 0, 'ERP integrations': 2 },
     });
 
     // ---------------- Stakeholders ----------------
     const S = (id: string, data: Record<string, unknown>) => put(`stk_${id}`, 'stakeholder', data, 200);
     S('me', { name: people.me.name, email: people.me.email, userId: people.me.id, title: people.me.title ?? 'Senior Product Owner', orgUnit: 'Product', kind: 'internal', power: 3, interest: 5, legitimacy: true, currentEngagement: 'leading', desiredEngagement: 'leading', preferredChannel: 'slack' });
-    S('maya', { name: 'Maya Chen', title: 'Chief Financial Officer', orgUnit: 'Finance', kind: 'internal', power: 5, interest: 3, legitimacy: true, urgency: false, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Gross margin above 70%\nPredictable, audit-clean revenue\nInfra cost per account flat while usage grows', concerns: 'Infrastructure cost of large exports\nSOX controls on anything touching invoices', preferredChannel: 'meeting', timezone: 'America/New_York', influencedBy: ['stk_elena', 'stk_hiroshi'], email: 'maya.chen@northwind.example' });
-    S('daniel', { name: 'Daniel Brooks', title: 'VP Sales', orgUnit: 'Sales', kind: 'internal', power: 5, interest: 5, legitimacy: true, urgency: true, currentEngagement: 'resistant', desiredEngagement: 'supportive', goals: 'Close $4.2M new enterprise ARR in Q4\nStop losing security reviews to Ledgerline', concerns: 'Roadmap dates keep slipping and he has to walk back promises\nExport SLA is weaker than competitors in RFPs', preferredChannel: 'phone', timezone: 'America/Chicago', influencedBy: ['stk_hiroshi', 'stk_olivia'] });
+    S('maya', { name: 'Maya Chen', title: 'Chief Financial Officer', orgUnit: 'Finance', kind: 'internal', power: 5, interest: 3, legitimacy: true, urgency: false, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Gross margin above 70%\nPredictable, audit-clean revenue\nInfra cost per account flat while usage grows', concerns: 'Infrastructure cost of large exports\nSOX controls on anything touching invoices', preferredChannel: 'meeting', timezone: 'America/New_York', influencedBy: ['stk_elena', 'stk_hiroshi'], email: 'maya.chen@ashgrove.example' });
+    S('daniel', { name: 'Daniel Brooks', title: 'VP Sales', orgUnit: 'Sales', kind: 'internal', power: 5, interest: 5, legitimacy: true, urgency: true, currentEngagement: 'resistant', desiredEngagement: 'supportive', goals: 'Close $4.2M new enterprise ARR in Q4\nStop losing security reviews to Arkwell AP', concerns: 'Roadmap dates keep slipping and he has to walk back promises\nExport SLA is weaker than competitors in RFPs', preferredChannel: 'phone', timezone: 'America/Chicago', influencedBy: ['stk_hiroshi', 'stk_olivia'] });
     S('priya', { name: 'Priya Nair', title: 'Engineering Manager, Payments', orgUnit: 'Engineering', kind: 'internal', power: 4, interest: 5, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Sustainable pace; fewer month-end incidents\nRetire the legacy export queue', concerns: 'Scope creep after commitment\nPerformance targets set without load data', preferredChannel: 'slack', influencedBy: ['stk_grace'] });
     S('samuel', { name: 'Samuel Osei', title: 'Head of Customer Support', orgUnit: 'Support', kind: 'internal', power: 3, interest: 5, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'supportive', goals: 'Cut month-end ticket spike\nKnow what ships before customers do', concerns: 'No visibility into release dates\nMacros and docs ready too late', preferredChannel: 'slack' });
     S('elena', { name: 'Elena Petrova', title: 'Legal & Compliance Counsel', orgUnit: 'Legal', kind: 'internal', power: 4, interest: 2, legitimacy: true, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'No regulatory findings\nClear retention policy for financial records', concerns: 'Invoices must be retained 10 years in Germany\nPersonal data in exported files (GDPR)', preferredChannel: 'email', timezone: 'Europe/Berlin' });
@@ -31,17 +31,17 @@ export function seedPaymentsWorkspace(store: Store, now: Date, people: SeedPeopl
     S('grace', { name: 'Grace Mbeki', title: 'Head of Security', orgUnit: 'Security', kind: 'internal', power: 4, interest: 4, legitimacy: true, urgency: true, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Zero data-exfiltration incidents\nPass customer security reviews first time', concerns: 'Exports as an exfiltration path\nUnsigned download links', preferredChannel: 'async-doc', influencedBy: ['stk_elena'] });
     S('lucas', { name: 'Lucas Fernández', title: 'Data & Analytics Lead', orgUnit: 'Data', kind: 'internal', power: 2, interest: 4, currentEngagement: 'supportive', desiredEngagement: 'supportive', goals: 'Every bet has a tracking plan before build', concerns: 'Events named inconsistently', preferredChannel: 'slack' });
     S('aisha', { name: 'Aisha Rahman', title: 'UX Lead', orgUnit: 'Design', kind: 'internal', power: 3, interest: 5, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Research before solutions\nAccessible by default (WCAG 2.2 AA)', preferredChannel: 'meeting' });
-    S('noah', { name: 'Noah Williams', title: 'Customer Success Lead', orgUnit: 'Customer Success', kind: 'internal', power: 3, interest: 4, currentEngagement: 'supportive', desiredEngagement: 'supportive', goals: 'Net revenue retention > 110%', concerns: 'Fabrikam renewal in January is at risk', preferredChannel: 'slack' });
+    S('noah', { name: 'Noah Williams', title: 'Customer Success Lead', orgUnit: 'Customer Success', kind: 'internal', power: 3, interest: 4, currentEngagement: 'supportive', desiredEngagement: 'supportive', goals: 'Net revenue retention > 110%', concerns: 'Pinemoor renewal in January is at risk', preferredChannel: 'slack' });
     S('sofia', { name: 'Sofia Rossi', title: 'Product Marketing Manager', orgUnit: 'Marketing', kind: 'internal', power: 2, interest: 3, currentEngagement: 'neutral', desiredEngagement: 'supportive', preferredChannel: 'email' });
-    S('olivia', { name: 'Olivia Hart', title: 'Finance Director', orgUnit: 'Finance', account: 'Contoso', kind: 'customer', power: 4, interest: 5, legitimacy: true, urgency: true, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Close the books in 3 days instead of 5', concerns: 'Team spends two days exporting and stitching spreadsheets', preferredChannel: 'meeting', timezone: 'Europe/London' });
-    S('ben', { name: 'Ben Adler', title: 'Controller', orgUnit: 'Finance', account: 'Fabrikam', kind: 'customer', power: 3, interest: 4, legitimacy: true, urgency: true, currentEngagement: 'resistant', desiredEngagement: 'supportive', goals: 'Audit-ready exports', concerns: 'Evaluating Ledgerline ahead of the January renewal\nAuditors want PDF exports', preferredChannel: 'email', influencedBy: ['stk_noah'] });
-    S('chloe', { name: 'Chloé Martin', title: 'AP Manager', orgUnit: 'Finance', account: 'Tailspin Toys', kind: 'customer', power: 2, interest: 5, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Fewer manual approvals', preferredChannel: 'email' });
-    S('raj', { name: 'Raj Patel', title: 'Partner Manager', orgUnit: 'Partnerships', account: 'Litware', kind: 'partner', power: 3, interest: 3, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Deeper ERP integration with Northwind Pay', preferredChannel: 'email' });
-    S('kim', { name: 'Kim Lee', title: 'External Audit Partner', orgUnit: 'Proseware Audit', kind: 'regulator', power: 4, interest: 2, legitimacy: true, currentEngagement: 'unaware', desiredEngagement: 'neutral', concerns: 'Completeness and immutability of financial records', preferredChannel: 'email' });
+    S('olivia', { name: 'Olivia Hart', title: 'Finance Director', orgUnit: 'Finance', account: 'Halcyon Foods', kind: 'customer', power: 4, interest: 5, legitimacy: true, urgency: true, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Close the books in 3 days instead of 5', concerns: 'Team spends two days exporting and stitching spreadsheets', preferredChannel: 'meeting', timezone: 'Europe/London' });
+    S('ben', { name: 'Ben Adler', title: 'Controller', orgUnit: 'Finance', account: 'Pinemoor', kind: 'customer', power: 3, interest: 4, legitimacy: true, urgency: true, currentEngagement: 'resistant', desiredEngagement: 'supportive', goals: 'Audit-ready exports', concerns: 'Evaluating Arkwell AP ahead of the January renewal\nAuditors want PDF exports', preferredChannel: 'email', influencedBy: ['stk_noah'] });
+    S('chloe', { name: 'Chloé Martin', title: 'AP Manager', orgUnit: 'Finance', account: 'Kitebird Toys', kind: 'customer', power: 2, interest: 5, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Fewer manual approvals', preferredChannel: 'email' });
+    S('raj', { name: 'Raj Patel', title: 'Partner Manager', orgUnit: 'Partnerships', account: 'Quillsoft', kind: 'partner', power: 3, interest: 3, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Deeper ERP integration with Ledgerly', preferredChannel: 'email' });
+    S('kim', { name: 'Kim Lee', title: 'External Audit Partner', orgUnit: 'Fernhill Audit', kind: 'regulator', power: 4, interest: 2, legitimacy: true, currentEngagement: 'unaware', desiredEngagement: 'neutral', concerns: 'Completeness and immutability of financial records', preferredChannel: 'email' });
 
     // ---------------- Strategy ----------------
     put('vis_main', 'vision', {
-      title: 'Northwind Pay', horizon: '2027',
+      title: 'Ledgerly', horizon: '2027',
       vision: 'Every finance team closes the books in a day, not a week.',
       targetGroup: 'Finance and accounts-payable teams at mid-market and enterprise companies (50–5,000 employees).',
       needs: 'Pay suppliers on time without chasing approvals\nReconcile invoices and payments without spreadsheets\nPass audits and security reviews without fire drills',
@@ -71,19 +71,19 @@ export function seedPaymentsWorkspace(store: Store, now: Date, people: SeedPeopl
     put('kr_arr', 'keyResult', { title: 'Close $4.2M new enterprise ARR', objectiveId: 'obj_ent', baseline: 0, target: 4.2, current: 2.6, unit: '$M', dueDate: d(67), confidence: 50 }, 90);
     put('kr_appr', 'keyResult', { title: 'Median approval cycle time from 46h to 24h', objectiveId: 'obj_appr', metricId: 'met_approval', baseline: 46, target: 24, current: 40, unit: 'hours', dueDate: d(67), confidence: 65 }, 90);
 
-    put('cmp_ledger', 'competitor', { name: 'Ledgerline', positioning: 'Enterprise AP suite, strong compliance story', strengths: 'SSO, audit, scheduled exports, SOC 2 Type II\nLarge partner ecosystem', weaknesses: 'Expensive; 6-month implementations\nDated approval UX', pricing: '$$$ — per-entity licensing', threat: 5, capabilities: { 'Scheduled export': 3, 'SSO / SAML': 3, 'Audit log': 3, 'Auto payment matching': 2, 'Multi-entity': 3, 'Mobile approvals': 1, 'Supplier portal': 2, 'ERP integrations': 3 } }, 200);
-    put('cmp_bill', 'competitor', { name: 'BillFlow', positioning: 'Low-cost AP for small businesses', strengths: 'Self-serve onboarding, cheap', weaknesses: 'No enterprise controls', pricing: '$ — per user', threat: 3, capabilities: { 'Scheduled export': 1, 'SSO / SAML': 0, 'Audit log': 1, 'Auto payment matching': 1, 'Multi-entity': 0, 'Mobile approvals': 3, 'Supplier portal': 1, 'ERP integrations': 1 } }, 200);
-    put('cmp_pay', 'competitor', { name: 'Payably', positioning: 'Mid-market AP with best-in-class reconciliation', strengths: 'Automatic matching\nFast exports', weaknesses: 'Weak approvals; no mobile', pricing: '$$ — per invoice volume', threat: 4, capabilities: { 'Scheduled export': 2, 'SSO / SAML': 2, 'Audit log': 2, 'Auto payment matching': 3, 'Multi-entity': 1, 'Mobile approvals': 0, 'Supplier portal': 0, 'ERP integrations': 2 } }, 200);
+    put('cmp_ledger', 'competitor', { name: 'Arkwell AP', positioning: 'Enterprise AP suite, strong compliance story', strengths: 'SSO, audit, scheduled exports, SOC 2 Type II\nLarge partner ecosystem', weaknesses: 'Expensive; 6-month implementations\nDated approval UX', pricing: '$$$ — per-entity licensing', threat: 5, capabilities: { 'Scheduled export': 3, 'SSO / SAML': 3, 'Audit log': 3, 'Auto payment matching': 2, 'Multi-entity': 3, 'Mobile approvals': 1, 'Supplier portal': 2, 'ERP integrations': 3 } }, 200);
+    put('cmp_bill', 'competitor', { name: 'Tallypenny', positioning: 'Low-cost AP for small businesses', strengths: 'Self-serve onboarding, cheap', weaknesses: 'No enterprise controls', pricing: '$ — per user', threat: 3, capabilities: { 'Scheduled export': 1, 'SSO / SAML': 0, 'Audit log': 1, 'Auto payment matching': 1, 'Multi-entity': 0, 'Mobile approvals': 3, 'Supplier portal': 1, 'ERP integrations': 1 } }, 200);
+    put('cmp_pay', 'competitor', { name: 'Matchbay', positioning: 'Mid-market AP with best-in-class reconciliation', strengths: 'Automatic matching\nFast exports', weaknesses: 'Weak approvals; no mobile', pricing: '$$ — per invoice volume', threat: 4, capabilities: { 'Scheduled export': 2, 'SSO / SAML': 2, 'Audit log': 2, 'Auto payment matching': 3, 'Multi-entity': 1, 'Mobile approvals': 0, 'Supplier portal': 0, 'ERP integrations': 2 } }, 200);
     const WL = (id: string, data: Record<string, unknown>) => put(`wl_${id}`, 'winLoss', data, 20);
-    WL('woodgrove', { title: 'Woodgrove Bank — AP platform', account: 'Woodgrove Bank', outcome: 'lost', reason: 'security-compliance', amount: 310000, date: d(-40), competitorId: 'cmp_ledger', featureGap: 'SSO (SAML), audit log export', notes: 'Failed security questionnaire on SSO and audit trail.' });
-    WL('blueyonder', { title: 'Blue Yonder Airlines — expansion', account: 'Blue Yonder Airlines', outcome: 'lost', reason: 'missing-feature', amount: 200000, date: d(-75), competitorId: 'cmp_ledger', featureGap: 'Multi-entity consolidation' });
-    WL('lamna', { title: 'Lamna Healthcare', account: 'Lamna Healthcare', outcome: 'won', reason: 'product-fit', amount: 85000, date: d(-30) });
-    WL('trey', { title: 'Trey Research', account: 'Trey Research', outcome: 'won', reason: 'product-fit', amount: 48000, date: d(-55) });
-    WL('proseware', { title: 'Proseware renewal + upsell', account: 'Proseware', outcome: 'no-decision', reason: 'timing', amount: 72000, date: d(-20) });
-    WL('alpine', { title: 'Alpine Ski House', account: 'Alpine Ski House', outcome: 'lost', reason: 'price', amount: 12000, date: d(-62), competitorId: 'cmp_bill' });
-    WL('adventure', { title: 'Adventure Works — AP automation', account: 'Adventure Works', outcome: 'won', reason: 'relationship', amount: 150000, date: d(-15), notes: 'Won on the promise of audit log export before their security review.' });
-    WL('fourth', { title: 'Fourth Coffee', account: 'Fourth Coffee', outcome: 'lost', reason: 'competitor', amount: 15000, date: d(-35), competitorId: 'cmp_pay', featureGap: 'Automatic payment matching' });
-    WL('margie', { title: "Margie's Travel", account: "Margie's Travel", outcome: 'won', reason: 'price', amount: 11000, date: d(-48) });
+    WL('stonebridge', { title: 'Stonebridge Bank — AP platform', account: 'Stonebridge Bank', outcome: 'lost', reason: 'security-compliance', amount: 310000, date: d(-40), competitorId: 'cmp_ledger', featureGap: 'SSO (SAML), audit log export', notes: 'Failed security questionnaire on SSO and audit trail.' });
+    WL('blueyonder', { title: 'Skylark Airways — expansion', account: 'Skylark Airways', outcome: 'lost', reason: 'missing-feature', amount: 200000, date: d(-75), competitorId: 'cmp_ledger', featureGap: 'Multi-entity consolidation' });
+    WL('marlow', { title: 'Marlow Health', account: 'Marlow Health', outcome: 'won', reason: 'product-fit', amount: 85000, date: d(-30) });
+    WL('calder', { title: 'Calder Research', account: 'Calder Research', outcome: 'won', reason: 'product-fit', amount: 48000, date: d(-55) });
+    WL('fernhill', { title: 'Fernhill renewal + upsell', account: 'Fernhill', outcome: 'no-decision', reason: 'timing', amount: 72000, date: d(-20) });
+    WL('summitline', { title: 'Summitline Ski', account: 'Summitline Ski', outcome: 'lost', reason: 'price', amount: 12000, date: d(-62), competitorId: 'cmp_bill' });
+    WL('adventure', { title: 'Trailmark Outdoors — AP automation', account: 'Trailmark Outdoors', outcome: 'won', reason: 'relationship', amount: 150000, date: d(-15), notes: 'Won on the promise of audit log export before their security review.' });
+    WL('fourth', { title: 'Daybreak Coffee', account: 'Daybreak Coffee', outcome: 'lost', reason: 'competitor', amount: 15000, date: d(-35), competitorId: 'cmp_pay', featureGap: 'Automatic payment matching' });
+    WL('margie', { title: "Pennant Travel", account: "Pennant Travel", outcome: 'won', reason: 'price', amount: 11000, date: d(-48) });
 
     put('td_queue', 'techDebt', { title: 'Legacy export queue drops jobs longer than 5 minutes', area: 'Exports', description: 'Jobs exceeding 5 min are silently re-queued and eventually dropped.', businessImpact: 'Large customers never receive exports; drives month-end tickets.', interest: 'high', effort: 6, teamId: 'team_plat', status: 'scheduled' }, 120);
     put('td_pdf', 'techDebt', { title: 'Monolithic PDF renderer', area: 'Documents', businessImpact: 'Every invoice template change takes a week.', interest: 'medium', effort: 8, teamId: 'team_pay', status: 'identified' }, 200);
@@ -96,7 +96,7 @@ export function seedPaymentsWorkspace(store: Store, now: Date, people: SeedPeopl
     put('per_dana', 'persona', { name: 'Dana, Department Approver', role: 'Budget holder', segment: 'enterprise', goals: 'Approve quickly, from anywhere', pains: 'Has to log in on a laptop to approve one invoice', jobs: 'When I am between meetings, I want to approve invoices from my phone, so I am not the bottleneck.' }, 200);
     put('per_sam', 'persona', { name: 'Sam, Supplier', role: 'Supplier accounts receivable', segment: 'smb', goals: 'Know when they will be paid', pains: 'Calls the customer\'s AP team to ask about payment status' }, 200);
 
-    put('opp_close', 'opportunity', { title: 'Finance teams cannot reconcile quickly at month-end', description: 'The close is slow because data must be pulled out of Northwind Pay and matched by hand.', metricId: 'met_close', objectiveId: 'obj_close', personaIds: ['per_fiona'], status: 'prioritized' }, 150);
+    put('opp_close', 'opportunity', { title: 'Finance teams cannot reconcile quickly at month-end', description: 'The close is slow because data must be pulled out of Ledgerly and matched by hand.', metricId: 'met_close', objectiveId: 'obj_close', personaIds: ['per_fiona'], status: 'prioritized' }, 150);
     put('opp_export', 'opportunity', { title: 'Getting a complete invoice export takes hours of manual work', parentId: 'opp_close', metricId: 'met_tickets', personaIds: ['per_fiona', 'per_arjun'], status: 'prioritized' }, 150);
     put('opp_match', 'opportunity', { title: 'Payments must be matched to invoices by hand', parentId: 'opp_close', metricId: 'met_close', personaIds: ['per_fiona'], status: 'exploring' }, 150);
     put('opp_approve', 'opportunity', { title: 'Invoices wait days for approvers who are away from their desk', metricId: 'met_approval', objectiveId: 'obj_appr', personaIds: ['per_dana', 'per_arjun'], status: 'prioritized' }, 150);
@@ -105,10 +105,10 @@ export function seedPaymentsWorkspace(store: Store, now: Date, people: SeedPeopl
     put('opp_supplier', 'opportunity', { title: 'Suppliers have no visibility into payment status', personaIds: ['per_sam'], status: 'exploring' }, 150);
 
     const ACC: Record<string, [string, number]> = {
-      Contoso: ['enterprise', 180000], Fabrikam: ['mid-market', 95000], 'Tailspin Toys': ['mid-market', 60000], 'Wide World Importers': ['enterprise', 240000],
-      'Adventure Works': ['enterprise', 150000], Litware: ['smb', 18000], Proseware: ['mid-market', 72000], 'Woodgrove Bank': ['enterprise', 310000],
-      'Alpine Ski House': ['smb', 12000], 'Coho Winery': ['smb', 9000], 'Fourth Coffee': ['smb', 15000], 'Lamna Healthcare': ['mid-market', 85000],
-      'Trey Research': ['mid-market', 48000], "Margie's Travel": ['smb', 11000], 'Blue Yonder Airlines': ['enterprise', 200000], 'Graphic Design Institute': ['smb', 7000],
+      'Halcyon Foods': ['enterprise', 180000], Pinemoor: ['mid-market', 95000], 'Kitebird Toys': ['mid-market', 60000], 'Seaward Importers': ['enterprise', 240000],
+      'Trailmark Outdoors': ['enterprise', 150000], Quillsoft: ['smb', 18000], Fernhill: ['mid-market', 72000], 'Stonebridge Bank': ['enterprise', 310000],
+      'Summitline Ski': ['smb', 12000], 'Riverbend Winery': ['smb', 9000], 'Daybreak Coffee': ['smb', 15000], 'Marlow Health': ['mid-market', 85000],
+      'Calder Research': ['mid-market', 48000], 'Pennant Travel': ['smb', 11000], 'Skylark Airways': ['enterprise', 200000], 'Inkwell Design School': ['smb', 7000],
     };
     let evN = 0;
     const EV = (title: string, source: string, account: string | undefined, daysAgo: number, opps: string[], extra: Record<string, unknown> = {}) => {
@@ -117,56 +117,56 @@ export function seedPaymentsWorkspace(store: Store, now: Date, people: SeedPeopl
       put(`ev_${evN}`, 'evidence', { title, source, account, segment, arr, date: d(-daysAgo), kind: source === 'analytics' ? 'did' : 'said', opportunityIds: opps, sentiment: -1, ...extra }, daysAgo);
     };
     // Export / reconciliation — rising in the last 30 days.
-    EV('We export invoices page by page and paste them into one workbook every month-end', 'interview', 'Contoso', 3, ['opp_export'], { personaId: 'per_fiona', sentiment: -2, relayedById: 'stk_olivia' });
-    EV('Export stops at 500 rows so we run it twelve times for one month', 'support', 'Wide World Importers', 4, ['opp_export'], { sentiment: -2 });
-    EV('Month-end export is missing payment status, so we have to join it with the bank file', 'support', 'Fabrikam', 5, ['opp_export', 'opp_match'], { relayedById: 'stk_ben' });
+    EV('We export invoices page by page and paste them into one workbook every month-end', 'interview', 'Halcyon Foods', 3, ['opp_export'], { personaId: 'per_fiona', sentiment: -2, relayedById: 'stk_olivia' });
+    EV('Export stops at 500 rows so we run it twelve times for one month', 'support', 'Seaward Importers', 4, ['opp_export'], { sentiment: -2 });
+    EV('Month-end export is missing payment status, so we have to join it with the bank file', 'support', 'Pinemoor', 5, ['opp_export', 'opp_match'], { relayedById: 'stk_ben' });
     EV('38% of active accounts exported more than five CSVs in the last week of the month', 'analytics', undefined, 6, ['opp_export'], { kind: 'did', sentiment: 0, detail: 'Event export_clicked, last 7 days of September vs rest of month: 6.4× higher.' });
-    EV('Can you just email me all invoices for the period on the 1st? I would pay for that', 'sales-call', 'Adventure Works', 7, ['opp_export'], { sentiment: 0 });
-    EV('Our auditors asked for a full invoice listing and it took my team a day to build', 'interview', 'Fabrikam', 9, ['opp_export'], { personaId: 'per_fiona', relayedById: 'stk_ben' });
-    EV('Export to Excel times out for our larger entities', 'support', 'Wide World Importers', 11, ['opp_export'], { sentiment: -2 });
+    EV('Can you just email me all invoices for the period on the 1st? I would pay for that', 'sales-call', 'Trailmark Outdoors', 7, ['opp_export'], { sentiment: 0 });
+    EV('Our auditors asked for a full invoice listing and it took my team a day to build', 'interview', 'Pinemoor', 9, ['opp_export'], { personaId: 'per_fiona', relayedById: 'stk_ben' });
+    EV('Export to Excel times out for our larger entities', 'support', 'Seaward Importers', 11, ['opp_export'], { sentiment: -2 });
     EV('Recurring export is the #1 request in our design partner calls', 'internal', undefined, 12, ['opp_export'], { relayedById: 'stk_noah', sentiment: 0 });
-    EV('The export file mixes date formats depending on who ran it', 'support', 'Tailspin Toys', 14, ['opp_export'], { relayedById: 'stk_chloe' });
+    EV('The export file mixes date formats depending on who ran it', 'support', 'Kitebird Toys', 14, ['opp_export'], { relayedById: 'stk_chloe' });
     EV('Average month-end session length for controllers is 3h 40m vs 22m mid-month', 'analytics', undefined, 16, ['opp_close'], { kind: 'did', sentiment: 0 });
     EV('Reconciliation tickets peaked at 412 on the first business day of October', 'analytics', undefined, 24, ['opp_export', 'opp_close'], { kind: 'did', source: 'support', sentiment: -1 });
-    EV('Ledgerline sends a scheduled reconciliation file — that was their best demo moment', 'competitor', 'Woodgrove Bank', 41, ['opp_export'], { sentiment: -1 });
-    EV('I would love one export with invoices, approvals and payments together', 'nps', 'Proseware', 45, ['opp_export'], { sentiment: 0 });
-    EV('We hired a temp for month-end just to do exports', 'interview', 'Lamna Healthcare', 52, ['opp_export', 'opp_close'], { sentiment: -2, personaId: 'per_fiona' });
+    EV('Arkwell AP sends a scheduled reconciliation file — that was their best demo moment', 'competitor', 'Stonebridge Bank', 41, ['opp_export'], { sentiment: -1 });
+    EV('I would love one export with invoices, approvals and payments together', 'nps', 'Fernhill', 45, ['opp_export'], { sentiment: 0 });
+    EV('We hired a temp for month-end just to do exports', 'interview', 'Marlow Health', 52, ['opp_export', 'opp_close'], { sentiment: -2, personaId: 'per_fiona' });
     // Matching
-    EV('We match 2,000 payments to invoices by hand each month', 'interview', 'Contoso', 18, ['opp_match'], { personaId: 'per_fiona', relayedById: 'stk_olivia', sentiment: -2 });
-    EV('Payably matched our bank feed automatically during the trial', 'sales-call', 'Fourth Coffee', 36, ['opp_match'], { sentiment: -1 });
-    EV('Partial payments make reconciliation impossible to automate in a spreadsheet', 'support', 'Trey Research', 33, ['opp_match']);
-    EV('Unmatched payments are the main reason our close slips', 'survey', 'Adventure Works', 58, ['opp_match']);
-    EV('Matching is where my team loses the most time', 'nps', 'Coho Winery', 64, ['opp_match']);
-    EV('Bank statement import fails on multi-currency accounts', 'support', 'Wide World Importers', 70, ['opp_match'], { sentiment: -2 });
+    EV('We match 2,000 payments to invoices by hand each month', 'interview', 'Halcyon Foods', 18, ['opp_match'], { personaId: 'per_fiona', relayedById: 'stk_olivia', sentiment: -2 });
+    EV('Matchbay matched our bank feed automatically during the trial', 'sales-call', 'Daybreak Coffee', 36, ['opp_match'], { sentiment: -1 });
+    EV('Partial payments make reconciliation impossible to automate in a spreadsheet', 'support', 'Calder Research', 33, ['opp_match']);
+    EV('Unmatched payments are the main reason our close slips', 'survey', 'Trailmark Outdoors', 58, ['opp_match']);
+    EV('Matching is where my team loses the most time', 'nps', 'Riverbend Winery', 64, ['opp_match']);
+    EV('Bank statement import fails on multi-currency accounts', 'support', 'Seaward Importers', 70, ['opp_match'], { sentiment: -2 });
     // Approvals
-    EV('Our directors approve invoices only on Fridays when they are at their desk', 'interview', 'Tailspin Toys', 21, ['opp_approve'], { personaId: 'per_dana', relayedById: 'stk_chloe' });
+    EV('Our directors approve invoices only on Fridays when they are at their desk', 'interview', 'Kitebird Toys', 21, ['opp_approve'], { personaId: 'per_dana', relayedById: 'stk_chloe' });
     EV('Median approval wait went from 41h to 46h this quarter', 'analytics', undefined, 25, ['opp_approve'], { kind: 'did', sentiment: -1 });
-    EV('Approvers ignore the email notifications — too many of them', 'support', 'Lamna Healthcare', 29, ['opp_approve']);
-    EV('I need to approve from my phone between meetings', 'app-review', 'Adventure Works', 38, ['opp_approve'], { personaId: 'per_dana' });
-    EV('Late approvals cost us early-payment discounts', 'sales-call', 'Proseware', 47, ['opp_approve']);
+    EV('Approvers ignore the email notifications — too many of them', 'support', 'Marlow Health', 29, ['opp_approve']);
+    EV('I need to approve from my phone between meetings', 'app-review', 'Trailmark Outdoors', 38, ['opp_approve'], { personaId: 'per_dana' });
+    EV('Late approvals cost us early-payment discounts', 'sales-call', 'Fernhill', 47, ['opp_approve']);
     EV('Reminder emails worked well in the A/B test cohort', 'analytics', undefined, 30, ['opp_approve'], { kind: 'did', sentiment: 1 });
-    EV('Can approvals be delegated while I am on holiday?', 'support', 'Contoso', 60, ['opp_approve'], { sentiment: 0 });
-    EV('Bulk approval saved my team hours this month', 'nps', 'Tailspin Toys', 80, ['opp_approve'], { sentiment: 2 });
+    EV('Can approvals be delegated while I am on holiday?', 'support', 'Halcyon Foods', 60, ['opp_approve'], { sentiment: 0 });
+    EV('Bulk approval saved my team hours this month', 'nps', 'Kitebird Toys', 80, ['opp_approve'], { sentiment: 2 });
     // Security / enterprise
-    EV('Security questionnaire failed: no SAML SSO and no exportable audit log', 'sales-call', 'Woodgrove Bank', 42, ['opp_secure'], { sentiment: -2, relayedById: 'stk_daniel' });
-    EV('Procurement will not sign without SSO enforcement', 'sales-call', 'Adventure Works', 17, ['opp_secure'], { relayedById: 'stk_daniel' });
-    EV('IT wants SCIM user provisioning before rollout to 400 users', 'sales-call', 'Blue Yonder Airlines', 76, ['opp_secure']);
-    EV('We need to show auditors who approved what, and when', 'interview', 'Fabrikam', 26, ['opp_secure'], { relayedById: 'stk_ben' });
+    EV('Security questionnaire failed: no SAML SSO and no exportable audit log', 'sales-call', 'Stonebridge Bank', 42, ['opp_secure'], { sentiment: -2, relayedById: 'stk_daniel' });
+    EV('Procurement will not sign without SSO enforcement', 'sales-call', 'Trailmark Outdoors', 17, ['opp_secure'], { relayedById: 'stk_daniel' });
+    EV('IT wants SCIM user provisioning before rollout to 400 users', 'sales-call', 'Skylark Airways', 76, ['opp_secure']);
+    EV('We need to show auditors who approved what, and when', 'interview', 'Pinemoor', 26, ['opp_secure'], { relayedById: 'stk_ben' });
     EV('SSO is the first question in every enterprise RFP this quarter', 'internal', undefined, 10, ['opp_secure'], { relayedById: 'stk_daniel', sentiment: 0 });
     // Multi-entity — one loud customer
-    EV('We run 12 subsidiaries and need one AP view', 'sales-call', 'Wide World Importers', 90, ['opp_entity'], { sentiment: -1 });
-    EV('Switching between 12 entities to approve is painful', 'support', 'Wide World Importers', 66, ['opp_entity']);
-    EV('Consolidated payment runs across entities would save us a week', 'interview', 'Wide World Importers', 49, ['opp_entity']);
-    EV('Multi-entity was the deciding factor for Ledgerline', 'sales-call', 'Blue Yonder Airlines', 75, ['opp_entity']);
+    EV('We run 12 subsidiaries and need one AP view', 'sales-call', 'Seaward Importers', 90, ['opp_entity'], { sentiment: -1 });
+    EV('Switching between 12 entities to approve is painful', 'support', 'Seaward Importers', 66, ['opp_entity']);
+    EV('Consolidated payment runs across entities would save us a week', 'interview', 'Seaward Importers', 49, ['opp_entity']);
+    EV('Multi-entity was the deciding factor for Arkwell AP', 'sales-call', 'Skylark Airways', 75, ['opp_entity']);
     // Supplier visibility
-    EV('Suppliers call us daily to ask when they will be paid', 'interview', 'Lamna Healthcare', 34, ['opp_supplier'], { personaId: 'per_sam' });
-    EV('A supplier portal would cut our inbound calls in half', 'survey', 'Contoso', 85, ['opp_supplier']);
-    EV('Payment status emails to suppliers would be enough for us', 'support', 'Coho Winery', 54, ['opp_supplier'], { sentiment: 0 });
+    EV('Suppliers call us daily to ask when they will be paid', 'interview', 'Marlow Health', 34, ['opp_supplier'], { personaId: 'per_sam' });
+    EV('A supplier portal would cut our inbound calls in half', 'survey', 'Halcyon Foods', 85, ['opp_supplier']);
+    EV('Payment status emails to suppliers would be enough for us', 'support', 'Riverbend Winery', 54, ['opp_supplier'], { sentiment: 0 });
     // Recent, unlinked
-    EV('Please let us choose which columns go into the export', 'support', 'Proseware', 2, [], { sentiment: 0 });
-    EV('Export schedule should follow our fiscal calendar, not calendar months', 'interview', 'Contoso', 2, [], { relayedById: 'stk_olivia', sentiment: 0 });
-    EV('Dark mode for the approval screen please', 'app-review', 'Graphic Design Institute', 1, [], { sentiment: 0 });
-    EV('Could the export also go to our SFTP server?', 'sales-call', 'Blue Yonder Airlines', 3, [], { sentiment: 0 });
+    EV('Please let us choose which columns go into the export', 'support', 'Fernhill', 2, [], { sentiment: 0 });
+    EV('Export schedule should follow our fiscal calendar, not calendar months', 'interview', 'Halcyon Foods', 2, [], { relayedById: 'stk_olivia', sentiment: 0 });
+    EV('Dark mode for the approval screen please', 'app-review', 'Inkwell Design School', 1, [], { sentiment: 0 });
+    EV('Could the export also go to our SFTP server?', 'sales-call', 'Skylark Airways', 3, [], { sentiment: 0 });
 
     // ---------------- Bets ----------------
     put('bet_export', 'bet', {
@@ -230,10 +230,10 @@ export function seedPaymentsWorkspace(store: Store, now: Date, people: SeedPeopl
 
     put('asm_trust', 'assumption', { title: 'Finance teams will trust a scheduled file without checking it in the app', betId: 'bet_export', category: 'value', importance: 5, evidenceLevel: 2, status: 'untested', testPlan: 'Concierge test: send hand-built files to 5 design partners for one close and interview afterwards.' }, 30);
     put('asm_xlsx', 'assumption', { title: 'XLSX and CSV cover 80% of reconciliation workflows', betId: 'bet_export', category: 'value', importance: 4, evidenceLevel: 4, status: 'validated', testPlan: 'Survey of 120 controllers (done): 84% use XLSX or CSV.' }, 30);
-    put('asm_perf', 'assumption', { title: 'A 100k-row export completes in under 30 s on the new job platform', betId: 'bet_export', category: 'feasibility', importance: 4, evidenceLevel: 3, status: 'testing', testPlan: 'Load test on staging with Wide World Importers-sized data.' }, 30);
+    put('asm_perf', 'assumption', { title: 'A 100k-row export completes in under 30 s on the new job platform', betId: 'bet_export', category: 'feasibility', importance: 4, evidenceLevel: 3, status: 'testing', testPlan: 'Load test on staging with Seaward Importers-sized data.' }, 30);
     put('asm_retention', 'assumption', { title: 'Customers accept that generated files expire after 7 days', betId: 'bet_export', category: 'viability', importance: 3, evidenceLevel: 2, status: 'untested' }, 30);
     put('asm_push', 'assumption', { title: 'Approvers act on mobile push notifications within a day', betId: 'bet_remind', category: 'usability', importance: 5, evidenceLevel: 3, status: 'testing', testPlan: 'A/B test reminder email at 24h (running).' }, 30);
-    put('asm_bankfeed', 'assumption', { title: 'Bank statement data is available via the Litware connector for 70% of accounts', betId: 'bet_match', category: 'feasibility', importance: 5, evidenceLevel: 1, status: 'untested' }, 30);
+    put('asm_bankfeed', 'assumption', { title: 'Bank statement data is available via the Quillsoft connector for 70% of accounts', betId: 'bet_match', category: 'feasibility', importance: 5, evidenceLevel: 1, status: 'untested' }, 30);
     put('asm_idp', 'assumption', { title: 'Enterprise customers use Okta or Entra ID as IdP', betId: 'bet_sso', category: 'feasibility', importance: 3, evidenceLevel: 5, status: 'validated' }, 60);
 
     put('exp_fakedoor', 'experiment', { title: 'Fake door: "Schedule this export" button', betId: 'bet_export', assumptionIds: ['asm_trust'], method: 'fake-door', hypothesis: 'At least 10% of export-page visitors click "Schedule".', metric: 'Click-through on Schedule', baselineRate: 10, variantN: 3400, variantConversions: 612, status: 'concluded', decision: 'persevere', startDate: d(-60), endDate: d(-46), notes: '18% clicked; 140 left an email for the beta.' }, 60);
@@ -253,15 +253,15 @@ export function seedPaymentsWorkspace(store: Store, now: Date, people: SeedPeopl
 
     put('std_close', 'study', {
       title: 'Month-end close interviews (Q3)', objective: 'Understand where time goes during the close for mid-market controllers.', method: 'interviews', status: 'done', startDate: d(-70),
-      participants: '8 controllers / finance directors (Contoso, Fabrikam, Lamna, Tailspin, Proseware, Trey, Coho, Adventure Works). Screener: owns the close, ≥ 500 invoices/month.',
+      participants: '8 controllers / finance directors (Halcyon Foods, Pinemoor, Marlow, Kitebird, Fernhill, Calder, Riverbend, Trailmark Outdoors). Screener: owns the close, ≥ 500 invoices/month.',
       guide: '## Warm-up\n- Walk me through your last month-end close.\n\n## Deep dive\n- Where did you lose the most time?\n- What did you export, and what did you do with it?\n- Show me the spreadsheet.\n\n## Wrap-up\n- If you had a magic wand…',
       findings: '## Key findings\n1. **Exports are the bottleneck** — 7 of 8 rebuild the same workbook every month.\n2. **Matching is the next pain** — 5 of 8 match payments by hand.\n3. **Approvals block the start of the close** — 4 of 8 wait for late approvals.\n\n## Surprises\n- Two teams hired temps for month-end.',
       evidenceIds: ['ev_1', 'ev_6', 'ev_14', 'ev_15', 'ev_21'],
     }, 70);
 
     // ---------------- Define ----------------
-    put('gl_account', 'glossaryTerm', { term: 'Account', definition: 'A Northwind Pay customer organisation; the billing and data boundary.', synonyms: ['tenant'], domain: 'Platform' }, 200);
-    put('gl_customer', 'glossaryTerm', { term: 'Customer', definition: 'The company that buys Northwind Pay (has one or more Accounts).', synonyms: ['client'], domain: 'Commercial' }, 200);
+    put('gl_account', 'glossaryTerm', { term: 'Account', definition: 'A Ledgerly customer organisation; the billing and data boundary.', synonyms: ['tenant'], domain: 'Platform' }, 200);
+    put('gl_customer', 'glossaryTerm', { term: 'Customer', definition: 'The company that buys Ledgerly (has one or more Accounts).', synonyms: ['client'], domain: 'Commercial' }, 200);
     put('gl_supplier', 'glossaryTerm', { term: 'Supplier', definition: 'A business that sends invoices to a Customer and receives payments.', synonyms: ['vendor'], domain: 'AP' }, 200);
     put('gl_invoice', 'glossaryTerm', { term: 'Invoice', definition: 'A request for payment from a Supplier, with line items, amount, currency and due date.', domain: 'AP' }, 200);
     put('gl_approver', 'glossaryTerm', { term: 'Approver', definition: 'A user who can approve invoices up to their approval limit.', domain: 'AP' }, 200);
@@ -274,7 +274,7 @@ export function seedPaymentsWorkspace(store: Store, now: Date, people: SeedPeopl
 ## Problem
 Today, finance teams build their month-end reconciliation file by hand. The export stops at 500 rows, misses payment status and has to be repeated for every entity. Reconciliation tickets peak at 400+ on the first business day of each month.
 
-> "We export invoices page by page and paste them into one workbook every month-end" — Contoso
+> "We export invoices page by page and paste them into one workbook every month-end" — Halcyon Foods
 
 ## Goals
 - Reduce reconciliation-related tickets from 340 to 140 per month (baseline: September).
@@ -317,7 +317,7 @@ Feature flag \`export.scheduled\`. Design partners first, then 25%, then everyon
       body: `# SSO (SAML) and audit log export
 
 ## Problem
-Enterprise buyers fail us in security review: no SAML SSO and no exportable audit trail. We lost Woodgrove Bank ($310k) for this reason.
+Enterprise buyers fail us in security review: no SAML SSO and no exportable audit trail. We lost Stonebridge Bank ($310k) for this reason.
 
 ## Goals
 - Security review pass rate from 60% to 90% (baseline: last two quarters).
@@ -395,15 +395,15 @@ Invoices wait a median of 46 hours for approval.
         { id: 'req_pdf', key: 'REQ-0', title: 'PDF export', statement: 'The system shall generate exports in PDF.', priority: 'could', version: 1 },
       ],
     }, 12);
-    put('cr_sla', 'changeRequest', { title: 'Tighten export SLA to 10 seconds for enterprise', description: 'Sales asks for a 10 s SLA to match Ledgerline in RFPs.', requirementIds: ['req_perf'], reason: 'Three enterprise RFPs this quarter list < 10 s as a requirement.', requestedById: 'stk_daniel', status: 'submitted' }, 8);
+    put('cr_sla', 'changeRequest', { title: 'Tighten export SLA to 10 seconds for enterprise', description: 'Sales asks for a 10 s SLA to match Arkwell AP in RFPs.', requirementIds: ['req_perf'], reason: 'Three enterprise RFPs this quarter list < 10 s as a requirement.', requestedById: 'stk_daniel', status: 'submitted' }, 8);
 
     const DEC = (id: string, data: Record<string, unknown>, daysAgo: number) => put(`dec_${id}`, 'decision', { status: 'decided', ...data }, daysAgo);
-    DEC('nopdf', { title: 'XLSX and CSV only in v1 — no PDF', context: 'Auditors at Fabrikam asked for PDF; 84% of controllers use XLSX/CSV.', options: '- **XLSX + CSV** — covers 84%, cheap\n- **+ PDF** — +3 weeks, auditors only\n- **Defer all formats but CSV** — fastest, weak value', chosen: 'XLSX + CSV', rationale: 'PDF adds three weeks for a minority use case; revisit with data.', deciderIds: ['stk_me', 'stk_priya'], consultedIds: ['stk_olivia', 'stk_samuel'], date: d(-20), reversibility: 'two-way-door', revisitTrigger: 'More than 20% of export requests ask for PDF', revisitDate: d(60), relatedIds: ['bet_export', 'spec_export'], evidenceIds: ['ev_6'] }, 20);
+    DEC('nopdf', { title: 'XLSX and CSV only in v1 — no PDF', context: 'Auditors at Pinemoor asked for PDF; 84% of controllers use XLSX/CSV.', options: '- **XLSX + CSV** — covers 84%, cheap\n- **+ PDF** — +3 weeks, auditors only\n- **Defer all formats but CSV** — fastest, weak value', chosen: 'XLSX + CSV', rationale: 'PDF adds three weeks for a minority use case; revisit with data.', deciderIds: ['stk_me', 'stk_priya'], consultedIds: ['stk_olivia', 'stk_samuel'], date: d(-20), reversibility: 'two-way-door', revisitTrigger: 'More than 20% of export requests ask for PDF', revisitDate: d(60), relatedIds: ['bet_export', 'spec_export'], evidenceIds: ['ev_6'] }, 20);
     DEC('async', { title: 'Exports run as background jobs', context: 'Synchronous exports time out above ~20k rows.', options: '- Background job with notification\n- Streaming download\n- Raise timeouts', chosen: 'Background job with notification', rationale: 'Only option that scales to 100k rows and scheduled runs.', deciderIds: ['stk_priya'], consultedIds: ['stk_me', 'stk_grace'], date: d(-28), reversibility: 'two-way-door', relatedIds: ['bet_export'] }, 28);
     DEC('signed', { title: 'Deliver files by signed link, not attachment', context: 'Attachments containing personal data cannot be revoked.', options: '- Email attachment\n- Signed, expiring link', chosen: 'Signed link, 7-day expiry', rationale: 'Revocable, auditable, no size limits on mail servers.', deciderIds: ['stk_me', 'stk_grace'], consultedIds: ['stk_elena'], date: d(-15), reversibility: 'two-way-door', relatedIds: ['bet_export'], supersedesId: 'dec_attach' }, 15);
     DEC('retention', { title: 'Generated export files are kept for 7 days', context: 'Storage cost and data-minimisation vs customers re-downloading files.', options: '- 7 days\n- 30 days\n- Until the next run', chosen: '7 days', rationale: 'Matches signed-link expiry; minimises personal data at rest.', deciderIds: ['stk_me'], consultedIds: [], date: d(-3), reversibility: 'two-way-door', revisitTrigger: 'More than 50 support tickets about expired files', relatedIds: ['bet_export'] }, 3);
     DEC('saml', { title: 'SAML 2.0 first, OIDC later', options: '- SAML first\n- OIDC first\n- Both', chosen: 'SAML first', rationale: 'Every enterprise RFP asks for SAML; OIDC is nice-to-have.', deciderIds: ['stk_priya', 'stk_grace'], consultedIds: ['stk_daniel'], date: d(-45), reversibility: 'two-way-door', relatedIds: ['bet_sso'] }, 45);
-    DEC('entity', { title: 'Defer multi-entity consolidation to 2027', context: 'One loud customer (Wide World Importers) plus one lost deal.', options: '- Build now (30 weeks)\n- Defer to 2027\n- Partner with Litware', chosen: 'Defer to 2027', rationale: 'Evidence is concentrated in one account; enterprise readiness (SSO) is the bigger blocker.', deciderIds: ['stk_hiroshi', 'stk_me'], consultedIds: ['stk_daniel'], date: d(-60), reversibility: 'two-way-door', revisitTrigger: 'Two more enterprise deals lost for multi-entity', revisitDate: d(-2), relatedIds: ['bet_entity'] }, 60);
+    DEC('entity', { title: 'Defer multi-entity consolidation to 2027', context: 'One loud customer (Seaward Importers) plus one lost deal.', options: '- Build now (30 weeks)\n- Defer to 2027\n- Partner with Quillsoft', chosen: 'Defer to 2027', rationale: 'Evidence is concentrated in one account; enterprise readiness (SSO) is the bigger blocker.', deciderIds: ['stk_hiroshi', 'stk_me'], consultedIds: ['stk_daniel'], date: d(-60), reversibility: 'two-way-door', revisitTrigger: 'Two more enterprise deals lost for multi-entity', revisitDate: d(-2), relatedIds: ['bet_entity'] }, 60);
     DEC('pricing', { title: 'Scheduled export only on Pro and Enterprise plans', context: 'Proposal from Product Marketing to drive upgrades.', options: '- All plans\n- Pro + Enterprise\n- Enterprise only', chosen: 'Pro + Enterprise', rationale: 'Upsell lever; SMB plans rarely reconcile monthly.', deciderIds: [], consultedIds: ['stk_sofia'], date: d(-1), status: 'proposed', reversibility: 'one-way-door', relatedIds: ['bet_export'] }, 1);
     DEC('attach', { title: 'Email exports as attachments', chosen: 'Attachment', rationale: 'Simplest first version.', deciderIds: ['stk_me'], date: d(-90), status: 'superseded', reversibility: 'two-way-door', relatedIds: ['bet_export'] }, 90);
 
@@ -421,8 +421,8 @@ Invoices wait a median of 46 hours for approval.
     }, 20);
 
     put('pm_asis', 'processModel', {
-      title: 'Month-end reconciliation', variant: 'as-is', counterpartId: 'pm_tobe', notes: 'Observed at Contoso and Fabrikam (elicitation workshop).',
-      lanes: ['AP Clerk', 'Finance Controller', 'Northwind Pay', 'Spreadsheet'],
+      title: 'Month-end reconciliation', variant: 'as-is', counterpartId: 'pm_tobe', notes: 'Observed at Halcyon Foods and Pinemoor (elicitation workshop).',
+      lanes: ['AP Clerk', 'Finance Controller', 'Ledgerly', 'Spreadsheet'],
       steps: [
         { id: 'a1', lane: 'AP Clerk', label: 'Period ends', kind: 'start', next: ['a2'] },
         { id: 'a2', lane: 'AP Clerk', label: 'Export invoices page by page', kind: 'task', next: ['a3'] },
@@ -437,11 +437,11 @@ Invoices wait a median of 46 hours for approval.
     }, 40);
     put('pm_tobe', 'processModel', {
       title: 'Month-end reconciliation', variant: 'to-be', counterpartId: 'pm_asis', notes: 'With scheduled export (2026.11) and, later, automatic matching.',
-      lanes: ['AP Clerk', 'Finance Controller', 'Northwind Pay', 'Spreadsheet'],
+      lanes: ['AP Clerk', 'Finance Controller', 'Ledgerly', 'Spreadsheet'],
       steps: [
-        { id: 'b1', lane: 'Northwind Pay', label: 'Period ends', kind: 'start', next: ['b2'] },
-        { id: 'b2', lane: 'Northwind Pay', label: 'Generate scheduled export', kind: 'task', next: ['b3'] },
-        { id: 'b3', lane: 'Northwind Pay', label: 'Email signed link', kind: 'task', next: ['b4'] },
+        { id: 'b1', lane: 'Ledgerly', label: 'Period ends', kind: 'start', next: ['b2'] },
+        { id: 'b2', lane: 'Ledgerly', label: 'Generate scheduled export', kind: 'task', next: ['b3'] },
+        { id: 'b3', lane: 'Ledgerly', label: 'Email signed link', kind: 'task', next: ['b4'] },
         { id: 'b4', lane: 'Spreadsheet', label: 'Match remaining exceptions', kind: 'task', next: ['b5'] },
         { id: 'b5', lane: 'Finance Controller', label: 'Exceptions?', kind: 'decision', next: ['b6', 'b7'] },
         { id: 'b6', lane: 'AP Clerk', label: 'Email suppliers and approvers', kind: 'task', next: ['b4'] },
@@ -473,7 +473,7 @@ Invoices wait a median of 46 hours for approval.
     }, 25);
 
     put('de_invoice', 'dataEntity', {
-      name: 'Invoice', description: 'Supplier invoice as stored in Northwind Pay.', relations: 'Belongs to Account and Supplier; has many Line items, Approvals and Payments.', ownerId: 'stk_priya',
+      name: 'Invoice', description: 'Supplier invoice as stored in Ledgerly.', relations: 'Belongs to Account and Supplier; has many Line items, Approvals and Payments.', ownerId: 'stk_priya',
       attributes: [
         { name: 'invoice_number', type: 'string', required: true, pii: false, description: 'Supplier-provided number' },
         { name: 'supplier_name', type: 'string', required: true, pii: false, description: '' },
@@ -496,15 +496,15 @@ Invoices wait a median of 46 hours for approval.
       ],
     }, 30);
 
-    put('eli_contoso', 'elicitation', {
-      title: 'Month-end close workshop — Contoso finance', technique: 'workshop', date: d(-40), stakeholderIds: ['stk_olivia', 'stk_me', 'stk_aisha'], status: 'synthesized',
+    put('eli_halcyon', 'elicitation', {
+      title: 'Month-end close workshop — Halcyon Foods finance', technique: 'workshop', date: d(-40), stakeholderIds: ['stk_olivia', 'stk_me', 'stk_aisha'], status: 'synthesized',
       objectives: 'Map the as-is close process; find the top three time sinks.',
       questions: '1. Walk us through the last close, step by step.\n2. Where do you wait on others?\n3. What do you export, and why?',
       notes: '- Decision: focus the pilot on invoice export first\n- Action: @olivia to share the reconciliation workbook by Friday\n- Risk: their fiscal calendar differs from calendar months\n- The export must include payment status\n- What happens with partial payments?',
     }, 40);
-    put('eli_fabrikam', 'elicitation', {
-      title: 'Interview — Fabrikam controller', technique: 'interview', date: d(-18), stakeholderIds: ['stk_ben'], status: 'done',
-      objectives: 'Understand renewal risk and audit needs.', notes: '- Auditors need a full invoice listing with approvals\n- Concern: they are evaluating Ledgerline\n- The system must show who approved each invoice',
+    put('eli_pinemoor', 'elicitation', {
+      title: 'Interview — Pinemoor controller', technique: 'interview', date: d(-18), stakeholderIds: ['stk_ben'], status: 'done',
+      objectives: 'Understand renewal risk and audit needs.', notes: '- Auditors need a full invoice listing with approvals\n- Concern: they are evaluating Arkwell AP\n- The system must show who approved each invoice',
     }, 18);
 
     put('cap_ap', 'capability', { name: 'Accounts payable', description: 'End-to-end AP for mid-market and enterprise.', maturityNow: 3, maturityTarget: 4, importance: 5 }, 200);
@@ -514,10 +514,10 @@ Invoices wait a median of 46 hours for approval.
     put('cap_recon', 'capability', { name: 'Reconciliation & close', parentId: 'cap_ap', maturityNow: 1, maturityTarget: 4, importance: 5, ownerId: 'stk_me' }, 200);
     put('cap_report', 'capability', { name: 'Reporting & export', parentId: 'cap_ap', maturityNow: 2, maturityTarget: 4, importance: 4 }, 200);
     put('cap_comp', 'capability', { name: 'Compliance & audit', parentId: 'cap_ap', maturityNow: 2, maturityTarget: 5, importance: 5, ownerId: 'stk_grace' }, 200);
-    put('gap_export', 'gapItem', { title: 'Data out of Northwind Pay', currentState: 'Per-page manual export, 500-row limit, no payment status.', futureState: 'Complete scheduled export with invoices, approvals and payments.', gap: 'No job platform for large exports; no scheduling.', action: 'Scheduled export (2026.11) on the new job platform.', priority: 'high', capabilityId: 'cap_report', status: 'planned' }, 40);
+    put('gap_export', 'gapItem', { title: 'Data out of Ledgerly', currentState: 'Per-page manual export, 500-row limit, no payment status.', futureState: 'Complete scheduled export with invoices, approvals and payments.', gap: 'No job platform for large exports; no scheduling.', action: 'Scheduled export (2026.11) on the new job platform.', priority: 'high', capabilityId: 'cap_report', status: 'planned' }, 40);
     put('gap_match', 'gapItem', { title: 'Payment matching', currentState: 'Entirely manual in spreadsheets.', futureState: 'Automatic matching with exception review.', gap: 'No bank feed; no matching engine.', action: 'Discovery: automatic matching (bet).', priority: 'high', capabilityId: 'cap_recon', status: 'open' }, 40);
     put('gap_audit', 'gapItem', { title: 'Audit evidence', currentState: 'Audit trail visible in UI only.', futureState: 'Exportable, immutable audit log.', gap: 'No export; retention undefined.', action: 'Audit log export (2026.11).', priority: 'high', capabilityId: 'cap_comp', status: 'planned' }, 40);
-    put('swot_2026', 'swot', { title: 'Northwind Pay in mid-market AP (2026)', date: d(-30), strengths: 'Best approval UX in the segment\nFast onboarding (2 weeks)\nHigh NPS among AP clerks', weaknesses: 'No SSO / audit export\nManual reconciliation\nSingle-entity only', opportunities: 'Enterprise teams frustrated with Ledgerline implementations\nERP partners (Litware) want deeper integration', threats: 'Payably moving up-market with matching\nLedgerline discounting to block us' }, 30);
+    put('swot_2026', 'swot', { title: 'Ledgerly in mid-market AP (2026)', date: d(-30), strengths: 'Best approval UX in the segment\nFast onboarding (2 weeks)\nHigh NPS among AP clerks', weaknesses: 'No SSO / audit export\nManual reconciliation\nSingle-entity only', opportunities: 'Enterprise teams frustrated with Arkwell AP implementations\nERP partners (Quillsoft) want deeper integration', threats: 'Matchbay moving up-market with matching\nArkwell AP discounting to block us' }, 30);
     put('rca_tickets', 'rootCause', {
       title: 'Reconciliation tickets spike at month-end',
       whys: ['Customers cannot get the invoice data they need to reconcile.', 'They export manually and the data is incomplete.', 'Exports are per-page with a 500-row limit and no payment status.', 'Export was built as a UI convenience, not as part of the close workflow.', 'Nobody owned reporting and export until 2026.'],
@@ -605,7 +605,7 @@ Invoices wait a median of 46 hours for approval.
     put('rel_nov', 'release', {
       title: '2026.11 — Scheduled export & SSO', version: '2026.11', targetDate: d(21), status: 'in-progress', tier: 'tier-1', betIds: ['bet_export', 'bet_sso'],
       goals: 'Ship scheduled export to design partners; GA of SAML SSO and audit log export for enterprise.',
-      rolloutPlan: 'Flag export.scheduled → 10 design partners (Contoso, Tailspin, Fabrikam…) in week 1 → 25% in week 3 → 100% by week 5.\nSSO: GA for Enterprise plan at release.',
+      rolloutPlan: 'Flag export.scheduled → 10 design partners (Halcyon Foods, Kitebird, Pinemoor…) in week 1 → 25% in week 3 → 100% by week 5.\nSSO: GA for Enterprise plan at release.',
       rollbackCriteria: 'Export job error rate > 2% or p95 > 60 s for 2 consecutive hours → disable flag.\nSSO login failure rate > 1% → revert to password login for affected accounts.',
       checklist: [
         { id: 'c1', area: 'Support', item: 'Help-centre articles (export, SSO)', ownerId: 'stk_samuel', done: false },
@@ -628,7 +628,7 @@ Invoices wait a median of 46 hours for approval.
     RAID('legal', { kind: 'risk', title: 'Legal may require 10-year retention of generated files', probability: 3, impact: 4, ownerId: 'stk_elena', mitigation: 'Clarify that files are copies; source records retained (REQ-8).', status: 'open', dueDate: d(5), relatedIds: ['bet_export', 'dec_retention'] });
     RAID('promises', { kind: 'risk', title: 'Sales promises dates earlier than the 85% forecast', probability: 4, impact: 5, ownerId: 'stk_daniel', mitigation: '', status: 'open', relatedIds: ['bet_export', 'bet_sso'] }, 15);
     RAID('queue', { kind: 'issue', title: 'Legacy queue drops export jobs longer than 5 minutes', probability: 5, impact: 4, ownerId: 'stk_priya', mitigation: 'Hotfix: split jobs into 20k-row chunks until the migration.', status: 'open', relatedIds: ['bet_export', 'bet_queue'] }, 12);
-    RAID('litware', { kind: 'dependency', title: 'Litware ERP connector: bank statement feed', externalTeam: 'Litware (partner)', probability: 3, impact: 3, ownerId: 'stk_raj', status: 'open', dueDate: d(5), relatedIds: ['bet_match'] });
+    RAID('quillsoft', { kind: 'dependency', title: 'Quillsoft ERP connector: bank statement feed', externalTeam: 'Quillsoft (partner)', probability: 3, impact: 3, ownerId: 'stk_raj', status: 'open', dueDate: d(5), relatedIds: ['bet_match'] });
     RAID('signed', { kind: 'dependency', title: 'Platform: signed URL service in production', externalTeam: 'Platform', probability: 2, impact: 4, ownerId: 'stk_priya', status: 'open', dueDate: d(4), relatedIds: ['bet_export'] });
     RAID('partners', { kind: 'assumption', title: 'Design partners give feedback within a week of beta', probability: 2, impact: 3, ownerId: 'stk_noah', status: 'open', relatedIds: ['bet_export'] });
     RAID('lockout', { kind: 'risk', title: 'SSO misconfiguration locks customer admins out', probability: 2, impact: 5, ownerId: 'stk_grace', mitigation: 'Break-glass admin; test sign-in before enforcing.', status: 'mitigating', relatedIds: ['bet_sso'] });
@@ -676,14 +676,14 @@ Invoices wait a median of 46 hours for approval.
     // ---------------- Stakeholder work ----------------
     const I = (id: string, data: Record<string, unknown>) => put(`int_${id}`, 'interaction', data, 5);
     I('d1', { title: 'Q4 pipeline review', date: d(-60), stakeholderIds: ['stk_daniel'], kind: '1:1', sentiment: 1, summary: 'Positive about SSO plan; wants dates.' });
-    I('d2', { title: 'Woodgrove loss debrief', date: d(-40), stakeholderIds: ['stk_daniel'], kind: 'meeting', sentiment: 0, summary: 'Frustrated about losing on SSO.' });
+    I('d2', { title: 'Stonebridge loss debrief', date: d(-40), stakeholderIds: ['stk_daniel'], kind: 'meeting', sentiment: 0, summary: 'Frustrated about losing on SSO.' });
     I('d3', { title: 'Export SLA discussion', date: d(-25), stakeholderIds: ['stk_daniel', 'stk_priya'], kind: 'meeting', sentiment: -1, summary: 'Sales wants 10 s; engineering says 30 s.', followUps: 'Draft change request with load data.' });
-    I('d4', { title: 'Escalation: Adventure Works audit log date', date: d(-11), stakeholderIds: ['stk_daniel'], kind: 'call', sentiment: -1, summary: 'Promised audit export before their review without checking the forecast.' });
+    I('d4', { title: 'Escalation: Trailmark Outdoors audit log date', date: d(-11), stakeholderIds: ['stk_daniel'], kind: 'call', sentiment: -1, summary: 'Promised audit export before their review without checking the forecast.' });
     I('d5', { title: 'Weekly sync', date: d(-4), stakeholderIds: ['stk_daniel'], kind: '1:1', sentiment: -2, summary: '"Every date I give customers slips." Asked for a single source of truth on dates.', followUps: 'Show the promise ledger and 85% forecast.' });
     I('m1', { title: 'Budget review: export infrastructure', date: d(-55), stakeholderIds: ['stk_maya'], kind: 'meeting', sentiment: 0 });
     I('m2', { title: 'Business case walkthrough', date: d(-25), stakeholderIds: ['stk_maya'], kind: 'meeting', sentiment: 1, summary: 'Asked for infra cost estimate at 100k-row scale.' });
     I('o1', { title: 'Design partner kickoff', date: d(-45), stakeholderIds: ['stk_olivia'], kind: 'workshop', sentiment: 1 });
-    I('o2', { title: 'Close workshop', date: d(-40), stakeholderIds: ['stk_olivia', 'stk_aisha'], kind: 'workshop', sentiment: 1, relatedIds: ['eli_contoso'] });
+    I('o2', { title: 'Close workshop', date: d(-40), stakeholderIds: ['stk_olivia', 'stk_aisha'], kind: 'workshop', sentiment: 1, relatedIds: ['eli_halcyon'] });
     I('o3', { title: 'Prototype feedback', date: d(-26), stakeholderIds: ['stk_olivia'], kind: 'demo', sentiment: 2, summary: 'Loved the schedule flow.' });
     I('o4', { title: 'UAT check-in', date: d(-12), stakeholderIds: ['stk_olivia'], kind: 'call', sentiment: 0, summary: 'Worried about the 100k-row timeout.' });
     I('p1', { title: 'Refinement prep', date: d(-8), stakeholderIds: ['stk_priya'], kind: '1:1', sentiment: 1 });
@@ -693,7 +693,7 @@ Invoices wait a median of 46 hours for approval.
     I('h1', { title: 'Board prep', date: d(-10), stakeholderIds: ['stk_hiroshi'], kind: 'meeting', sentiment: 1 });
     I('h2', { title: 'Steering — October', date: d(-20), stakeholderIds: ['stk_hiroshi', 'stk_maya', 'stk_daniel', 'stk_priya'], kind: 'steering', sentiment: 0, relatedIds: ['mtg_steer'] });
     I('b1', { title: 'Renewal check-in', date: d(-50), stakeholderIds: ['stk_ben', 'stk_noah'], kind: 'call', sentiment: 0 });
-    I('b2', { title: 'Interview: audit needs', date: d(-18), stakeholderIds: ['stk_ben'], kind: 'call', sentiment: -1, relatedIds: ['eli_fabrikam'] });
+    I('b2', { title: 'Interview: audit needs', date: d(-18), stakeholderIds: ['stk_ben'], kind: 'call', sentiment: -1, relatedIds: ['eli_pinemoor'] });
     I('b3', { title: 'PDF export follow-up', date: d(-9), stakeholderIds: ['stk_ben'], kind: 'email', sentiment: -2, summary: '"If auditors cannot get PDFs we will have to look elsewhere."' });
     I('c1', { title: 'Bulk approval thank-you', date: d(-70), stakeholderIds: ['stk_chloe'], kind: 'email', sentiment: 2 });
     I('c2', { title: 'Beta invite', date: d(-15), stakeholderIds: ['stk_chloe'], kind: 'email', sentiment: 1 });
@@ -704,26 +704,26 @@ Invoices wait a median of 46 hours for approval.
     I('so1', { title: 'Launch planning', date: d(-30), stakeholderIds: ['stk_sofia'], kind: 'meeting', sentiment: 0 });
 
     const RQ = (id: string, data: Record<string, unknown>, daysAgo: number) => put(`rq_${id}`, 'request', { receivedAt: d(-daysAgo), ...data }, daysAgo);
-    RQ('olivia', { title: 'Monthly export of all invoices with payment status', requesterId: 'stk_olivia', priority: 'high', status: 'planned', betId: 'bet_export', evidenceIds: ['ev_1'], responseNote: 'Planned for 2026.11; Contoso is a design partner.' }, 45);
-    RQ('ben', { title: 'PDF export for auditors', requesterId: 'stk_ben', priority: 'high', status: 'triaging', respondBy: d(-2), evidenceIds: ['ev_6'], description: 'Auditors at Fabrikam want PDF listings.' }, 9);
+    RQ('olivia', { title: 'Monthly export of all invoices with payment status', requesterId: 'stk_olivia', priority: 'high', status: 'planned', betId: 'bet_export', evidenceIds: ['ev_1'], responseNote: 'Planned for 2026.11; Halcyon Foods is a design partner.' }, 45);
+    RQ('ben', { title: 'PDF export for auditors', requesterId: 'stk_ben', priority: 'high', status: 'triaging', respondBy: d(-2), evidenceIds: ['ev_6'], description: 'Auditors at Pinemoor want PDF listings.' }, 9);
     RQ('daniel', { title: 'SSO for the enterprise pipeline', requesterId: 'stk_daniel', priority: 'critical', status: 'planned', betId: 'bet_sso' }, 60);
     RQ('samuel', { title: 'Release calendar visible to Support', requesterId: 'stk_samuel', priority: 'medium', status: 'new', respondBy: d(3) }, 4);
     RQ('chloe', { title: 'Bulk approve invoices', requesterId: 'stk_chloe', priority: 'medium', status: 'done', betId: 'bet_bulk', loopClosed: false }, 200);
     RQ('maya', { title: 'Infrastructure cost estimate for exports at scale', requesterId: 'stk_maya', priority: 'high', status: 'accepted', respondBy: d(7) }, 25);
     RQ('grace', { title: 'Security review of the export design', requesterId: 'stk_grace', priority: 'high', status: 'done', betId: 'bet_export', loopClosed: true }, 30);
-    RQ('noah', { title: 'Approval reminders for Lamna Healthcare', requesterId: 'stk_noah', priority: 'medium', status: 'planned', betId: 'bet_remind' }, 20);
+    RQ('noah', { title: 'Approval reminders for Marlow Health', requesterId: 'stk_noah', priority: 'medium', status: 'planned', betId: 'bet_remind' }, 20);
     RQ('www', { title: 'Consolidated view across 12 subsidiaries', requesterId: 'stk_noah', priority: 'high', status: 'declined', responseNote: 'Deferred to 2027 (DEC-6). Shared reasoning with the account.', loopClosed: true }, 70);
     RQ('raj', { title: 'API for invoice payment status', requesterId: 'stk_raj', priority: 'medium', status: 'new', respondBy: d(-5) }, 15);
     RQ('lucas', { title: 'Review tracking plan for export events', requesterId: 'stk_lucas', priority: 'low', status: 'new', respondBy: d(2) }, 3);
     RQ('hiroshi', { title: 'One-page enterprise readiness update for the board', requesterId: 'stk_hiroshi', priority: 'high', status: 'new', respondBy: d(1) }, 2);
 
     const CM = (id: string, data: Record<string, unknown>, daysAgo: number) => put(`com_${id}`, 'commitment', { status: 'open', ...data }, daysAgo);
-    CM('contoso', { title: 'Scheduled export live for Contoso', toId: 'stk_olivia', promisedById: 'stk_daniel', account: 'Contoso', dueDate: d(14), betId: 'bet_export', releaseId: 'rel_nov', notes: 'Promised in the QBR; their close starts on the 1st.' }, 30);
-    CM('adventure', { title: 'Audit log export before Adventure Works security review', toId: 'stk_daniel', promisedById: 'stk_me', account: 'Adventure Works', dueDate: d(3), betId: 'bet_sso' }, 11);
-    CM('woodgrove', { title: 'SSO available for Woodgrove Bank re-pitch', promisedById: 'stk_daniel', account: 'Woodgrove Bank', dueDate: d(12), betId: 'bet_sso' }, 20);
-    CM('fabrikam', { title: 'Export roadmap update to Fabrikam before renewal', toId: 'stk_ben', promisedById: 'stk_me', account: 'Fabrikam', dueDate: d(5) }, 9);
-    CM('lamna', { title: 'Approval reminders for Lamna by year end', promisedById: 'stk_noah', account: 'Lamna Healthcare', dueDate: d(60), betId: 'bet_remind' }, 20);
-    CM('tailspin', { title: 'Bulk approval for Tailspin', toId: 'stk_chloe', promisedById: 'stk_me', account: 'Tailspin Toys', dueDate: d(-120), betId: 'bet_bulk', status: 'kept' }, 200);
+    CM('contoso', { title: 'Scheduled export live for Halcyon Foods', toId: 'stk_olivia', promisedById: 'stk_daniel', account: 'Halcyon Foods', dueDate: d(14), betId: 'bet_export', releaseId: 'rel_nov', notes: 'Promised in the QBR; their close starts on the 1st.' }, 30);
+    CM('adventure', { title: 'Audit log export before Trailmark Outdoors security review', toId: 'stk_daniel', promisedById: 'stk_me', account: 'Trailmark Outdoors', dueDate: d(3), betId: 'bet_sso' }, 11);
+    CM('stonebridge', { title: 'SSO available for Stonebridge Bank re-pitch', promisedById: 'stk_daniel', account: 'Stonebridge Bank', dueDate: d(12), betId: 'bet_sso' }, 20);
+    CM('fabrikam', { title: 'Export roadmap update to Pinemoor before renewal', toId: 'stk_ben', promisedById: 'stk_me', account: 'Pinemoor', dueDate: d(5) }, 9);
+    CM('marlow', { title: 'Approval reminders for Marlow by year end', promisedById: 'stk_noah', account: 'Marlow Health', dueDate: d(60), betId: 'bet_remind' }, 20);
+    CM('kitebird', { title: 'Bulk approval for Kitebird', toId: 'stk_chloe', promisedById: 'stk_me', account: 'Kitebird Toys', dueDate: d(-120), betId: 'bet_bulk', status: 'kept' }, 200);
 
     put('raci_export', 'raci', {
       title: 'Scheduled export — RACI', scopeId: 'bet_export',
@@ -760,9 +760,9 @@ Invoices wait a median of 46 hours for approval.
     put('appr_sso', 'approval', { title: 'Approve SSO spec', subjectId: 'spec_sso', requestedById: 'stk_me', dueDate: d(-50), approvers: [
       { stakeholderId: 'stk_grace', status: 'approved', at: d(-52) }, { stakeholderId: 'stk_priya', status: 'approved', at: d(-51) },
     ] }, 55);
-    put('appr_uat', 'approval', { title: 'UAT sign-off — SSO (Adventure Works pilot)', subjectId: 'rel_nov', requestedById: 'stk_me', dueDate: d(-3), approvers: [{ stakeholderId: 'stk_noah', status: 'pending' }] }, 8);
+    put('appr_uat', 'approval', { title: 'UAT sign-off — SSO (Trailmark Outdoors pilot)', subjectId: 'rel_nov', requestedById: 'stk_me', dueDate: d(-3), approvers: [{ stakeholderId: 'stk_noah', status: 'pending' }] }, 8);
 
-    put('cf_sla', 'conflict', { title: 'Export SLA: 10 s (Sales) vs 30 s (Engineering)', partyIds: ['stk_daniel', 'stk_priya'], description: 'REQ-4 and REQ-10 contradict each other.', positions: 'Sales: enterprise RFPs ask for < 10 s.\nEngineering: 30 s at p95 for 100k rows is realistic with async jobs.', interests: 'Sales: not lose RFP checkboxes to Ledgerline.\nEngineering: avoid paying for workers idle 29 days a month.\nShared: customers get complete files reliably.', status: 'negotiating', raisedAt: d(-9) }, 9);
+    put('cf_sla', 'conflict', { title: 'Export SLA: 10 s (Sales) vs 30 s (Engineering)', partyIds: ['stk_daniel', 'stk_priya'], description: 'REQ-4 and REQ-10 contradict each other.', positions: 'Sales: enterprise RFPs ask for < 10 s.\nEngineering: 30 s at p95 for 100k rows is realistic with async jobs.', interests: 'Sales: not lose RFP checkboxes to Arkwell AP.\nEngineering: avoid paying for workers idle 29 days a month.\nShared: customers get complete files reliably.', status: 'negotiating', raisedAt: d(-9) }, 9);
     put('cf_retention', 'conflict', { title: 'Retention of generated files: 7 days vs 10 years', partyIds: ['stk_elena', 'stk_me'], positions: 'Product: delete files after 7 days (DEC-4).\nLegal: financial records must be retained 10 years.', interests: 'Legal: compliance. Product: minimise personal data at rest and storage cost.', status: 'open', raisedAt: d(-2) }, 2);
     put('cf_threshold', 'conflict', { title: 'Bulk approval default threshold', partyIds: ['stk_chloe', 'stk_grace'], status: 'resolved', resolution: 'Default limit = approver limit; admins can lower it.', raisedAt: d(-150) }, 150);
 

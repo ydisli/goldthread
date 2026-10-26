@@ -69,7 +69,7 @@ Completeness is impossible to judge by reading alone; you'll miss what isn't the
 
 Some items only apply when certain things are in scope. If the spec mentions approvals or deletion, audit trail is essential. If it involves dates and global users, time zones matter. If it handles employee data, privacy does.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Jordan's first draft of the access request portal spec covered the happy path well. The checklist exposed what was missing: no error handling for provisioning failures, no answer to "what happens if the approver is on leave", nothing on notifications, and nothing on retention of request history, which auditors will want for seven years. Four gaps, each a likely defect, found before any design work started.
 
 ## Reviewing through other people's eyes
@@ -129,7 +129,7 @@ A **change request** answers:
 
 The impact analysis is the valuable part, and it's only possible if you've kept traces between requirements, stories, tests and releases (Chapter 14).
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Daniel's team raises a change request: provision Sales cohorts within **5 minutes** instead of the baselined **15 minutes** (p95). Impact analysis: it changes REQ-4, conflicts with nothing else, but needs a different provisioning architecture for the CRM connector (two extra stories, about two weeks), invalidates three performance tests, and puts the November release at risk. The cost of delay of slipping JML is about $12k a week. The decision, taken by Alex with Priya: reject the 5-minute target for now, because the January problem is solved by batch provisioning the week before; revisit after JML is live. Recorded with reasoning, communicated to Daniel in person.
 
 ### Proportionality

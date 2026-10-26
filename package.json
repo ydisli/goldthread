@@ -2,7 +2,8 @@
   "name": "throughline",
   "version": "0.1.0",
   "private": true,
-  "description": "Throughline \u2014 the intent & alignment layer for Product Owners and Business Analysts",
+  "description": "Throughline — the intent & alignment layer for Product Owners and Business Analysts",
+  "license": "Apache-2.0",
   "type": "module",
   "engines": {
     "node": ">=23.6"

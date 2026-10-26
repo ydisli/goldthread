@@ -48,7 +48,7 @@ Five minutes of preparation changes the quality of a stakeholder conversation. B
 4. **What news do you bring?** Good and bad, with the bad first.
 5. **What do you need from them?** A decision, an introduction, a sign-off, their attendance at a workshop. If you need nothing, consider whether the meeting is needed.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Before his fortnightly with Daniel, Alex checks the open items: one request from Daniel's team (pre-approval for the January cohort, still being triaged), one promise (day-one access for January reps, made two months ago by Alex's predecessor) and nothing waiting on Daniel. The forecast says the promise has about a 2% chance of being met by JML alone. Alex decides to lead with that, show the fallback "cohort pack" option, and ask Daniel for one thing: the final list of January starters by 1 December.
 
 ## Same facts, different updates
@@ -98,7 +98,7 @@ Three rules:
 2. **Check every promise against the delivery forecast**, not against hope. If the forecast gives a promise a 30% chance, it isn't really a promise. (Chapter 12 explains how to get that number.)
 3. **Renegotiate early.** The moment a promise looks unlikely, go back to the person with the evidence and options. A renegotiation in October is a conversation. A missed date in January is a failure.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > The promise to Daniel ("Day-one access for the January sales cohort") was made before JML had a forecast. When Alex checks it against the delivery forecast, the chance is around 2%. Alex doesn't wait for January. In the next 1:1, Alex shows Daniel the forecast, offers the batch-provisioning fallback, and records the renegotiated promise: "CRM and email access on day one for all January starters on the list by 1 December, via batch provisioning."
 
 ## When stakeholders disagree
@@ -112,7 +112,7 @@ The key move is separating **positions** from **interests**:
 
 Positions conflict. Interests often don't.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Elena (DPO) wants leaver mailboxes deleted after **30 days** for data minimisation. Tomás and the managers he speaks for want them kept for **90 days** so handovers can happen. These positions are incompatible, and two requirements in the JML spec say both.
 >
 > Their interests: Elena needs personal data kept no longer than necessary, with a defensible reason. Managers need access to the business correspondence of the person who left, mostly in the first few weeks.

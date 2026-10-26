@@ -209,6 +209,10 @@ export class SystemDB {
       .run(patch.name?.trim() || u.name, patch.title ?? u.title ?? null, JSON.stringify({ ...u.prefs, ...(patch.prefs ?? {}) }), patch.status ?? u.status, userId);
   }
 
+  changeEmail(userId: string, email: string) {
+    this.db.prepare('UPDATE users SET email = ? WHERE id = ?').run(normalizeEmail(email), userId);
+  }
+
   setPassword(userId: string, password: string) {
     this.db.prepare('UPDATE users SET pw_hash = ? WHERE id = ?').run(hashPassword(password), userId);
     this.db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId);

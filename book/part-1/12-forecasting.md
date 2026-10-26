@@ -47,7 +47,7 @@ The result is a distribution of completion dates. You then read off percentiles:
 
 That's it. No formulas to memorise. The power is that it turns "when will it be done?" into "how confident do you need to be?", which is a much better conversation.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Daniel asks if JML will be done by the January start date. Alex's forecast shows the remaining JML scope finishing by **15 December at 50%** and **9 January at 85%**, but the January cohort needs accounts created three business days before 6 January, so by 1 January. The chance of making that from JML alone is low. That's why Alex offered batch provisioning as a fallback (Chapter 4), and why the conversation was calm rather than defensive: the numbers did the talking.
 
 ### Remaining scope isn't fixed

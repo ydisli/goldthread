@@ -31,7 +31,7 @@ The **Tracking plan** tab lists the measurement each bet needs before it can be 
 
 The **assumptions** field is where you write out each benefit line, so anyone can challenge it. The sensitivity view shows which input the answer depends on most: halve the benefit, double the cost, and see whether the decision survives.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > The JML case ($220k one-time, $30k a year to run, $640k a year of benefit at a 35/80/100% ramp, 8% discount rate) pays back within the second year and has a cost of delay of about $12k a week. The SSPR case is smaller but approved; the access reviews case is still a draft.
 
 ## Alternatives

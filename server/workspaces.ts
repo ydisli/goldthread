@@ -5,7 +5,7 @@ import { seedWorkspace, type SeedPeople } from './seed.ts';
 import { seedPaymentsWorkspace } from './seed-payments.ts';
 import type { SystemDB, User, Workspace } from './system.ts';
 
-/** it = internal IT product (ServiceHub), saas = customer-facing SaaS (Northwind Pay). */
+/** it = internal IT product (ServiceHub), saas = customer-facing SaaS (Ledgerly). */
 export type Sample = 'it' | 'saas' | 'empty';
 
 /** Opens and caches one SQLite store per workspace. */

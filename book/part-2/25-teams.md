@@ -46,7 +46,7 @@ Each person has one role per workspace. Roles are enforced on every request, whe
 
 Viewers see the same screens as editors, read-only. When a viewer opens an item, the form is shown but locked, with a note explaining how to get edit access. Viewers can still comment and @mention people, so a sponsor can ask a question on a spec without being able to change it.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > The ServiceHub workspace has Alex as owner and Jordan and Priya as editors. Dana (CISO) is a viewer, so she can follow the security-relevant decisions and comment on specs. Kim Lee from internal audit is a viewer too, so she can check traceability and approvals herself rather than requesting evidence packs.
 
 ## Teams inside a workspace

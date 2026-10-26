@@ -140,7 +140,7 @@ function Unlinked({ items }: { items: Entity[] }) {
 }
 
 function ImportSignals() {
-  const [text, setText] = useState('title,source,account,segment,arr,date,detail\n"Need the export to include tax codes",support,Contoso,enterprise,180000,2026-10-20,');
+  const [text, setText] = useState('title,source,account,segment,arr,date,detail\n"Need the export to include tax codes",support,Halcyon Foods,enterprise,180000,2026-10-20,');
   const rows = parseCsv(text);
   const head = (rows[0] ?? []).map((h) => h.trim().toLowerCase());
   const body = rows.slice(1);

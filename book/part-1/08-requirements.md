@@ -56,7 +56,7 @@ Most ambiguity comes from a small set of words. Learn to spot them in your own w
 | **Passive voice hiding the actor** | access is approved, the account is disabled | Approved by whom? Disabled by what? |
 | **Placeholders** | TBD, TBC, ???, to follow | Fine in drafts; never in a baseline |
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > An early draft of the JML spec said: *"The system should quickly provision appropriate access for new employees, including email, Teams, etc."*
 >
 > Almost every word is a problem. "Should" is weak. "Quickly" isn't testable. "Appropriate" is undefined. "New employees" excludes contractors, maybe deliberately. "Etc." leaves the list open. And it's three requirements (timing, scope of access, systems) wearing one sentence.
@@ -157,7 +157,7 @@ Keep a **glossary**: each term, one definition, and the synonyms you'll avoid. T
 
 Requirements gathered from different people contradict each other more often than anyone expects. Two classic forms:
 
-- **Direct conflict:** two requirements that can't both be true. *Leaver mailboxes retained for 90 days for handover* and *leaver mailboxes deleted after 30 days*. Both existed in Northwind's JML spec, from different stakeholders.
+- **Direct conflict:** two requirements that can't both be true. *Leaver mailboxes retained for 90 days for handover* and *leaver mailboxes deleted after 30 days*. Both existed in Ashgrove's JML spec, from different stakeholders.
 - **Conflicting numbers:** the same measure with different targets. *p95 provisioning within 15 minutes* in the main spec, and *within 5 minutes for Sales cohorts* in a change request from Daniel's team.
 
 Contradictions aren't a sign that you did something wrong. They're the natural result of listening to many people. The mistake is not finding them until build or UAT. Review the whole set periodically, specifically looking for conflicts, and resolve each one as a decision (Chapter 4 covers the people side).

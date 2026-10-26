@@ -64,7 +64,7 @@ For any process, systematically ask what happens when:
 - **The actor is unusual:** a contractor, an intern, an executive, someone with no manager, someone without a phone. *A contractor who isn't in the HR system.*
 - **Scale changes:** 120 people start on the same day.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > In Jordan's JML workshop with Hannah (HR), Priya (engineering) and an agent from Tomás's team, the happy path takes twenty minutes to map. Then Jordan asks: "What happens when someone who left last year is rehired?" Silence, then the service desk agent laughs: "They get a second account. We merge them by hand when someone complains." Workday creates a new worker ID for rehires, and the identity platform treats it as a new person.
 >
 > That one question produced a requirement (match rehires to their previous identity), a defect already happening in production, and an audit concern: two identities for one person makes access reviews unreliable. It would otherwise have been found in UAT, or by the auditors.

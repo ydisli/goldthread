@@ -52,12 +52,12 @@ The typical failure: UAT is the first time business users see the solution. They
 - **Clear exit criteria.** What pass rate, which severity of open defects is acceptable, who signs off.
 - **Recorded results.** Who tested what, when, with what result. In audited environments, this record is evidence.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > For SSPR, UAT included office staff from Finance (who had been in the pilot) and, crucially, three warehouse associates testing badge-and-PIN unlock on a real shift scanner at 5:45 a.m. They found that the scanner's on-screen keyboard covered the PIN field, a problem invisible in the office test environment. Fixed in two days, before release rather than on 1,000 shift workers' first morning.
 
 ### Test data in IT
 
-Internal systems often lack good test environments. Northwind has no test environment for the Workday integration, so changes are tested on real hires. That's a risk to record (RAID), a reason for technical debt work, and a constraint on how you design tests (smaller changes, feature flags, careful monitoring). Know your test environment limitations before you plan UAT around them.
+Internal systems often lack good test environments. Ashgrove has no test environment for the Workday integration, so changes are tested on real hires. That's a risk to record (RAID), a reason for technical debt work, and a constraint on how you design tests (smaller changes, feature flags, careful monitoring). Know your test environment limitations before you plan UAT around them.
 
 ## Defects as feedback
 
@@ -92,10 +92,10 @@ Most IT organisations control production changes through a change management pro
 - **Know the change types.** *Standard* changes are pre-approved, low-risk and repeatable. *Normal* changes need assessment and approval. *Emergency* changes are for fixing urgent problems and get expedited review.
 - **Aim for standard changes.** If your releases are frequent, small, tested and easily rolled back, work with the change manager to get that type of release pre-approved. This is often the single biggest lever for releasing faster in IT.
 - **Bring evidence, not reassurance.** Test results, rollback plan, monitoring, the release window, who's on call. CAB members are assessing risk; give them what they need.
-- **Watch the change failure rate.** The percentage of changes that cause an incident or rollback. Northwind's is 18%, which is one reason the CAB is cautious. Smaller, better-tested releases bring it down, and that buys trust.
+- **Watch the change failure rate.** The percentage of changes that cause an incident or rollback. Ashgrove's is 18%, which is one reason the CAB is cautious. Smaller, better-tested releases bring it down, and that buys trust.
 
-> [!example] At Northwind
-> Noah Williams chairs Northwind's CAB. Rather than presenting SSPR as one big change, Alex and Priya propose a wave plan: Finance (pilot users) in week 1, all office staff in week 2, warehouse sites one at a time in weeks 3–5. Each wave has explicit rollback criteria: more than 2% of reset attempts failing, or more than 20 related tickets in a day. Noah approves the plan once, and each wave goes through as a standard change.
+> [!example] At Ashgrove
+> Noah Williams chairs Ashgrove's CAB. Rather than presenting SSPR as one big change, Alex and Priya propose a wave plan: Finance (pilot users) in week 1, all office staff in week 2, warehouse sites one at a time in weeks 3–5. Each wave has explicit rollback criteria: more than 2% of reset attempts failing, or more than 20 related tickets in a day. Noah approves the plan once, and each wave goes through as a standard change.
 
 ## Rolling out
 

@@ -31,7 +31,7 @@ Transcript formats work too: timestamps and speaker names ("Priya Nair: …") ar
 
 The **Extracted from notes** panel lists everything found. Untick anything that's wrong and click **Create selected**. Decisions go to the decision log, risks to the RAID log, action items to the meeting's action list (owners see them in their Inbox), and requirement candidates to Requirements as drafts. Open questions are listed for you to follow up. Everything created stays linked to the meeting, so you can always see where a decision was made.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Alex's notes from the JML steering meeting include:
 >
 > *Decision: batch-provision the January Sales cohort the week before start.*

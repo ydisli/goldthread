@@ -79,7 +79,7 @@ function world() {
   const req = e('requirement', { id: 'r1', key: 'REQ-1', title: 'Export permission', status: 'approved', betId: 'bet1', sourceIds: ['cfo'] });
   const tc = e('testCase', { id: 'tc1', title: 'Admin exports', storyIds: ['s0'], status: 'fail' });
   const request = e('request', { id: 'rq1', title: 'Monthly export', requesterId: 'cfo', status: 'planned', betId: 'bet1', respondBy: '2026-10-01' });
-  const commitment = e('commitment', { id: 'c1', title: 'Export live for Contoso', toId: 'sales', dueDate: '2026-11-01', betId: 'bet1', status: 'open' });
+  const commitment = e('commitment', { id: 'c1', title: 'Export live for Halcyon Foods', toId: 'sales', dueDate: '2026-11-01', betId: 'bet1', status: 'open' });
   const approval = e('approval', { id: 'ap1', title: 'Approve export spec', status: 'pending', dueDate: '2026-10-20', approvers: [{ stakeholderId: 'me', status: 'pending' }, { stakeholderId: 'cfo', status: 'pending' }] });
   const raci = e('raci', { id: 'raci1', title: 'Export RACI', scopeId: 'bet1', activities: ['Approve scope'], memberIds: ['me', 'cfo', 'sales'], assignments: { 'Approve scope': { me: 'R', cfo: 'A', sales: 'C' } } });
   const decision = e('decision', { id: 'd1', title: 'XLSX only in v1', date: '2026-10-22', deciderIds: ['me'], consultedIds: [], relatedIds: ['bet1'], status: 'decided' });

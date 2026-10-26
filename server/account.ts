@@ -48,6 +48,7 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
       throw new HttpError(401, 'Email or password is not right.');
     }
     clearFailures(key);
+    if (user.demo && !demoEnabled()) throw new HttpError(403, 'Demo accounts are switched off on this server.');
     const first = sys.workspacesOf(user.id)[0];
     setSessionCookie(ctx.req, ctx.res, sys.createSession(user.id, first?.id));
     return { ok: true, workspaceId: first?.id };

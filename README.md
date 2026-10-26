@@ -67,7 +67,7 @@ A practical book for Product Owners and Business Analysts, in Markdown under `bo
 - **Part II: Working in Throughline** (11 chapters): a tour, a first-week setup plan, one chapter per area, teams, connecting AI assistants, and recipes for a real week.
 - **Appendices**: fill-in templates and a glossary.
 
-Every chapter uses the same running example as the IT sample workspace (Northwind's ServiceHub), names the common traps, links to the tools it uses, and ends with interactive check-yourself questions. Reading paths cover new POs and BAs, experienced ones, and people who only want the tool. Progress is saved per person, Home shows a "continue reading" card, and tool guide panels link back to the chapter that teaches the craft behind them. Connected AI assistants can read chapters and quiz you over MCP.
+Every chapter uses the same running example as the IT sample workspace (Ashgrove's ServiceHub), names the common traps, links to the tools it uses, and ends with interactive check-yourself questions. Reading paths cover new POs and BAs, experienced ones, and people who only want the tool. Progress is saved per person, Home shows a "continue reading" card, and tool guide panels link back to the chapter that teaches the craft behind them. Connected AI assistants can read chapters and quiz you over MCP.
 
 ---
 

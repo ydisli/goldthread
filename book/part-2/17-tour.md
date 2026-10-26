@@ -87,7 +87,7 @@ A **workspace** holds one product or programme. You can keep one just for yourse
 
 ## The sample workspace
 
-If you signed in with a demo account, you're in **ServiceHub (demo)**, the Northwind example used throughout this book. Everything Part I describes is in there: the stakeholders, the JML and SSPR bets, the contradictory mailbox requirements, the decision table with gaps, the as-is and to-be onboarding processes, the forecast that doesn't support Daniel's promise. Explore freely; an admin can put it back to its original state from **Settings → Data**.
+If you signed in with a demo account, you're in **ServiceHub (demo)**, the Ashgrove example used throughout this book. Everything Part I describes is in there: the stakeholders, the JML and SSPR bets, the contradictory mailbox requirements, the decision table with gaps, the as-is and to-be onboarding processes, the forecast that doesn't support Daniel's promise. Explore freely; an admin can put it back to its original state from **Settings → Data**.
 
 > [!try]
 > Press **G H** to go Home and look at **Needs you**: each item there is something the graph noticed. Open one, follow a link, then press **⌘K** and search for `mailbox` to find the contradiction from Chapter 8.

@@ -51,7 +51,7 @@ async function call<T>(path: string, init: { method?: string; body?: unknown } =
 const HELP = `${bold('tl')} — Throughline from the terminal
 
 ${bold('Usage')}
-  tl capture "<text>" [--kind evidence|request|interaction|decision] [--account Contoso]
+  tl capture "<text>" [--kind evidence|request|interaction|decision] [--account Halcyon Foods]
                       [--source support|sales-call|interview|…] [--from "Stakeholder name"] [--url URL]
   tl brief [--all]                 Today's brief (high and critical by default)
   tl search "<query>"              Search the whole workspace (supports type:decision, REQ-12)

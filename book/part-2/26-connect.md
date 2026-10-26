@@ -76,7 +76,7 @@ Your assistant only gets what your role allows, and write tools need a token wit
    - **Any client that supports Streamable HTTP** (Cursor, VS Code and others): use the server URL ending in `/mcp` with the Authorization header.
 3. Ask your assistant something simple, such as *"Search ServiceHub for mailbox retention."*
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Jordan keeps Claude open while writing the access request portal spec. After each section, Jordan asks Claude to run `lint_spec` on the draft and to list exceptions the approval routing might miss. Claude suggests the absent-approver case and an approver who is also the requester; Jordan adds both to the decision table. When the weekly steering meeting comes round, Alex asks Claude for the steering pack and a summary of what changed since last week.
 
 > [!trap] Letting the assistant decide

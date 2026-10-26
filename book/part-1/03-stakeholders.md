@@ -25,7 +25,7 @@ The stakeholders you'll forget are not the powerful ones; those find you. They'r
 
 Then ask each stakeholder you find: "Who else should I talk to?" The answers will surprise you.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > When Alex first scoped automated JML, the list had five names: Morgan (sponsor), Priya (engineering), Hannah (HR, because HR events trigger everything), Tomás (service desk) and Dana (security). Following the data added **Elena**, the DPO, because leaver mailboxes contain personal data with retention rules. Following the approvals added **Noah**, who chairs the change advisory board, and **Marcus**, the enterprise architect, who must agree Workday is the source of truth. Following the support path added **Olivia** in warehouse operations, whose shift workers share scanners and would be locked out by any new MFA step. Asking "who will be blamed?" added **Kim Lee** in internal audit, because the SOX audit tests exactly these controls. Five names became sixteen.
 
 ### The groups IT teams forget
@@ -55,7 +55,7 @@ The grid is useful because it forces a choice. You cannot manage sixteen people 
 > [!tip] Rate interest by impact, not enthusiasm
 > A warehouse manager who has never heard of your project but whose staff will be locked out by it has high interest, whether or not they know it yet. Rate how much they will be affected, then make sure they find out from you.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Alex's grid for JML puts Dana (CISO, power 5, interest 5), Priya (engineering lead, 4/5) and Daniel (VP Sales, 5/4) in **manage closely**. Morgan (CIO, 5/3) and Elena (DPO, 4/2) are **keep satisfied**: they need to be confident, not involved in every detail. Tomás, Olivia and Aisha (UX) are **keep informed**: high interest, less formal power, essential for adoption. The vendor account manager sits in **monitor**.
 
 ## Beyond power and interest: salience
@@ -87,7 +87,7 @@ Mapping who people are is half the picture. The other half is where each relatio
 
 For each key stakeholder, record **current** and **desired** engagement. The gaps are your plan.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Daniel is **resistant**. He has been burned by IT timelines before and expects JML to be late. Alex needs him **supportive** by January, not leading. That means showing him a credible forecast and a fallback for the January cohort, not enthusiasm.
 >
 > Dana is **neutral**: she likes automated leaver deprovisioning but distrusts anything that grants access without a human approval. The desired state is **supportive**, which means bringing her into the rules for what counts as birthright access.
@@ -106,7 +106,7 @@ Ask yourself, and ask others:
 - Who do they complain to?
 - Who has credibility with them that you lack?
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Daniel trusts his own operations lead and, it turns out, Hannah in HR, who fixed his team's commission data last year. When Alex shows Hannah the problem statement and the January fallback plan, Hannah mentions it to Daniel in their weekly sync. The next conversation between Alex and Daniel starts from a better place.
 
 ## A profile worth keeping

@@ -7,7 +7,7 @@ summary: Why requests arrive as solutions, how to dig down to the problem undern
 tools: [signals, opportunities, bets]
 ---
 
-Almost nothing arrives on your desk as a problem. It arrives as a solution with a deadline. "We need a chatbot." "Can we buy ServiceNow?" "Sales needs managers to pre-approve access before day one." "Add an export button." Each of these is somebody's answer to a question they haven't told you.
+Almost nothing arrives on your desk as a problem. It arrives as a solution with a deadline. "We need a chatbot." "Can we buy a new ITSM platform?" "Sales needs managers to pre-approve access before day one." "Add an export button." Each of these is somebody's answer to a question they haven't told you.
 
 Your first job, before any requirement or backlog item exists, is to recover that question. Not because the proposed solution is wrong (sometimes it's exactly right) but because you can't judge it, size it, prioritise it or measure it without knowing what it's for.
 
@@ -24,7 +24,7 @@ The trouble is that a solution carries hidden assumptions:
 
 Any of these can be false. When they are, you build the requested thing on time and the problem stays.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Daniel Brooks, VP Sales, asks Alex for a change: "Let hiring managers pre-approve their new reps' access before day one." It's specific, it sounds cheap and Daniel is powerful. Alex could put it straight on the backlog. Instead, Alex asks what happens to a new rep today. The answer: reps start on Monday, get their laptop on Monday afternoon and get CRM access on Wednesday, because the CRM access request waits for the manager, then for the CRM system owner. They can't call a customer until Thursday. **The problem is not "managers can't pre-approve". It's "new reps lose three selling days because access arrives in sequence after they start."** Pre-approval is one possible fix. Automatic access from job code (already part of the JML bet) is another, and it doesn't need managers to remember anything.
 
 ## From request to problem
@@ -66,7 +66,7 @@ This costs [impact: time, money, risk, frequency].
 We know this because [evidence: data, tickets, interviews, observation].
 ```
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > **New hires in Sales** can't start selling in their first week because **laptops and access arrive in sequence after their start date** (laptop on day one afternoon, CRM on day three). **About 40 reps a quarter lose roughly three selling days each,** and the January cohort alone is 120 people. **We know this from** 14 onboarding interviews, access request timestamps (median 46 hours from request to provisioned) and the service desk's day-one ticket volume.
 
 Read that statement and notice what it allows. Engineering can see several possible fixes. Finance can estimate the cost of doing nothing. Daniel can check it matches his experience. And later, Alex can measure whether it got better.
@@ -88,7 +88,7 @@ The most useful distinction in product work is between what you ship and what ch
 - An **outcome** is a change in what people do: employees reset their own passwords; managers approve access in hours, not days; reviewers complete reviews on time.
 - **Impact** is the result the organisation cares about: fewer tickets and less service desk cost; new hires productive on day one; a clean audit.
 
-Outputs are necessary but they are not the goal. You can ship every output on the roadmap, on time, and move no outcome at all. The chatbot Northwind launched last year is the classic case: delivered on schedule, it deflected 4% of tickets instead of the predicted 30%, and satisfaction dropped.
+Outputs are necessary but they are not the goal. You can ship every output on the roadmap, on time, and move no outcome at all. The chatbot Ashgrove launched last year is the classic case: delivered on schedule, it deflected 4% of tickets instead of the predicted 30%, and satisfaction dropped.
 
 When you define work, define it at the outcome level and treat outputs as your current best guess for how to get there:
 
@@ -111,7 +111,7 @@ You'll need to compare problems against each other. A rough size beats no size. 
 
 Multiply and you have a crude cost of the problem.
 
-> [!example] At Northwind
+> [!example] At Ashgrove
 > Password lockouts: about 1,450 tickets a month. Each takes an agent around 8 minutes, and the employee loses around 25 minutes waiting. That's roughly 190 agent hours and 600 employee hours **every month**: about 4.5 full-time equivalents of lost time, before counting the shift workers who miss the start of their shift.
 >
 > Rehires getting a second identity: maybe four cases a year. Each causes a messy clean-up and a small audit risk. Real, but much smaller.
