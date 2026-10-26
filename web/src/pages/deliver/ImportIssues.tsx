@@ -54,7 +54,7 @@ export function ImportIssuesDrawer({ onClose }: { onClose: () => void }) {
           <span className="spacer" />
           <label className="row small"><input type="checkbox" checked={bugs} onChange={(e) => setBugs(e.target.checked)} />Import bugs as defects</label>
         </div>
-        <textarea className="textarea mono" rows={6} value={text} onChange={(e) => { setText(e.target.value); setFileName(''); }} placeholder={'…or paste the CSV here.\nSummary,Issue key,Issue Type,Status,Custom field (Story Points),Sprint'} />
+        <textarea aria-label="CSV" className="textarea mono" rows={6} value={text} onChange={(e) => { setText(e.target.value); setFileName(''); }} placeholder={'…or paste the CSV here.\nSummary,Issue key,Issue Type,Status,Custom field (Story Points),Sprint'} />
         {plan && (
           <>
             <div className="row-wrap">

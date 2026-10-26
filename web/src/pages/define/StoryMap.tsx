@@ -3,7 +3,7 @@ import type { Entity } from '../../../../core/schema.ts';
 import { invest, readiness, splitHints, validateGherkin } from '../../../../core/engines/hygiene.ts';
 import { createEntity, updateEntity, useEntity, useGraph } from '../../store.ts';
 import { Link, navigate } from '../../router.tsx';
-import { Badge, Card, PageHead, StatusBadge, errorToast } from '../../ui/kit.tsx';
+import { activate, Badge, Card, PageHead, StatusBadge, errorToast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { EntityPage, EntityTable } from '../../entity/views.tsx';
 import { RefChip } from '../../entity/fields.tsx';
@@ -52,7 +52,7 @@ export function StoryMapPage({ id }: { id: string }) {
   const addSlice = () => { const n = prompt('Release slice name'); if (n) save({ slices: [...slices, { id: `sl${Date.now().toString(36)}`, name: n }] }); };
   const cols = `repeat(${steps.length}, minmax(170px, 1fr))`;
   const Tile = ({ s }: { s: Entity }) => (
-    <div className="tile" draggable onDragStart={() => setDrag(s.id)} onDragEnd={() => setDrag(null)} onClick={() => navigate(hrefOf(s))} style={{ borderLeft: `3px solid ${STATUS_COLOR[s.status] ?? 'var(--border)'}`, padding: '6px 8px' }}>
+    <div className="tile" draggable onDragStart={() => setDrag(s.id)} onDragEnd={() => setDrag(null)} {...activate(() => navigate(hrefOf(s)))} style={{ borderLeft: `3px solid ${STATUS_COLOR[s.status] ?? 'var(--border)'}`, padding: '6px 8px' }}>
       <div className="small">{s.key && <span className="key">{s.key} </span>}{s.title}</div>
       <div className="row tiny muted mt8" style={{ gap: 6 }}>{s.status}{s.estimate ? ` · ${s.estimate} pts` : ''}{s.externalKey && <span className="key">{s.externalKey}</span>}</div>
     </div>
@@ -85,7 +85,7 @@ export function StoryMapPage({ id }: { id: string }) {
                   onDrop={(e) => { e.preventDefault(); setOver(null); if (drag) void moveTo(drag, st.id, sl.id); }}>
                   {cell.map((s) => <Tile key={s.id} s={s} />)}
                   {adding === key ? (
-                    <input className="input input-sm" autoFocus value={draft} placeholder="Story title, Enter" onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') void add(st.id, sl.id); if (e.key === 'Escape') setAdding(null); }} onBlur={() => void add(st.id, sl.id).then(() => setAdding(null))} />
+                    <input aria-label="Story title" className="input input-sm" autoFocus value={draft} placeholder="Story title, Enter" onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') void add(st.id, sl.id); if (e.key === 'Escape') setAdding(null); }} onBlur={() => void add(st.id, sl.id).then(() => setAdding(null))} />
                   ) : <button className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start' }} onClick={() => { setAdding(key); setDraft(''); }}><Icon name="plus" size={12} /></button>}
                 </div>
               );

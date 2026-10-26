@@ -113,12 +113,12 @@ export function DecisionTablePage({ id }: { id: string }) {
                     <td className="key">{r.id}{overlapping && <Icon name="circle-alert" size={12} className="err" />}</td>
                     {conditions.map((c) => (
                       <td key={c.name}>
-                        <select className="select input-sm" value={r.when[c.name] ?? '-'} onChange={(e) => setRule(i, 'when', c.name, e.target.value)}>
+                        <select aria-label={`Rule ${i + 1}: ${c.name}`} className="select input-sm" value={r.when[c.name] ?? '-'} onChange={(e) => setRule(i, 'when', c.name, e.target.value)}>
                           <option value="-">– (any)</option>{c.values.map((v) => <option key={v} value={v}>{v}</option>)}
                         </select>
                       </td>
                     ))}
-                    {actions.map((a) => <td key={a.name}><input className="input input-sm" defaultValue={r.then[a.name] ?? ''} onBlur={(e) => e.target.value !== (r.then[a.name] ?? '') && setRule(i, 'then', a.name, e.target.value)} /></td>)}
+                    {actions.map((a) => <td key={a.name}><input aria-label={`Rule ${i + 1}: ${a.name}`} className="input input-sm" defaultValue={r.then[a.name] ?? ''} onBlur={(e) => e.target.value !== (r.then[a.name] ?? '') && setRule(i, 'then', a.name, e.target.value)} /></td>)}
                     <td className="tight"><button className="btn btn-ghost btn-sm btn-icon" onClick={() => save({ rules: rules.filter((_, k) => k !== i) })}><Icon name="trash-2" size={13} /></button></td>
                   </tr>
                 );
@@ -201,10 +201,10 @@ export function StateModelPage({ id }: { id: string }) {
           <tbody>
             {transitions.map((t, i) => <tr key={i}><td>{t.from}</td><td>{t.to}</td><td>{t.trigger}</td><td className="muted">{t.guard ?? '—'}</td><td className="tight"><button className="btn btn-ghost btn-sm btn-icon" onClick={() => save({ transitions: transitions.filter((_, k) => k !== i) })}><Icon name="trash-2" size={12} /></button></td></tr>)}
             <tr>
-              <td><select className="select input-sm" value={tr.from} onChange={(e) => setTr({ ...tr, from: e.target.value })}><option value="">from…</option>{states.map((s) => <option key={s}>{s}</option>)}</select></td>
-              <td><select className="select input-sm" value={tr.to} onChange={(e) => setTr({ ...tr, to: e.target.value })}><option value="">to…</option>{states.map((s) => <option key={s}>{s}</option>)}</select></td>
-              <td><input className="input input-sm" placeholder="trigger" value={tr.trigger} onChange={(e) => setTr({ ...tr, trigger: e.target.value })} /></td>
-              <td><input className="input input-sm" placeholder="guard (optional)" value={tr.guard ?? ''} onChange={(e) => setTr({ ...tr, guard: e.target.value || undefined })} /></td>
+              <td><select aria-label="From state" className="select input-sm" value={tr.from} onChange={(e) => setTr({ ...tr, from: e.target.value })}><option value="">from…</option>{states.map((s) => <option key={s}>{s}</option>)}</select></td>
+              <td><select aria-label="To state" className="select input-sm" value={tr.to} onChange={(e) => setTr({ ...tr, to: e.target.value })}><option value="">to…</option>{states.map((s) => <option key={s}>{s}</option>)}</select></td>
+              <td><input aria-label="Trigger" className="input input-sm" placeholder="trigger" value={tr.trigger} onChange={(e) => setTr({ ...tr, trigger: e.target.value })} /></td>
+              <td><input aria-label="Guard" className="input input-sm" placeholder="guard (optional)" value={tr.guard ?? ''} onChange={(e) => setTr({ ...tr, guard: e.target.value || undefined })} /></td>
               <td className="tight"><button className="btn btn-sm" disabled={!tr.from || !tr.to || !tr.trigger} onClick={() => { save({ transitions: [...transitions, tr] }); setTr({ from: '', to: '', trigger: '' }); }}>Add</button></td>
             </tr>
           </tbody>

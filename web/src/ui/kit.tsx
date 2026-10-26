@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from './icons.tsx';
 import { avatarColor, humanize, initials, toneOf, type Tone } from './format.ts';
@@ -78,18 +78,52 @@ export function Markdown({ text, className }: { text: string | undefined; classN
   return <div className={`md ${className ?? ''}`} dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }} />;
 }
 
+/**
+ * Dialog focus: move focus inside when it opens (unless a field already took it), keep Tab
+ * inside while it is open, and give focus back to whatever opened it when it closes.
+ */
+function useDialogFocus(ref: { current: HTMLElement | null }) {
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    const box = ref.current;
+    const focusable = () => [...(box?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])') ?? [])].filter((el) => el.offsetParent !== null);
+    const id = requestAnimationFrame(() => {
+      if (!box || box.contains(document.activeElement)) return;
+      const els = focusable();
+      (els.find((el) => el.matches('input, select, textarea')) ?? els[0] ?? box).focus();
+    });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !box) return;
+      const els = focusable();
+      if (!els.length) return;
+      const first = els[0], last = els[els.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !box.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      cancelAnimationFrame(id);
+      document.removeEventListener('keydown', onKey);
+      if (opener?.isConnected) opener.focus({ preventScroll: true });
+    };
+  }, [ref]);
+}
+
 export function Drawer({ title, onClose, children, footer, width }: { title: ReactNode; onClose: () => void; children: ReactNode; footer?: ReactNode; width?: number }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
+  const titleId = useId();
+  const box = useRef<HTMLElement>(null);
+  useDialogFocus(box);
   return createPortal(
     <>
       <div className="scrim" onClick={onClose} />
-      <aside className="drawer" role="dialog" aria-modal="true" style={width ? { width: `min(${width}px, 100vw)` } : undefined}>
+      <aside ref={box} tabIndex={-1} className="drawer" role="dialog" aria-modal="true" aria-labelledby={titleId} style={width ? { width: `min(${width}px, 100vw)` } : undefined}>
         <div className="drawer-head">
-          <h2>{title}</h2>
+          <h2 id={titleId}>{title}</h2>
           <button className="btn btn-ghost btn-icon" onClick={onClose} aria-label="Close"><Icon name="x" /></button>
         </div>
         <div className="drawer-body">{children}</div>
@@ -106,13 +140,26 @@ export function Modal({ onClose, children, label }: { onClose: () => void; child
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
+  const box = useRef<HTMLDivElement>(null);
+  useDialogFocus(box);
   return createPortal(
     <>
       <div className="scrim" onClick={onClose} />
-      <div className="modal" role="dialog" aria-modal="true" aria-label={label}>{children}</div>
+      <div ref={box} tabIndex={-1} className="modal" role="dialog" aria-modal="true" aria-label={label}>{children}</div>
     </>,
     document.body,
   );
+}
+
+/**
+ * Props that let a tile, row or shape open something by keyboard (Enter) as well as by mouse.
+ * Rows keep their table role; everything else is announced as a link.
+ */
+export function activate(run: () => void, role: 'link' | null = 'link') {
+  return {
+    ...(role ? { role } : {}), tabIndex: 0, onClick: run,
+    onKeyDown: (e: { key: string; target: unknown; currentTarget: unknown; preventDefault: () => void }) => { if (e.key === 'Enter' && e.target === e.currentTarget) { e.preventDefault(); run(); } },
+  };
 }
 
 // ---------------- toasts ----------------

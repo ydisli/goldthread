@@ -3,7 +3,7 @@ import { daysBetween } from '../../../../core/util.ts';
 import { nameOf } from '../../../../core/schema.ts';
 import { now, useGraph } from '../../store.ts';
 import { Link, navigate } from '../../router.tsx';
-import { Badge, Card, Empty, PageHead, Stat, StatusBadge } from '../../ui/kit.tsx';
+import { activate, Badge, Card, Empty, PageHead, Stat, StatusBadge } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { CalibrationChart } from '../../ui/charts.tsx';
 import { fmtDate, humanize, relDays } from '../../ui/format.ts';
@@ -55,7 +55,7 @@ export function LedgerPage() {
         <div className="table-wrap"><table className="table">
           <thead><tr><th>Bet</th><th>Confidence</th><th>Predicted</th><th>Actual</th><th>Result</th></tr></thead>
           <tbody>{measured.map((b) => (
-            <tr key={b.id} className="clickable" onClick={() => navigate(hrefOf(b))}>
+            <tr key={b.id} className="clickable" {...activate(() => navigate(hrefOf(b)), null)}>
               <td className="strong">{b.title}</td><td className="num">{b.confidence}%</td><td>{b.predictedChange ?? '—'}</td><td className="small">{b.actualResult ?? '—'}</td><td><StatusBadge value={b.result} /></td>
             </tr>
           ))}</tbody>

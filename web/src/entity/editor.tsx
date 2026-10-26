@@ -166,8 +166,8 @@ function EntityForm({ req, onClose }: { req: EditorRequest; onClose: () => void 
           const wide = ['longtext', 'markdown', 'refs', 'tags', 'scale'].includes(f.kind) || f.key === def.titleField || (f.kind === 'ref' && f.ref === '*');
           return (
             <div key={f.key} className={`field ${wide ? 'full' : ''}`}>
-              {f.kind !== 'bool' && <label>{f.label}{f.required && <span className="muted"> *</span>}</label>}
-              <FieldInput f={f} value={data[f.key]} onChange={(v) => set(f.key, v)} entityId={existing?.id} />
+              {f.kind !== 'bool' && <label htmlFor={`f-${f.key}`}>{f.label}{f.required && <span className="muted"> *</span>}</label>}
+              <FieldInput id={`f-${f.key}`} f={f} value={data[f.key]} onChange={(v) => set(f.key, v)} entityId={existing?.id} />
               {f.help && <span className="help">{f.help}</span>}
             </div>
           );

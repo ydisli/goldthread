@@ -13,7 +13,7 @@
   --border-strong: #d6d3cb;
   --text: #1c1b18;
   --text-2: #55534d;
-  --text-3: #8a877f;
+  --text-3: #6b6860;
 
   /* Ink for primary actions; one accent for focus, links and "you are here". */
   --ink: #1c1b18;
@@ -52,7 +52,7 @@
     color-scheme: dark;
     --bg: #121211; --surface: #1a1a18; --surface-2: #20201e; --surface-3: #292927;
     --border: #2c2c29; --border-strong: #3d3d39;
-    --text: #edece8; --text-2: #b9b7b0; --text-3: #8b8982;
+    --text: #edece8; --text-2: #b9b7b0; --text-3: #9a978f;
     --ink: #edece8; --on-ink: #151514;
     --accent: #4fbf9b; --accent-hover: #6bcfae; --accent-soft: #17302a; --accent-text: #7fd6b9; --on-accent: #0e1512;
     --red: #ee8a73; --red-soft: #2e1a15; --amber: #e5b15a; --amber-soft: #2c2312; --green: #69c792; --green-soft: #142a1e;
@@ -67,7 +67,7 @@
   color-scheme: dark;
   --bg: #121211; --surface: #1a1a18; --surface-2: #20201e; --surface-3: #292927;
   --border: #2c2c29; --border-strong: #3d3d39;
-  --text: #edece8; --text-2: #b9b7b0; --text-3: #8b8982;
+  --text: #edece8; --text-2: #b9b7b0; --text-3: #9a978f;
   --ink: #edece8; --on-ink: #151514;
   --accent: #4fbf9b; --accent-hover: #6bcfae; --accent-soft: #17302a; --accent-text: #7fd6b9; --on-accent: #0e1512;
   --red: #ee8a73; --red-soft: #2e1a15; --amber: #e5b15a; --amber-soft: #2c2312; --green: #69c792; --green-soft: #142a1e;
@@ -713,3 +713,8 @@ a.list-item:hover { background: var(--surface-2); text-decoration: none; }
 .custom-type { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
 .custom-type-head { display: grid; grid-template-columns: 18px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 150px) auto auto; gap: 8px; align-items: center; }
 @media (max-width: 720px) { .custom-field { grid-template-columns: 1fr 1fr; } .custom-field > :nth-child(3) { grid-column: 1 / -1; } .custom-type-head { grid-template-columns: 18px 1fr auto; } }
+
+/* Keyboard: skip straight to the page, and no ring on headings focused for screen readers */
+.skip-link { position: fixed; left: 12px; top: -48px; z-index: 1000; padding: 8px 14px; border-radius: 8px; background: var(--accent); color: var(--on-accent, #fff); border: 0; font-weight: 600; }
+.skip-link:focus { top: 12px; }
+main:focus, main h1[tabindex="-1"]:focus, .drawer:focus, .modal:focus { outline: none; }

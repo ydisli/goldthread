@@ -45,7 +45,7 @@ export function RequirementsPage() {
       {tab === 'all' && (
         <Card flush>
           <div className="row" style={{ padding: '10px 12px 0' }}>
-            <select className="select input-sm" style={{ width: 'auto' }} value={specFilter} onChange={(e) => setSpecFilter(e.target.value)}>
+            <select aria-label="Filter by spec" className="select input-sm" style={{ width: 'auto' }} value={specFilter} onChange={(e) => setSpecFilter(e.target.value)}>
               <option value="">All specs</option>{g.all('spec').map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
             </select>
           </div>
@@ -105,7 +105,7 @@ function BaselinesList() {
       <Card className="mb16">
         <div className="row-wrap">
           <span className="small">Capture a baseline of the current requirements for</span>
-          <select className="select input-sm" style={{ width: 'auto' }} value={spec} onChange={(e) => setSpec(e.target.value)}>{g.all('spec').map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}</select>
+          <select aria-label="Spec" className="select input-sm" style={{ width: 'auto' }} value={spec} onChange={(e) => setSpec(e.target.value)}>{g.all('spec').map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}</select>
           <button className="btn btn-sm btn-primary" onClick={create}>Capture baseline</button>
         </div>
       </Card>

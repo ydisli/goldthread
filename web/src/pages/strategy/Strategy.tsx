@@ -4,7 +4,7 @@ import { evaluateBusinessCase, cd3 } from '../../../../core/engines/finance.ts';
 import { daysBetween } from '../../../../core/util.ts';
 import { now, updateEntity, updateSettings, useEntity, useGraph, useSettings } from '../../store.ts';
 import { Link, navigate } from '../../router.tsx';
-import { Badge, Card, Empty, Meter, PageHead, Stat, StatusBadge, Tabs, errorToast } from '../../ui/kit.tsx';
+import { activate, Badge, Card, Empty, Meter, PageHead, Stat, StatusBadge, Tabs, errorToast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { HBars, Legend, LineChart, StackBar } from '../../ui/charts.tsx';
 import { humanize, money } from '../../ui/format.ts';
@@ -138,7 +138,7 @@ export function BusinessCasesPage() {
                 const bet = g.get(bc.betId);
                 const cd = cd3(Number(bc.costOfDelayPerWeek), Number(bet?.effort));
                 return (
-                  <tr key={bc.id} className="clickable" onClick={() => navigate(hrefOf(bc))}>
+                  <tr key={bc.id} className="clickable" {...activate(() => navigate(hrefOf(bc)), null)}>
                     <td className="strong">{bc.title}</td>
                     <td>{bet ? <RefChip e={bet} /> : '—'}</td>
                     <td className="num strong" style={{ color: r.npv < 0 ? 'var(--red)' : undefined }}>{money(r.npv)}</td>

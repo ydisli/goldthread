@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import { createEntity, updateEntity, useCan, useGraph, useMe, useStore, type Member } from '../store.ts';
 import { Avatar, Card, errorToast } from '../ui/kit.tsx';
 import { fmtDateTime } from '../ui/format.ts';
@@ -51,14 +52,15 @@ export function Comments({ entityId }: { entityId: string }) {
     if (!query) return;
     const caret = query.at + query.text.length + 1;
     const next = `${body.slice(0, query.at)}@${m.name} ${body.slice(caret)}`;
-    setBody(next);
-    setPicked((p) => (p.some((x) => x.userId === m.userId) ? p : [...p, m]));
-    setQuery(null);
-    requestAnimationFrame(() => {
-      const pos = query.at + m.name.length + 2;
-      area.current?.focus();
-      area.current?.setSelectionRange(pos, pos);
+    // Commit the text now and put the caret after the name, so whatever is typed next lands there.
+    flushSync(() => {
+      setBody(next);
+      setPicked((p) => (p.some((x) => x.userId === m.userId) ? p : [...p, m]));
+      setQuery(null);
     });
+    const pos = query.at + m.name.length + 2;
+    area.current?.focus();
+    area.current?.setSelectionRange(pos, pos);
   };
 
   const add = async () => {
@@ -89,6 +91,7 @@ export function Comments({ entityId }: { entityId: string }) {
           <div className="grow" style={{ position: 'relative' }}>
             <textarea
               ref={area}
+              aria-label="Add a comment"
               className="textarea"
               rows={2}
               style={{ minHeight: 44 }}

@@ -100,7 +100,7 @@ export function MeetingPage({ id }: { id: string }) {
                 toast(`Imported ${t.split('\n').length} lines from ${f.name}. Check what was extracted below.`);
               } catch (err) { errorToast(err); }
             }} /></label>}>
-            <textarea className="textarea" rows={12} value={notes} onChange={(e) => onNotes(e.target.value)} placeholder="- Decision: …&#10;- Action: @maya to … by Friday&#10;- Risk: …" />
+            <textarea aria-label="Meeting notes" className="textarea" rows={12} value={notes} onChange={(e) => onNotes(e.target.value)} placeholder="- Decision: …&#10;- Action: @maya to … by Friday&#10;- Risk: …" />
           </Card>
           <ExtractPanel e={{ ...m, notes }} field="notes" />
           <Card title={`Action items · ${actions.filter((a) => !a.done).length} open`} icon="circle-check" flush>
@@ -114,7 +114,7 @@ export function MeetingPage({ id }: { id: string }) {
                   <button className="btn btn-ghost btn-sm btn-icon" onClick={() => saveActions(actions.filter((x) => x.id !== a.id))}><Icon name="x" size={12} /></button>
                 </div>
               ))}
-              <div className="list-item"><input className="input input-sm" placeholder="Add an action item, Enter" value={newAction} onChange={(e) => setNewAction(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && newAction.trim()) { saveActions([...actions, { id: `a${Date.now().toString(36)}`, text: newAction.trim(), done: false, ownerId: g.me?.id }]); setNewAction(''); } }} /></div>
+              <div className="list-item"><input aria-label="Add an action item" className="input input-sm" placeholder="Add an action item, Enter" value={newAction} onChange={(e) => setNewAction(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && newAction.trim()) { saveActions([...actions, { id: `a${Date.now().toString(36)}`, text: newAction.trim(), done: false, ownerId: g.me?.id }]); setNewAction(''); } }} /></div>
             </div>
           </Card>
         </div>
@@ -163,7 +163,7 @@ export function DocsPage() {
             <Card title="Subject" icon="target">
               <EntityPicker targets={info.subject} value={subjectId ? [subjectId] : []} onChange={(ids) => setQuery({ subject: ids[0] })} single />
               {kind === 'stakeholder-update' && (
-                <div className="mt12"><div className="label mb8">Audience</div><select className="select" value={audience} onChange={(e) => setQuery({ audience: e.target.value })}>{(Object.keys(AUDIENCES) as Audience[]).map((a) => <option key={a} value={a}>{AUDIENCES[a]}</option>)}</select></div>
+                <div className="mt12"><div className="label mb8">Audience</div><select aria-label="Audience" className="select" value={audience} onChange={(e) => setQuery({ audience: e.target.value })}>{(Object.keys(AUDIENCES) as Audience[]).map((a) => <option key={a} value={a}>{AUDIENCES[a]}</option>)}</select></div>
               )}
             </Card>
           )}
@@ -215,7 +215,7 @@ export function AskPage() {
     <div className="page">
       <PageHead title="Ask Throughline" sub="Search everything — decisions, evidence, requirements, people. Every answer links to its source." />
       <form className="row mb16" onSubmit={(e) => { e.preventDefault(); setQuery({ q: draft.trim() || undefined }); }}>
-        <input className="input" style={{ fontSize: 15, minHeight: 42 }} autoFocus placeholder="Ask a question or search… (type:decision, REQ-12 …)" value={draft} onChange={(e) => setDraft(e.target.value)} />
+        <input aria-label="Ask a question or search" className="input" style={{ fontSize: 15, minHeight: 42 }} autoFocus placeholder="Ask a question or search… (type:decision, REQ-12 …)" value={draft} onChange={(e) => setDraft(e.target.value)} />
         <button className="btn btn-primary" style={{ height: 42 }}>Search</button>
       </form>
       {!q && <div className="row-wrap">{SUGGESTIONS.map((x) => <button key={x} className="btn btn-sm" onClick={() => setQuery({ q: x })}>{x}</button>)}</div>}

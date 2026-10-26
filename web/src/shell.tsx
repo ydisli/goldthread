@@ -129,7 +129,7 @@ function WorkspaceSwitcher({ onNavigate }: { onNavigate: () => void }) {
   return (
     <>
       <Dropdown width={260} trigger={(toggle) => (
-        <button className="ws-switch" onClick={toggle} aria-label="Switch workspace">
+        <button className="ws-switch" onClick={toggle} title="Switch workspace" aria-haspopup="menu">
           <span className="ws-mark">{(cur?.name ?? 'T').trim()[0]?.toUpperCase()}</span>
           <span style={{ minWidth: 0, flex: 1 }}>
             <div className="ws-name">{cur?.name ?? 'Throughline'}</div>
@@ -188,7 +188,7 @@ export function NewWorkspaceModal({ onClose }: { onClose: () => void }) {
           <h2>New workspace</h2>
           <div className="small muted">A workspace holds one product or programme. Invite your team to it, or keep it to yourself.</div>
         </div>
-        <div className="field"><label>Name</label><input className="input" autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Identity & Access, Data Platform" /></div>
+        <div className="field"><label>Name</label><input aria-label="Team name" className="input" autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Identity & Access, Data Platform" /></div>
         <div className="field"><label>Who is it for?</label><Seg options={[{ id: 'team', label: 'My team' }, { id: 'personal', label: 'Just me' }]} value={kind} onChange={setKind} /></div>
         <div className="field">
           <label>Start with</label>
@@ -208,7 +208,7 @@ function UserMenu({ onNavigate }: { onNavigate: () => void }) {
   const go = (to: string, close: () => void) => { close(); onNavigate(); navigate(to); };
   return (
     <Dropdown up width={250} trigger={(toggle) => (
-      <button className="user-chip" onClick={toggle} aria-label="Account menu">
+      <button className="user-chip" onClick={toggle} title="Account menu" aria-haspopup="menu">
         <Avatar name={me.name} size="sm" />
         <span style={{ minWidth: 0, flex: 1 }}>
           <div className="ellipsis" style={{ fontWeight: 560, fontSize: 13 }}>{me.name}</div>
@@ -303,7 +303,7 @@ export function CommandPalette() {
   let lastGroup = '';
   return (
     <Modal onClose={() => setOpen(false)} label="Command palette">
-      <input
+      <input aria-label="Search or jump to"
         className="palette-input" autoFocus placeholder="Search everything, jump to a page, create…" value={q}
         onChange={(e) => { setQ(e.target.value); setHl(0); }}
         onKeyDown={(e) => {
@@ -402,7 +402,7 @@ export function QuickCapture() {
           ))}
         </div>
         <div className="small muted">{k.hint}</div>
-        <textarea className="textarea" autoFocus rows={4} value={text} onChange={(e) => setText(e.target.value)} placeholder="First line becomes the title…" onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) void save(); }} />
+        <textarea className="textarea" aria-label="What to capture" autoFocus rows={4} value={text} onChange={(e) => setText(e.target.value)} placeholder="First line becomes the title…" onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) void save(); }} />
         <div className="form-grid">
           <div className="field">
             <label>{kind === 'interaction' ? 'With' : kind === 'request' ? 'Requested by' : kind === 'decision' ? 'Decided by' : kind === 'raid' ? 'Owner' : 'Relayed by'}</label>
@@ -411,18 +411,18 @@ export function QuickCapture() {
           {kind === 'evidence' && (
             <>
               <div className="field">
-                <label>Source</label>
-                <select className="select" value={source} onChange={(e) => setSource(e.target.value)}>
+                <label htmlFor="cap-source">Source</label>
+                <select id="cap-source" className="select" value={source} onChange={(e) => setSource(e.target.value)}>
                   {ENTITY_MAP.evidence.fields.find((f) => f.key === 'source')!.options!.map((o) => <option key={o} value={o}>{o.replace('-', ' ')}</option>)}
                 </select>
               </div>
-              <div className="field"><label>Account</label><input className="input" value={account} onChange={(e) => setAccount(e.target.value)} placeholder="e.g. Halcyon Foods" /></div>
+              <div className="field"><label htmlFor="cap-account">Account</label><input id="cap-account" className="input" value={account} onChange={(e) => setAccount(e.target.value)} placeholder="e.g. Halcyon Foods" /></div>
             </>
           )}
           {kind === 'interaction' && (
             <div className="field">
               <label>How did it go?</label>
-              <div className="scale">{[-2, -1, 0, 1, 2].map((v) => <button key={v} className={sentiment === v ? 'on' : ''} onClick={() => setSentiment(v)}>{v > 0 ? `+${v}` : v}</button>)}</div>
+              <div className="scale" role="group" aria-label="How did it go?">{[-2, -1, 0, 1, 2].map((v) => <button key={v} aria-pressed={sentiment === v} className={sentiment === v ? 'on' : ''} onClick={() => setSentiment(v)}>{v > 0 ? `+${v}` : v}</button>)}</div>
             </div>
           )}
         </div>

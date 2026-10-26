@@ -63,7 +63,8 @@ export function toneOf(value: unknown): Tone {
 
 /** Deterministic avatar color for a person. */
 export function avatarColor(seed: string): string {
-  const palette = ['#2a78d6', '#d95926', '#199e70', '#c98500', '#d55181', '#008300', '#6250d6', '#e34948'];
+  // White initials on each of these meet WCAG AA (4.5:1).
+  const palette = ['#2874d0', '#c35022', '#15845d', '#a06a00', '#d03a71', '#008300', '#6250d6', '#df2c2b'];
   let h = 0;
   for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return palette[h % palette.length];

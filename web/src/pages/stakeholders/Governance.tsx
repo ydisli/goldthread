@@ -135,7 +135,7 @@ export function RaciPage({ id }: { id: string }) {
                 <tr>
                   <td colSpan={members.length + 1}>
                     <div className="row">
-                      <input className="input input-sm" placeholder="Add an activity…" value={newAct} onChange={(e) => setNewAct(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addActivity()} style={{ maxWidth: 320 }} />
+                      <input aria-label="Add an activity" className="input input-sm" placeholder="Add an activity…" value={newAct} onChange={(e) => setNewAct(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addActivity()} style={{ maxWidth: 320 }} />
                       <button className="btn btn-sm" onClick={addActivity}>Add</button>
                     </div>
                   </td>
@@ -261,10 +261,10 @@ function NewApprovalButton() {
   };
   return (
     <div className="card pad col" style={{ width: '100%', maxWidth: 560 }}>
-      <input className="input" placeholder="What needs approval?" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
+      <input aria-label="What needs approval?" className="input" placeholder="What needs approval?" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
       <EntityPicker targets="*" value={subject} onChange={setSubject} single placeholder="Subject (spec, baseline, release…)" />
       <EntityPicker targets={['stakeholder']} value={who} onChange={setWho} placeholder="Approvers…" />
-      <div className="row"><input className="input" type="date" value={due} onChange={(e) => setDue(e.target.value)} style={{ maxWidth: 180 }} /><span className="spacer" /><button className="btn" onClick={() => setOpen(false)}>Cancel</button><button className="btn btn-primary" disabled={!title || !who.length} onClick={create}>Request</button></div>
+      <div className="row"><input aria-label="Due date" className="input" type="date" value={due} onChange={(e) => setDue(e.target.value)} style={{ maxWidth: 180 }} /><span className="spacer" /><button className="btn" onClick={() => setOpen(false)}>Cancel</button><button className="btn btn-primary" disabled={!title || !who.length} onClick={create}>Request</button></div>
     </div>
   );
 }

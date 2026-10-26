@@ -75,8 +75,8 @@ function ProfileTab() {
   return (
     <div className="stack">
       <Card title="You">
-        <Row label="Name" help="Shown on everything you change, and on your stakeholder record in each workspace."><input className="input" value={name} onChange={(e) => setName(e.target.value)} /></Row>
-        <Row label="Role or title"><input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Product Owner, Identity & Access" /></Row>
+        <Row label="Name" help="Shown on everything you change, and on your stakeholder record in each workspace."><input aria-label="Your name" className="input" value={name} onChange={(e) => setName(e.target.value)} /></Row>
+        <Row label="Role or title"><input aria-label="Your title" className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Product Owner, Identity & Access" /></Row>
         <Row label="Email"><span className="muted">{me.email}</span></Row>
         <div className="row mt12"><span className="spacer" /><button className="btn btn-primary" onClick={saveProfile} disabled={!name.trim()}>Save profile</button></div>
       </Card>
@@ -92,8 +92,8 @@ function ProfileTab() {
       <Card title="Password">
         {me.demo ? <div className="small muted">Demo accounts share a password and are reset with the demo — create your own account to keep your work.</div> : (
           <>
-            <Row label="Current password"><input className="input" type="password" autoComplete="current-password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} /></Row>
-            <Row label="New password" help="At least 10 characters. Signs out your other devices."><input className="input" type="password" autoComplete="new-password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} /></Row>
+            <Row label="Current password"><input aria-label="Current password" className="input" type="password" autoComplete="current-password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} /></Row>
+            <Row label="New password" help="At least 10 characters. Signs out your other devices."><input aria-label="New password" className="input" type="password" autoComplete="new-password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} /></Row>
             <div className="row mt12"><span className="spacer" /><button className="btn" onClick={changePassword} disabled={!pw.current || pw.next.length < 10}>Change password</button></div>
           </>
         )}
@@ -191,9 +191,9 @@ function WorkspaceTab() {
   return (
     <div className="stack">
       <Card title="This workspace">
-        <Row label="Name"><input className="input" value={name} disabled={!isAdmin} onChange={(e) => setName(e.target.value)} /></Row>
-        <Row label="Product or programme" help="Used in generated documents and the daily brief."><input className="input" value={product} disabled={!isAdmin} onChange={(e) => setProduct(e.target.value)} /></Row>
-        <Row label="Currency symbol"><input className="input" style={{ maxWidth: 90 }} value={currency} disabled={!isAdmin} onChange={(e) => setCurrency(e.target.value)} /></Row>
+        <Row label="Name"><input aria-label="Workspace name" className="input" value={name} disabled={!isAdmin} onChange={(e) => setName(e.target.value)} /></Row>
+        <Row label="Product or programme" help="Used in generated documents and the daily brief."><input aria-label="Product or programme" className="input" value={product} disabled={!isAdmin} onChange={(e) => setProduct(e.target.value)} /></Row>
+        <Row label="Currency symbol"><input aria-label="Currency symbol" className="input" style={{ maxWidth: 90 }} value={currency} disabled={!isAdmin} onChange={(e) => setCurrency(e.target.value)} /></Row>
         <Row label="Your access"><span>{cur?.role}{cur?.demo ? ' · demo workspace' : ''}{cur?.kind === 'personal' ? ' · personal' : ' · team'}</span></Row>
         {isAdmin ? <div className="row mt12"><span className="spacer" /><button className="btn btn-primary" onClick={save}>Save</button></div> : <div className="small muted mt12">Only admins and owners can change workspace settings.</div>}
       </Card>
@@ -322,7 +322,7 @@ function MembersTab() {
         {link && (
           <div className="invite-link mt12">
             <div className="small"><b>Invite for {link.email}</b>{link.emailed ? ' — emailed to them. The link is here too, in case it lands in spam.' : ' — copy it now; for security it isn\'t shown again.'}</div>
-            <div className="row mt8"><input className="input mono" readOnly value={link.url} onFocus={(e) => e.target.select()} /><button className="btn" onClick={() => copyText(link.url, 'Invite link copied')}><Icon name="copy" size={14} />Copy</button></div>
+            <div className="row mt8"><input aria-label="Invite link" className="input mono" readOnly value={link.url} onFocus={(e) => e.target.select()} /><button className="btn" onClick={() => copyText(link.url, 'Invite link copied')}><Icon name="copy" size={14} />Copy</button></div>
           </div>
         )}
       </Card>
@@ -484,7 +484,7 @@ function ConnectTab() {
         {fresh && (
           <div className="invite-link mt12">
             <div className="small"><b>Copy your token now</b> — it's shown once. The snippets below already include it.</div>
-            <div className="row mt8"><input className="input mono" readOnly value={fresh} onFocus={(e) => e.target.select()} /><button className="btn" onClick={() => copyText(fresh, 'Token copied')}><Icon name="copy" size={14} />Copy</button></div>
+            <div className="row mt8"><input aria-label="New token" className="input mono" readOnly value={fresh} onFocus={(e) => e.target.select()} /><button className="btn" onClick={() => copyText(fresh, 'Token copied')}><Icon name="copy" size={14} />Copy</button></div>
           </div>
         )}
         {tokens.length > 0 && (
@@ -580,18 +580,18 @@ function AiTab() {
           </Row>
           {cfg.provider === 'openai-compatible' && (
             <Row label="Endpoint" help="Any server with an OpenAI-style /chat/completions API: OpenAI, Azure, OpenRouter, Mistral, Groq, or a local Ollama / LM Studio / vLLM.">
-              <input className="input mono" value={cfg.baseUrl} onChange={(e) => setCfg({ ...cfg, baseUrl: e.target.value })} placeholder="https://api.openai.com/v1" />
+              <input aria-label="Base URL" className="input mono" value={cfg.baseUrl} onChange={(e) => setCfg({ ...cfg, baseUrl: e.target.value })} placeholder="https://api.openai.com/v1" />
               <div className="row-wrap mt8">{PRESETS.map((p) => <button key={p.label} className="btn btn-sm btn-ghost" onClick={() => setCfg({ ...cfg, baseUrl: p.baseUrl, model: p.model || cfg.model })}>{p.label}</button>)}</div>
             </Row>
           )}
           {cfg.provider !== 'none' && (
             <>
               <Row label="Model" help={cfg.provider === 'anthropic' ? 'Leave empty for the default (claude-opus-5-5).' : 'The model name your endpoint expects, e.g. gpt-5 or llama3.1.'}>
-                <input className="input mono" value={cfg.model} onChange={(e) => setCfg({ ...cfg, model: e.target.value })} placeholder={cfg.provider === 'anthropic' ? 'claude-opus-5-5' : 'model name'} />
+                <input aria-label="Model" className="input mono" value={cfg.model} onChange={(e) => setCfg({ ...cfg, model: e.target.value })} placeholder={cfg.provider === 'anthropic' ? 'claude-opus-5-5' : 'model name'} />
               </Row>
               <Row label="API key" help={cfg.hasKey ? 'A key is saved (encrypted on this server). Type a new one to replace it.' : cfg.provider === 'anthropic' && cfg.envAnthropicKey ? 'Using ANTHROPIC_API_KEY from the server environment. Enter a key to override it for this workspace.' : 'Stored encrypted on this server; never sent back to the browser.'}>
                 <div className="row">
-                  <input className="input mono" type="password" autoComplete="off" value={key} onChange={(e) => setKey(e.target.value)} placeholder={cfg.hasKey ? '•••••••• saved' : 'paste key'} />
+                  <input aria-label="API key" className="input mono" type="password" autoComplete="off" value={key} onChange={(e) => setKey(e.target.value)} placeholder={cfg.hasKey ? '•••••••• saved' : 'paste key'} />
                   {cfg.hasKey && <button className="btn btn-ghost btn-sm" onClick={() => save({ apiKey: null })}>Remove</button>}
                 </div>
               </Row>

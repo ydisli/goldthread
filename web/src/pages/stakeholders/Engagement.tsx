@@ -4,7 +4,7 @@ import { commitmentRisk, commsDue, hubSummary, sentimentTrend, touchStatus } fro
 import { daysBetween, isoDate } from '../../../../core/util.ts';
 import { now, updateEntity, useGraph } from '../../store.ts';
 import { Link, navigate } from '../../router.tsx';
-import { Badge, Card, Empty, PageHead, Seg, Stat, StatusBadge, Tabs, errorToast, toast, copyText } from '../../ui/kit.tsx';
+import { activate, Badge, Card, Empty, PageHead, Seg, Stat, StatusBadge, Tabs, errorToast, toast, copyText } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { Sparkline } from '../../ui/charts.tsx';
 import { fmtDate, humanize, relDays } from '../../ui/format.ts';
@@ -71,7 +71,7 @@ export function EngagementPage() {
                 <thead><tr><th>Message</th><th>Audience</th><th>Channel</th><th>Frequency</th><th>Last sent</th><th>Next</th><th /></tr></thead>
                 <tbody>
                   {comms.map(({ c, due }) => (
-                    <tr key={c.id} className="clickable" onClick={() => openEditor({ type: 'commsItem', id: c.id })}>
+                    <tr key={c.id} className="clickable" {...activate(() => openEditor({ type: 'commsItem', id: c.id }), null)}>
                       <td className="strong">{c.title}<div className="small muted">{c.format}</div></td>
                       <td>{c.audience && <div className="small">{c.audience}</div>}<RefChips ids={c.audienceIds} max={3} /></td>
                       <td>{humanize(c.channel)}</td>
@@ -165,7 +165,7 @@ export function RequestsPage() {
                 {list.map((r) => {
                   const overdue = ['new', 'triaging'].includes(r.status) && r.respondBy && daysBetween(today, r.respondBy) < 0;
                   return (
-                    <div key={r.id} className="tile" draggable onDragStart={() => setDragging(r.id)} onDragEnd={() => setDragging(null)} onClick={() => navigate(hrefOf(r))}>
+                    <div key={r.id} className="tile" draggable onDragStart={() => setDragging(r.id)} onDragEnd={() => setDragging(null)} {...activate(() => navigate(hrefOf(r)))}>
                       <div className="strong" style={{ fontSize: 13 }}>{r.title}</div>
                       <div className="small muted mt8">{nameOf(g.get(r.requesterId))}</div>
                       <div className="row-wrap mt8" style={{ gap: 4 }}>
@@ -219,7 +219,7 @@ export function CommitmentsPage() {
             <thead><tr><th>Promise</th><th>To</th><th>By</th><th>Due</th><th>Delivered by</th><th>Risk</th><th>Forecast</th><th /></tr></thead>
             <tbody>
               {rows.map(({ c, r }) => (
-                <tr key={c.id} className="clickable" onClick={() => navigate(hrefOf(c))}>
+                <tr key={c.id} className="clickable" {...activate(() => navigate(hrefOf(c)), null)}>
                   <td className="strong">{c.title}{c.account && <div className="small muted">{c.account}</div>}</td>
                   <td>{c.toId ? <PersonLink s={g.get(c.toId)} /> : <span className="muted">{c.account ?? '—'}</span>}</td>
                   <td className="small">{nameOf(g.get(c.promisedById))}</td>

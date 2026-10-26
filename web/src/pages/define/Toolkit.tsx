@@ -176,11 +176,11 @@ export function DataEntityPage({ id }: { id: string }) {
           <thead><tr><th>Name</th><th>Type</th><th>Required</th><th>PII</th><th>Description</th><th /></tr></thead>
           <tbody>{attrs.map((a, i) => (
             <tr key={i}>
-              <td><input className="input input-sm mono" defaultValue={a.name} onBlur={(e) => e.target.value !== a.name && set(i, 'name', e.target.value)} /></td>
-              <td><input className="input input-sm mono" defaultValue={a.type} onBlur={(e) => e.target.value !== a.type && set(i, 'type', e.target.value)} /></td>
+              <td><input aria-label="Attribute name" className="input input-sm mono" defaultValue={a.name} onBlur={(e) => e.target.value !== a.name && set(i, 'name', e.target.value)} /></td>
+              <td><input aria-label="Attribute type" className="input input-sm mono" defaultValue={a.type} onBlur={(e) => e.target.value !== a.type && set(i, 'type', e.target.value)} /></td>
               <td className="center"><input type="checkbox" checked={a.required} onChange={(e) => set(i, 'required', e.target.checked)} /></td>
               <td className="center"><input type="checkbox" checked={a.pii} onChange={(e) => set(i, 'pii', e.target.checked)} />{a.pii && <Badge tone="red">PII</Badge>}</td>
-              <td><input className="input input-sm" defaultValue={a.description} onBlur={(e) => e.target.value !== a.description && set(i, 'description', e.target.value)} /></td>
+              <td><input aria-label="Attribute description" className="input input-sm" defaultValue={a.description} onBlur={(e) => e.target.value !== a.description && set(i, 'description', e.target.value)} /></td>
               <td className="tight"><button className="btn btn-ghost btn-sm btn-icon" onClick={() => save(attrs.filter((_, x) => x !== i))}><Icon name="trash-2" size={12} /></button></td>
             </tr>
           ))}</tbody>
@@ -207,10 +207,10 @@ export function RootCausePage({ id }: { id: string }) {
           {[0, 1, 2, 3, 4].map((i) => (
             <div key={i} className="row" style={{ marginLeft: i * 18 }}>
               <Badge tone="accent">Why {i + 1}</Badge>
-              <input className="input input-sm" defaultValue={whys[i] ?? ''} placeholder="Because…" onBlur={(e) => { const next = [...whys]; next[i] = e.target.value; if (e.target.value !== (whys[i] ?? '')) save({ whys: next }); }} />
+              <input aria-label={`Why ${i + 1}`} className="input input-sm" defaultValue={whys[i] ?? ''} placeholder="Because…" onBlur={(e) => { const next = [...whys]; next[i] = e.target.value; if (e.target.value !== (whys[i] ?? '')) save({ whys: next }); }} />
             </div>
           ))}
-          <div className="row mt8"><Badge tone="red">Root cause</Badge><input className="input input-sm strong" defaultValue={r.rootCause ?? ''} onBlur={(e) => e.target.value !== (r.rootCause ?? '') && save({ rootCause: e.target.value })} /></div>
+          <div className="row mt8"><Badge tone="red">Root cause</Badge><input aria-label="Root cause" className="input input-sm strong" defaultValue={r.rootCause ?? ''} onBlur={(e) => e.target.value !== (r.rootCause ?? '') && save({ rootCause: e.target.value })} /></div>
         </div>
       </Card>
       <Card title="Fishbone" icon="combine" sub="Contributing causes by category.">
@@ -219,7 +219,7 @@ export function RootCausePage({ id }: { id: string }) {
             <div key={c} style={{ background: 'var(--surface-2)', borderRadius: 8, padding: 10 }}>
               <div className="label mb8">{c}</div>
               {(fish[c] ?? []).map((x, i) => <div key={i} className="small row">• <span className="grow">{x}</span><button className="btn btn-ghost btn-sm btn-icon" onClick={() => save({ fishbone: { ...fish, [c]: (fish[c] ?? []).filter((_, k) => k !== i) } })}><Icon name="x" size={11} /></button></div>)}
-              <input className="input input-sm mt8" placeholder="Add cause, Enter" onKeyDown={(e) => { const v = (e.target as HTMLInputElement).value.trim(); if (e.key === 'Enter' && v) { save({ fishbone: { ...fish, [c]: [...(fish[c] ?? []), v] } }); (e.target as HTMLInputElement).value = ''; } }} />
+              <input aria-label="Add cause" className="input input-sm mt8" placeholder="Add cause, Enter" onKeyDown={(e) => { const v = (e.target as HTMLInputElement).value.trim(); if (e.key === 'Enter' && v) { save({ fishbone: { ...fish, [c]: [...(fish[c] ?? []), v] } }); (e.target as HTMLInputElement).value = ''; } }} />
             </div>
           ))}
         </div>

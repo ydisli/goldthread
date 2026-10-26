@@ -63,57 +63,57 @@ export function SentimentValue({ v }: { v: number }) {
 
 // ---------------- inputs ----------------
 
-export function FieldInput({ f, value, onChange, entityId }: { f: FieldDef; value: any; onChange: (v: any) => void; entityId?: string }) {
+export function FieldInput({ f, value, onChange, entityId, id }: { f: FieldDef; value: any; onChange: (v: any) => void; entityId?: string; id?: string }) {
   switch (f.kind) {
     case 'text':
-      return <input className="input" value={value ?? ''} placeholder={f.placeholder} onChange={(e) => onChange(e.target.value)} />;
+      return <input id={id} className="input" value={value ?? ''} placeholder={f.placeholder} onChange={(e) => onChange(e.target.value)} />;
     case 'url':
       // "staging.example.com" means https://staging.example.com.
-      return <input className="input" inputMode="url" value={value ?? ''} placeholder={f.placeholder ?? 'https://…'} onChange={(e) => onChange(e.target.value)}
+      return <input id={id} className="input" inputMode="url" value={value ?? ''} placeholder={f.placeholder ?? 'https://…'} onChange={(e) => onChange(e.target.value)}
         onBlur={(e) => { const v = e.target.value.trim(); if (v && !/^[a-z][a-z0-9+.-]*:/i.test(v)) onChange(`https://${v}`); }} />;
     case 'longtext':
-      return <textarea className="textarea" rows={3} value={value ?? ''} placeholder={f.placeholder} onChange={(e) => onChange(e.target.value)} />;
+      return <textarea id={id} className="textarea" rows={3} value={value ?? ''} placeholder={f.placeholder} onChange={(e) => onChange(e.target.value)} />;
     case 'markdown':
-      return <textarea className="textarea mono" rows={8} value={value ?? ''} placeholder={f.placeholder} onChange={(e) => onChange(e.target.value)} />;
+      return <textarea id={id} className="textarea mono" rows={8} value={value ?? ''} placeholder={f.placeholder} onChange={(e) => onChange(e.target.value)} />;
     case 'number': case 'money': case 'percent':
       return (
         <div className="row">
-          <input className="input" type="number" step="any" value={value ?? ''} onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))} />
+          <input id={id} className="input" type="number" step="any" value={value ?? ''} onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))} />
           {f.kind === 'percent' && <span className="muted">%</span>}
         </div>
       );
     case 'enum':
       return (
-        <select className="select" value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
+        <select id={id} className="select" value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
           {!f.default && <option value="">—</option>}
           {f.options!.map((o) => <option key={o} value={o}>{humanize(o)}</option>)}
         </select>
       );
     case 'date':
-      return <input className="input" type="date" value={value ?? ''} onChange={(e) => onChange(e.target.value)} />;
+      return <input id={id} className="input" type="date" value={value ?? ''} onChange={(e) => onChange(e.target.value)} />;
     case 'bool':
-      return <label className="check"><input type="checkbox" checked={!!value} onChange={(e) => onChange(e.target.checked)} /> {f.label}</label>;
+      return <label className="check"><input id={id} type="checkbox" checked={!!value} onChange={(e) => onChange(e.target.checked)} /> {f.label}</label>;
     case 'scale': {
       const vals: number[] = [];
       for (let i = f.min ?? 1; i <= (f.max ?? 5); i++) vals.push(i);
       return (
-        <div className="scale">
-          {vals.map((v) => <button type="button" key={v} className={value === v ? 'on' : ''} onClick={() => onChange(value === v ? '' : v)}>{v > 0 && f.min === -2 ? `+${v}` : v}</button>)}
+        <div className="scale" role="group" aria-label={f.label}>
+          {vals.map((v) => <button type="button" aria-pressed={value === v} key={v} className={value === v ? 'on' : ''} onClick={() => onChange(value === v ? '' : v)}>{v > 0 && f.min === -2 ? `+${v}` : v}</button>)}
         </div>
       );
     }
     case 'tags':
-      return <TagsInput value={value ?? []} onChange={onChange} />;
+      return <TagsInput id={id} value={value ?? []} onChange={onChange} />;
     case 'ref':
-      return <EntityPicker targets={refTargets(f)} value={value ? [value] : []} onChange={(ids) => onChange(ids[0] ?? '')} single excludeId={entityId} />;
+      return <EntityPicker inputId={id} targets={refTargets(f)} value={value ? [value] : []} onChange={(ids) => onChange(ids[0] ?? '')} single excludeId={entityId} />;
     case 'refs':
-      return <EntityPicker targets={refTargets(f)} value={value ?? []} onChange={onChange} excludeId={entityId} />;
+      return <EntityPicker inputId={id} targets={refTargets(f)} value={value ?? []} onChange={onChange} excludeId={entityId} />;
     default:
       return null;
   }
 }
 
-export function TagsInput({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
+export function TagsInput({ value, onChange, id }: { value: string[]; onChange: (v: string[]) => void; id?: string }) {
   const [draft, setDraft] = useState('');
   const add = () => {
     const parts = draft.split(',').map((x) => x.trim()).filter(Boolean);
@@ -126,7 +126,7 @@ export function TagsInput({ value, onChange }: { value: string[]; onChange: (v: 
         <span className="chip" key={t}>{t}<button type="button" className="x" aria-label={`Remove ${t}`} onClick={() => onChange(value.filter((x) => x !== t))}><Icon name="x" size={12} /></button></span>
       ))}
       <input
-        style={{ border: 0, outline: 'none', flex: 1, minWidth: 80, background: 'transparent' }} value={draft} placeholder="Add, press Enter"
+        id={id} style={{ border: 0, outline: 'none', flex: 1, minWidth: 80, background: 'transparent' }} value={draft} placeholder="Add, press Enter"
         onChange={(e) => setDraft(e.target.value)} onBlur={add}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); } if (e.key === 'Backspace' && !draft && value.length) onChange(value.slice(0, -1)); }}
       />
@@ -135,7 +135,7 @@ export function TagsInput({ value, onChange }: { value: string[]; onChange: (v: 
 }
 
 /** Search-as-you-type picker for references, with inline creation. */
-export function EntityPicker({ targets, value, onChange, single, excludeId, placeholder }: { targets: string[] | '*'; value: string[]; onChange: (ids: string[]) => void; single?: boolean; excludeId?: string; placeholder?: string }) {
+export function EntityPicker({ targets, value, onChange, single, excludeId, placeholder, inputId }: { targets: string[] | '*'; value: string[]; onChange: (ids: string[]) => void; single?: boolean; excludeId?: string; placeholder?: string; inputId?: string }) {
   const g = useGraph();
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
@@ -197,7 +197,7 @@ export function EntityPicker({ targets, value, onChange, single, excludeId, plac
         })}
         {(!single || !value.length) && (
           <input
-            ref={inputRef} value={q} placeholder={value.length ? '' : placeholder ?? `Search ${targets === '*' ? 'anything' : targets.map((t) => ENTITY_MAP[t]?.plural.toLowerCase()).join(', ')}…`}
+            id={inputId} ref={inputRef} value={q} placeholder={value.length ? '' : placeholder ?? `Search ${targets === '*' ? 'anything' : targets.map((t) => ENTITY_MAP[t]?.plural.toLowerCase()).join(', ')}…`}
             style={{ border: 0, outline: 'none', flex: 1, minWidth: 120, background: 'transparent' }}
             onChange={(e) => { setQ(e.target.value); setOpen(true); setHl(0); }} onFocus={() => setOpen(true)} onKeyDown={onKey}
           />

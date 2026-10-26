@@ -52,7 +52,7 @@ export function StakeholdersPage() {
       <Card flush>
         <div className="row-wrap" style={{ padding: '10px 12px', borderBottom: '1px solid var(--border)' }}>
           <Seg value={q} onChange={setQ} options={[{ id: 'all', label: 'All' }, ...(Object.keys(QUADRANTS) as Quadrant[]).map((k) => ({ id: k, label: QUADRANTS[k].label }))]} />
-          <select className="select input-sm" style={{ width: 'auto' }} value={kind} onChange={(e) => setKind(e.target.value)}>
+          <select aria-label="Filter by kind" className="select input-sm" style={{ width: 'auto' }} value={kind} onChange={(e) => setKind(e.target.value)}>
             <option value="all">All types</option>
             {ENTITY_MAP.stakeholder.fields.find((f) => f.key === 'kind')!.options!.map((o) => <option key={o} value={o}>{humanize(o)}</option>)}
           </select>
@@ -240,7 +240,7 @@ function InteractionsView({ s, p }: { s: Entity; p: ReturnType<typeof profile360
     <div className="grid g-side">
       <Card title="Timeline" icon="message-square" flush>
         <div className="list-item" style={{ background: 'var(--surface-2)' }}>
-          <input className="input" placeholder={`What did you talk about with ${s.name.split(' ')[0]}?`} value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && log()} />
+          <input aria-label="What did you talk about?" className="input" placeholder={`What did you talk about with ${s.name.split(' ')[0]}?`} value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && log()} />
           <div className="scale">{[-2, -1, 0, 1, 2].map((v) => <button key={v} className={sentiment === v ? 'on' : ''} onClick={() => setSentiment(v)} title="Sentiment">{v > 0 ? `+${v}` : v}</button>)}</div>
           <button className="btn btn-primary" onClick={log} disabled={!title.trim()}>Log</button>
         </div>

@@ -8,7 +8,7 @@ import { AUDIENCES, commitmentRisk, tailoredUpdate, type Audience } from '../../
 import { addDays, daysBetween, isoDate } from '../../../../core/util.ts';
 import { api, can, deleteEntity, now, restoreEntity, updateEntity, useEntity, useGraph } from '../../store.ts';
 import { Link, navigate, setQuery, useRoute } from '../../router.tsx';
-import { Badge, Card, Dropdown, Markdown, Meter, PageHead, Seg, Stat, StatusBadge, Tabs, copyText, errorToast, toast, Term } from '../../ui/kit.tsx';
+import { activate, Badge, Card, Dropdown, Markdown, Meter, PageHead, Seg, Stat, StatusBadge, Tabs, copyText, errorToast, toast, Term } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { ToolGuide } from '../../ui/guide.tsx';
 import { HBars, Legend, LineChart, RiskMatrix, SERIES, useTooltip } from '../../ui/charts.tsx';
@@ -120,7 +120,7 @@ export function PrioritizePage() {
                   <tr key={r.bet.id}>
                     <td className="num strong">{r.rank}</td>
                     <td><Link to={hrefOf(r.bet)} className="strong" style={{ color: 'var(--text)' }}>{r.bet.title}</Link><div className="small"><StatusBadge value={r.bet.status} /> <span className="muted">{humanize(r.bet.horizon)}</span></div></td>
-                    {fields.map((f) => <td key={f} className="num"><input className="input input-sm num" style={{ width: 76, textAlign: 'right' }} type="number" step="any" defaultValue={r.bet[f] ?? ''} onBlur={(e) => e.target.value !== String(r.bet[f] ?? '') && set(r.bet, f, e.target.value)} /></td>)}
+                    {fields.map((f) => <td key={f} className="num"><input aria-label="Value" className="input input-sm num" style={{ width: 76, textAlign: 'right' }} type="number" step="any" defaultValue={r.bet[f] ?? ''} onBlur={(e) => e.target.value !== String(r.bet[f] ?? '') && set(r.bet, f, e.target.value)} /></td>)}
                     <td className="num strong">{r.score.toFixed(method === 'rice' ? 0 : 2)}</td>
                     <td style={{ minWidth: 150 }}><div className="row"><div style={{ flex: 1 }}><Meter value={st} color={st > 0.8 ? 'var(--good)' : st > 0.4 ? 'var(--warning)' : 'var(--axis)'} /></div><span className="small num">{Math.round(st * 100)}%</span></div></td>
                   </tr>
@@ -169,7 +169,7 @@ export function RoadmapPage() {
           const f = fc(b);
           const late = f && b.targetDate && f.dates.p85 > b.targetDate;
           return (
-            <div key={b.id} className="tile" draggable onDragStart={() => setDrag(b.id)} onClick={() => navigate(hrefOf(b))}>
+            <div key={b.id} className="tile" draggable onDragStart={() => setDrag(b.id)} {...activate(() => navigate(hrefOf(b)))}>
               <div className="strong" style={{ fontSize: 13 }}>{b.title}</div>
               {audience === 'external' ? <div className="small muted mt8">{(b.hypothesis ?? '').replace(/^We believe /i, '').split(/ will /i)[0]}</div> : (
                 <>
@@ -223,7 +223,7 @@ function Timeline({ bets, fc, today, external }: { bets: Entity[]; fc: (b: Entit
             const s = b.startDate ?? isoDate(today), t = b.targetDate ?? addDays(s, 30);
             const f = external ? null : fc(b);
             return (
-              <g key={b.id} className="hit" onClick={() => navigate(hrefOf(b))} onPointerMove={(e) => tt.show(e, <><div className="t-title">{b.title}</div><div>{fmtDate(s)} → {fmtDate(t)}</div>{f && <div>Forecast 50–85%: {fmtDate(f.dates.p50)} – {fmtDate(f.dates.p85)}</div>}</>)} onPointerLeave={tt.hide}>
+              <g key={b.id} className="hit" {...activate(() => navigate(hrefOf(b)))} aria-label={b.title} onPointerMove={(e) => tt.show(e, <><div className="t-title">{b.title}</div><div>{fmtDate(s)} → {fmtDate(t)}</div>{f && <div>Forecast 50–85%: {fmtDate(f.dates.p50)} – {fmtDate(f.dates.p85)}</div>}</>)} onPointerLeave={tt.hide}>
                 <text x={8} y={y + 15} style={{ fill: 'var(--text)', fontSize: 12 }}>{b.title.length > 30 ? `${b.title.slice(0, 29)}…` : b.title}</text>
                 <rect x={sx(s)} y={y + 4} width={Math.max(4, sx(t) - sx(s))} height={16} rx={4} fill={b.status === 'shipped' ? 'var(--good)' : 'var(--s1)'} opacity={b.status === 'idea' || b.status === 'discovery' ? 0.45 : 0.9} />
                 {f && <rect x={sx(f.dates.p50)} y={y + 9} width={Math.max(3, sx(f.dates.p85) - sx(f.dates.p50))} height={6} rx={3} fill="var(--s2)" />}
@@ -305,7 +305,7 @@ export function ReleasePage({ id }: { id: string }) {
           </div>
         ))}
         <div className="list-item">
-          <input className="input input-sm" placeholder="Area: item (e.g. Support: Train the team)" value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={(e) => {
+          <input aria-label="Add a readiness item" className="input input-sm" placeholder="Area: item (e.g. Support: Train the team)" value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={(e) => {
             if (e.key !== 'Enter' || !newItem.trim()) return;
             const [area, ...rest] = newItem.includes(':') ? newItem.split(':') : ['General', newItem];
             save([...list, { id: `c${Date.now().toString(36)}`, area: area.trim(), item: rest.join(':').trim(), done: false }]);
@@ -317,7 +317,7 @@ export function ReleasePage({ id }: { id: string }) {
         <Card title="Rollout plan" icon="route"><div className="pre small">{r.rolloutPlan ?? <span className="muted">Not defined.</span>}</div></Card>
         <Card title="Rollback criteria" icon="triangle-alert"><div className="pre small">{r.rollbackCriteria ?? <span className="muted">Not defined — decide before launch, not during an incident.</span>}</div></Card>
       </div>
-      <Card title="Release notes & updates" icon="megaphone" actions={<><select className="select input-sm" style={{ width: 'auto' }} value={aud} onChange={(e) => setAud(e.target.value as Audience)}>{(Object.keys(AUDIENCES) as Audience[]).map((a) => <option key={a} value={a}>{AUDIENCES[a]}</option>)}</select><button className="btn btn-sm" onClick={() => copyText(notes, 'Update copied')}><Icon name="copy" size={13} />Copy</button></>}>
+      <Card title="Release notes & updates" icon="megaphone" actions={<><select aria-label="Audience" className="select input-sm" style={{ width: 'auto' }} value={aud} onChange={(e) => setAud(e.target.value as Audience)}>{(Object.keys(AUDIENCES) as Audience[]).map((a) => <option key={a} value={a}>{AUDIENCES[a]}</option>)}</select><button className="btn btn-sm" onClick={() => copyText(notes, 'Update copied')}><Icon name="copy" size={13} />Copy</button></>}>
         <Markdown text={notes} />
       </Card>
       <Card title="Scope" icon="kanban" flush><EntityTable type="story" rows={stories} columns={['key', 'title', 'status', 'betId', 'estimate']} filterable={false} /></Card>
@@ -357,7 +357,7 @@ export function PulsePage() {
             const sc = scopeCreep(stories, b);
             const p = f?.probabilityBy;
             return (
-              <tr key={b.id} className="clickable" onClick={() => navigate(hrefOf(b))}>
+              <tr key={b.id} className="clickable" {...activate(() => navigate(hrefOf(b)), null)}>
                 <td className="strong">{b.title}</td><td>{nameOf(g.get(b.teamId))}</td><td className="num">{f?.remaining ?? '—'}</td>
                 <td>{f ? fmtDate(f.dates.p50) : '—'}</td><td className="strong">{f ? fmtDate(f.dates.p85) : '—'}</td><td>{fmtDate(b.targetDate)}</td>
                 <td>{p !== undefined ? <Badge tone={p >= 0.8 ? 'green' : p >= 0.5 ? 'amber' : 'red'}>{Math.round(p * 100)}%</Badge> : '—'}</td>
@@ -434,7 +434,7 @@ export function UatPage() {
   for (const d of defects) byCause.set(d.rootCause ?? 'unknown', (byCause.get(d.rootCause ?? 'unknown') ?? 0) + 1);
   return (
     <div className="page">
-      <PageHead title="UAT & quality" sub="Acceptance and UAT tests traced to requirements, business sign-off, and defects classified by root cause — requirement defects are the expensive ones." actions={<><select className="select input-sm" style={{ width: 'auto' }} value={release} onChange={(e) => setRelease(e.target.value)}><option value="">All releases</option>{g.all('release').map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}</select><button className="btn btn-primary" onClick={() => openEditor({ type: tab === 'tests' ? 'testCase' : 'defect', defaults: release ? { releaseId: release } : {} })}><Icon name="plus" size={14} />{tab === 'tests' ? 'Test case' : 'Defect'}</button></>} />
+      <PageHead title="UAT & quality" sub="Acceptance and UAT tests traced to requirements, business sign-off, and defects classified by root cause — requirement defects are the expensive ones." actions={<><select aria-label="Release" className="select input-sm" style={{ width: 'auto' }} value={release} onChange={(e) => setRelease(e.target.value)}><option value="">All releases</option>{g.all('release').map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}</select><button className="btn btn-primary" onClick={() => openEditor({ type: tab === 'tests' ? 'testCase' : 'defect', defaults: release ? { releaseId: release } : {} })}><Icon name="plus" size={14} />{tab === 'tests' ? 'Test case' : 'Defect'}</button></>} />
       <div className="grid g4 mb16">
         <Stat label="Pass rate" value={`${tests.length ? Math.round((tests.filter((t) => t.status === 'pass').length / tests.length) * 100) : 0}%`} sub={`${tests.filter((t) => t.status === 'pass').length} of ${tests.length} tests`} />
         <Stat label="Failing" value={tests.filter((t) => t.status === 'fail').length} tone={tests.some((t) => t.status === 'fail') ? 'red' : undefined} sub={`${tests.filter((t) => t.status === 'blocked').length} blocked`} />

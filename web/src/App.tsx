@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useStore } from './store.ts';
 import { match, navigate, useRoute } from './router.tsx';
 import { CommandPalette, MobileNav, NewWorkspaceModal, QuickCapture, SectionNav, Shortcuts, Sidebar, openCapture } from './shell.tsx';
@@ -18,6 +18,20 @@ export function App() {
     if (path === '/capture' && s.status === 'ready') { navigate('/today', { replace: true }); setTimeout(() => openCapture(), 50); }
   }, [path, s.status]);
 
+  // Each page gets its own tab title, and after you navigate, focus moves to the new page's
+  // heading so screen readers announce it and Tab continues from there.
+  const firstPage = useRef(true);
+  useEffect(() => {
+    if (s.status !== 'ready' && s.status !== 'offline') return;
+    const id = requestAnimationFrame(() => {
+      const h1 = document.querySelector<HTMLElement>('main h1');
+      document.title = h1?.textContent ? `${h1.textContent} · Throughline` : 'Throughline';
+      if (firstPage.current) { firstPage.current = false; return; }
+      if (h1 && !document.querySelector('.drawer, [role="dialog"]')) { h1.tabIndex = -1; h1.focus({ preventScroll: true }); }
+    });
+    return () => cancelAnimationFrame(id);
+  }, [path, s.status]);
+
   // Invite links work whether or not you are signed in.
   const join = match('/join/:token', path);
   if (join) return <><JoinScreen token={join.token} /><Toasts /></>;
@@ -35,6 +49,7 @@ export function App() {
 
   return (
     <div className="app">
+      <button className="skip-link" onClick={() => document.getElementById('main')?.focus()}>Skip to content</button>
       <Sidebar open={menu} onNavigate={() => setMenu(false)} />
       <div className={`sidebar-scrim ${menu ? 'open' : ''}`} onClick={() => setMenu(false)} />
       <div className="main-col">
@@ -42,7 +57,7 @@ export function App() {
           <button className="btn btn-ghost btn-icon menu-btn" onClick={() => setMenu(true)} aria-label="Open menu"><Icon name="menu" /></button>
           <span className="ws-name" style={{ flex: 1 }}>{s.auth?.current?.name ?? 'Throughline'}</span>
         </header>
-        <main>
+        <main id="main" tabIndex={-1}>
           {s.status === 'offline' && <div className="banner">You're offline. Showing the last copy of this workspace — changes are paused until the server is back.</div>}
           {s.status === 'loading' && <div className="page"><Empty icon="clock">Opening workspace…</Empty></div>}
           {s.status === 'error' && <div className="page"><Empty icon="circle-alert">Could not reach the Throughline server: {s.error}. Is <code>npm run dev</code> running?</Empty></div>}

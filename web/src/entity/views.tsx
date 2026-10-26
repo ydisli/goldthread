@@ -74,10 +74,10 @@ export function EntityTable({ type, recordType, rows, columns, onRowClick, empty
         <div className="row-wrap" style={{ padding: '10px 12px', borderBottom: '1px solid var(--border)' }}>
           <div className="row" style={{ flex: 1, minWidth: 180, maxWidth: 360 }}>
             <Icon name="search" size={14} className="muted" />
-            <input className="input input-sm" placeholder={`Filter ${def.plural.toLowerCase()}…`} value={q} onChange={(e) => setQ(e.target.value)} />
+            <input aria-label={`Filter ${def.plural.toLowerCase()}`} className="input input-sm" placeholder={`Filter ${def.plural.toLowerCase()}…`} value={q} onChange={(e) => setQ(e.target.value)} />
           </div>
           {statusField && (
-            <select className="select input-sm" style={{ width: 'auto' }} value={status} onChange={(e) => setStatus(e.target.value)}>
+            <select aria-label={`Filter by ${statusField.label.toLowerCase()}`} className="select input-sm" style={{ width: 'auto' }} value={status} onChange={(e) => setStatus(e.target.value)}>
               <option value="">All {statusField.label.toLowerCase()}</option>
               {statusField.options!.map((o) => <option key={o} value={o}>{humanize(o)}</option>)}
             </select>

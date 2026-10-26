@@ -759,9 +759,9 @@ function Inspector(props: {
       {step && (
         <fieldset disabled={!editable} className="col" style={{ gap: 12, border: 0, padding: 0, margin: 0 }}>
           <div className="row"><span className="eyebrow" style={{ margin: 0 }}>{KIND_LABEL[step.kind]}</span><span className="spacer" />{editable && <button className="btn btn-ghost btn-sm" onClick={() => props.onRemoveStep(step.id)}><Icon name="trash-2" size={13} />Delete</button>}</div>
-          <div className="field"><label>Name</label><input key={step.id + step.label} className="input" defaultValue={step.label} onBlur={(e) => e.target.value.trim() && e.target.value !== step.label && props.onUpdateStep(step.id, { label: e.target.value.trim() })} onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} /></div>
+          <div className="field"><label>Name</label><input aria-label="Step name" key={step.id + step.label} className="input" defaultValue={step.label} onBlur={(e) => e.target.value.trim() && e.target.value !== step.label && props.onUpdateStep(step.id, { label: e.target.value.trim() })} onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} /></div>
           <div className="field"><label>Type</label><Seg options={(['task', 'decision', 'start', 'end'] as StepKind[]).map((k) => ({ id: k, label: KIND_LABEL[k] }))} value={step.kind} onChange={(k) => props.onUpdateStep(step.id, { kind: k })} /></div>
-          <div className="field"><label>Lane</label><select className="select" value={step.lane} onChange={(e) => props.onUpdateStep(step.id, { lane: e.target.value })}>{model.lanes.map((l) => <option key={l}>{l}</option>)}</select></div>
+          <div className="field"><label>Lane</label><select aria-label="Lane" className="select" value={step.lane} onChange={(e) => props.onUpdateStep(step.id, { lane: e.target.value })}>{model.lanes.map((l) => <option key={l}>{l}</option>)}</select></div>
           <div className="field">
             <label>Goes to</label>
             {step.next.length === 0 && <div className="small muted">Nothing yet — drag the dot on the step's edge, or pick below.</div>}
@@ -769,12 +769,12 @@ function Inspector(props: {
               <div key={n} className="row" style={{ gap: 6 }}>
                 <Icon name="arrow-right" size={13} className="muted" />
                 <button className="btn-link grow ellipsis" style={{ textAlign: 'left' }} onClick={() => props.onSelect({ type: 'step', id: n })}>{byId.get(n)?.label ?? 'missing step'}</button>
-                {(step.kind === 'decision' || step.labels?.[n]) && <input key={n + (step.labels?.[n] ?? '')} className="input input-sm" style={{ width: 70 }} placeholder="label" defaultValue={step.labels?.[n] ?? ''} onBlur={(e) => e.target.value !== (step.labels?.[n] ?? '') && props.onLabel(step.id, n, e.target.value)} />}
+                {(step.kind === 'decision' || step.labels?.[n]) && <input aria-label="Connection label" key={n + (step.labels?.[n] ?? '')} className="input input-sm" style={{ width: 70 }} placeholder="label" defaultValue={step.labels?.[n] ?? ''} onBlur={(e) => e.target.value !== (step.labels?.[n] ?? '') && props.onLabel(step.id, n, e.target.value)} />}
                 {editable && <button className="btn btn-ghost btn-sm btn-icon" onClick={() => props.onDisconnect(step.id, n)} aria-label="Remove connection"><Icon name="x" size={13} /></button>}
               </div>
             ))}
             {editable && (
-              <select className="select input-sm mt8" value="" onChange={(e) => e.target.value && props.onConnect(step.id, e.target.value)}>
+              <select aria-label="Connect to" className="select input-sm mt8" value="" onChange={(e) => e.target.value && props.onConnect(step.id, e.target.value)}>
                 <option value="">Connect to…</option>
                 {model.steps.filter((s) => s.id !== step.id && !step.next.includes(s.id)).map((s) => <option key={s.id} value={s.id}>{s.label} ({s.lane})</option>)}
               </select>
@@ -797,7 +797,7 @@ function Inspector(props: {
           <fieldset disabled={!editable} className="col" style={{ gap: 12, border: 0, padding: 0, margin: 0 }}>
             <div className="row"><span className="eyebrow" style={{ margin: 0 }}>Connection</span><span className="spacer" />{editable && <button className="btn btn-ghost btn-sm" onClick={() => props.onDisconnect(from.id, to.id)}><Icon name="trash-2" size={13} />Delete</button>}</div>
             <div className="small"><b>{from.label}</b> → <b>{to.label}</b></div>
-            <div className="field"><label>Label</label><input key={sel.from + sel.to} className="input" placeholder={from.kind === 'decision' ? 'e.g. Yes, No, Over £5k' : 'optional'} defaultValue={from.labels?.[to.id] ?? ''} onBlur={(e) => props.onLabel(from.id, to.id, e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} /></div>
+            <div className="field"><label>Label</label><input aria-label="Connection label" key={sel.from + sel.to} className="input" placeholder={from.kind === 'decision' ? 'e.g. Yes, No, Over £5k' : 'optional'} defaultValue={from.labels?.[to.id] ?? ''} onBlur={(e) => props.onLabel(from.id, to.id, e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} /></div>
           </fieldset>
         );
       })()}

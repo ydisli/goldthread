@@ -95,7 +95,7 @@ function ClusterCard({ c }: { c: Cluster }) {
         {c.items.length > 4 && <span className="small muted">+{c.items.length - 4} more</span>}
       </div>
       <div className="row-wrap mt12">
-        <select className="select input-sm" style={{ width: 'auto', maxWidth: 320 }} value={target} onChange={(e) => setTarget(e.target.value)}>
+        <select aria-label="Link to" className="select input-sm" style={{ width: 'auto', maxWidth: 320 }} value={target} onChange={(e) => setTarget(e.target.value)}>
           <option value="">Link all to opportunity…</option>
           {g.all('opportunity').map((o) => <option key={o.id} value={o.id}>{o.title}</option>)}
         </select>
@@ -161,7 +161,7 @@ function ImportSignals() {
   };
   return (
     <Card title="Import signals from CSV" icon="upload" sub="Paste an export from your support desk, survey tool or CRM. Columns: title (required), source, kind, account, segment, arr, date, detail.">
-      <textarea className="textarea mono" rows={10} value={text} onChange={(e) => setText(e.target.value)} />
+      <textarea aria-label="Paste feedback" className="textarea mono" rows={10} value={text} onChange={(e) => setText(e.target.value)} />
       <div className="row mt12"><span className="small muted">{body.length} rows detected · columns: {head.join(', ') || '—'}</span><span className="spacer" /><button className="btn btn-primary" disabled={!body.length} onClick={doImport}>Import {body.length} signals</button></div>
     </Card>
   );
@@ -449,11 +449,11 @@ export function JourneyPage({ id }: { id: string }) {
             <div style={{ display: 'grid', gridTemplateColumns: `repeat(${stages.length}, 200px)`, gap: 0 }}>
               {stages.map((s, i) => (
                 <div key={i} style={{ padding: 10, borderRight: '1px solid var(--border)' }} className="col">
-                  <input className="input input-sm strong" value={s.name} onChange={(e) => edit(i, 'name', e.target.value)} />
+                  <input aria-label="Stage name" className="input input-sm strong" value={s.name} onChange={(e) => edit(i, 'name', e.target.value)} />
                   <div className="scale">{[-2, -1, 0, 1, 2].map((v) => <button key={v} className={(s.emotion ?? 0) === v ? 'on' : ''} onClick={() => edit(i, 'emotion', v)}>{v > 0 ? `+${v}` : v}</button>)}</div>
-                  <label className="label">Doing</label><textarea className="textarea" rows={2} style={{ minHeight: 50 }} defaultValue={s.actions} onBlur={(e) => e.target.value !== (s.actions ?? '') && edit(i, 'actions', e.target.value)} />
-                  <label className="label">Thinking</label><textarea className="textarea" rows={2} style={{ minHeight: 50 }} defaultValue={s.thoughts} onBlur={(e) => e.target.value !== (s.thoughts ?? '') && edit(i, 'thoughts', e.target.value)} />
-                  <label className="label">Pains</label><textarea className="textarea" rows={2} style={{ minHeight: 50 }} defaultValue={s.pains} onBlur={(e) => e.target.value !== (s.pains ?? '') && edit(i, 'pains', e.target.value)} />
+                  <label className="label">Doing</label><textarea aria-label={`${s.name}: doing`} className="textarea" rows={2} style={{ minHeight: 50 }} defaultValue={s.actions} onBlur={(e) => e.target.value !== (s.actions ?? '') && edit(i, 'actions', e.target.value)} />
+                  <label className="label">Thinking</label><textarea aria-label={`${s.name}: thinking`} className="textarea" rows={2} style={{ minHeight: 50 }} defaultValue={s.thoughts} onBlur={(e) => e.target.value !== (s.thoughts ?? '') && edit(i, 'thoughts', e.target.value)} />
+                  <label className="label">Pains</label><textarea aria-label={`${s.name}: pains`} className="textarea" rows={2} style={{ minHeight: 50 }} defaultValue={s.pains} onBlur={(e) => e.target.value !== (s.pains ?? '') && edit(i, 'pains', e.target.value)} />
                   <div className="chips">{(s.opportunityIds ?? []).map((o) => <RefChip key={o} id={o} />)}</div>
                   <button className="btn btn-sm btn-ghost btn-danger" onClick={() => save(stages.filter((_, x) => x !== i))}>Remove</button>
                 </div>
