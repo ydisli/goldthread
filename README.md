@@ -22,9 +22,11 @@ It comes with **The Field Guide**, a ~50,000-word book in [`book/`](book/), read
 
 ## Status
 
-**Early, usable, and open for feedback.** Everything described here is built and covered by tests: 113 unit and integration tests, plus 14 browser tests that include accessibility scans. Some things have **not been tested against the real services yet**: email (SMTP), single sign-on, Jira Cloud, Azure DevOps, Slack, Microsoft Teams, inbound email, live AI model calls and the Docker image. Each was built against a local stand-in that follows the provider's documented API. See [what has been tested](docs/SELF_HOSTING.md#what-has-been-tested). If you connect one for real, please [tell us how it went](.github/ISSUE_TEMPLATE/integration_report.md).
+**Shared as-is, and not maintained.** This is a free, non-commercial project. Issues and pull requests are closed. If it's useful to you, fork it and make it yours: the licences below allow that.
 
-**How it was made.** Goldthread, its tests and the Field Guide were written with substantial help from an AI model (Claude), directed and reviewed by the maintainer. Treat it as you would any young open-source project: read the code you rely on, and report what you find.
+Everything described here is built and covered by tests: 113 unit and integration tests, plus 14 browser tests that include accessibility scans. Some things have **never been tested against the real services**: email (SMTP), single sign-on, Jira Cloud, Azure DevOps, Slack, Microsoft Teams, inbound email, live AI model calls and the Docker image. Each was built against a local stand-in that follows the provider's documented API, so expect some fixing when you connect a real one. See [what has been tested](docs/SELF_HOSTING.md#what-has-been-tested).
+
+**How it was made.** Goldthread, its tests and the Field Guide were written with substantial help from an AI model (Claude), directed and reviewed by the author. Read the code you rely on before you depend on it.
 
 ---
 
@@ -170,13 +172,13 @@ e2e/         Playwright browser tests and accessibility scans
 
 The graph is derived from typed reference fields in `core/schema.ts`, so traceability, impact analysis, backlinks and 360° profiles work for every entity type, including ones you add.
 
-**Security:** see [SECURITY.md](SECURITY.md) for how data is protected and how to report a vulnerability. The server binds to `127.0.0.1` by default; put it behind HTTPS before exposing it ([docs/SELF_HOSTING.md](docs/SELF_HOSTING.md)).
+**Security:** see [SECURITY.md](SECURITY.md) for how data is protected. The project gets no security fixes, so whoever runs it is responsible for it. The server binds to `127.0.0.1` by default; put it behind HTTPS before exposing it ([docs/SELF_HOSTING.md](docs/SELF_HOSTING.md)).
 
 **Accessibility:** WCAG 2.1 AA is the target. Automated scans and keyboard tests run on every change; screen-reader testing still needs people. See [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
 
 ## Not built yet
 
-SAML single sign-on (OIDC is built), ServiceNow sync, meeting bots that join calls, native desktop and mobile wrappers (the PWA installs on both), translations (English only for now), keyboard alternatives to drag and drop on boards, and real-time co-editing of the same text field (edits to different fields merge; the same field asks). Ideas and help are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+SAML single sign-on (OIDC is built), ServiceNow sync, meeting bots that join calls, native desktop and mobile wrappers (the PWA installs on both), translations (English only for now), keyboard alternatives to drag and drop on boards, and real-time co-editing of the same text field (edits to different fields merge; the same field asks). These are good starting points for a fork.
 
 ## Licence
 

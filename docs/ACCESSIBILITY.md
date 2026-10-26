@@ -41,4 +41,4 @@ None of these have been done yet. Each needs a human tester, and ideally people 
 - **Voice control** (Voice Control on macOS, Dragon): check that every control can be targeted by its visible name.
 - **Cognitive load:** plain-language review of the guidance and error messages.
 
-To report a barrier, open an issue with the label `accessibility`. Include the page, what you were trying to do, and the assistive technology and browser you used.
+This project isn't maintained. If you fork it, the gaps and the human testing above are the place to start.

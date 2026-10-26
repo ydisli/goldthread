@@ -185,4 +185,4 @@ Database changes are applied automatically when the server starts. Take a backup
 | Claude and OpenAI-compatible AI | A local stand-in of each API | Live model calls |
 | Docker image and Caddy example | Not built | — |
 
-If you connect one of these for real, please report what worked and what didn't. That is the most useful contribution right now.
+If you connect one of these for real, expect to fix a few things: the stand-ins follow each provider's documentation, and real services rarely match it exactly.

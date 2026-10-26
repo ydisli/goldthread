@@ -1,14 +1,8 @@
 # Security
 
-## Reporting a vulnerability
+## Not maintained
 
-Please report vulnerabilities **privately**, not in a public issue. Use GitHub's private vulnerability reporting: open the repository's **Security** tab and choose **Report a vulnerability**.
-
-Include what an attacker could do, the steps to reproduce, and the version or commit you tested. You should hear back within a week. We'll work with you on a fix and credit you in the release notes, unless you'd rather not be named.
-
-## Supported versions
-
-Only the latest release gets security fixes.
+Goldthread is shared as-is. It gets no security fixes or updates, and there is no one to report vulnerabilities to. If you run it, you are responsible for keeping it, and its dependencies, up to date. If you find a problem, fix it in your fork.
 
 ## How Goldthread protects data
 
