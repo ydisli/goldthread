@@ -12,6 +12,7 @@ import { integrationRoutes } from '../integrations.ts';
 import { fileRoutes } from '../files.ts';
 import { authenticate } from '../auth.ts';
 import { HttpError, Router, type Ctx } from '../http.ts';
+import { ValidationError } from '../db.ts';
 
 /** A tiny in-process client: route lookup, auth and the handler, without a socket. */
 export function harness() {
@@ -40,12 +41,13 @@ export function harness() {
     };
     const req = Object.assign(Readable.from(opts.raw !== undefined ? [Buffer.from(opts.raw)] : []), { headers, socket: {} });
     const ctx = { req: req as any, res, url, params: hit.params, body: async () => opts.body ?? {} } as Ctx;
-    authenticate(ctx, hit.route.need, sys, ws);
     try {
+      authenticate(ctx, hit.route.need, sys, ws);
       const body = await hit.route.handler(ctx) as any;
       return { status: res.headersSent ? res.statusCode : 200, body, headers: res.headers };
     } catch (err) {
       if (err instanceof HttpError) return { status: err.status, body: { error: err.message, ...(err.data ?? {}) } as any, headers: res.headers };
+      if (err instanceof ValidationError) return { status: 422, body: { error: err.message, errors: err.errors } as any, headers: res.headers };
       throw err;
     }
   };

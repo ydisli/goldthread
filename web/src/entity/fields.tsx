@@ -65,8 +65,12 @@ export function SentimentValue({ v }: { v: number }) {
 
 export function FieldInput({ f, value, onChange, entityId }: { f: FieldDef; value: any; onChange: (v: any) => void; entityId?: string }) {
   switch (f.kind) {
-    case 'text': case 'url':
+    case 'text':
       return <input className="input" value={value ?? ''} placeholder={f.placeholder} onChange={(e) => onChange(e.target.value)} />;
+    case 'url':
+      // "staging.example.com" means https://staging.example.com.
+      return <input className="input" inputMode="url" value={value ?? ''} placeholder={f.placeholder ?? 'https://…'} onChange={(e) => onChange(e.target.value)}
+        onBlur={(e) => { const v = e.target.value.trim(); if (v && !/^[a-z][a-z0-9+.-]*:/i.test(v)) onChange(`https://${v}`); }} />;
     case 'longtext':
       return <textarea className="textarea" rows={3} value={value ?? ''} placeholder={f.placeholder} onChange={(e) => onChange(e.target.value)} />;
     case 'markdown':

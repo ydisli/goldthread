@@ -1,5 +1,5 @@
 import type { Entity } from '../schema.ts';
-import { tokenize, jaccard, stem } from '../util.ts';
+import { tokenize, stem } from '../util.ts';
 
 export interface Contradiction {
   aId: string;
@@ -58,45 +58,62 @@ function hasAny(words: Set<string>, list: string[]): boolean {
 
 /** Find pairs of requirements that likely contradict each other. */
 export function findContradictions(requirements: Entity[]): Contradiction[] {
+  // Terms become small integers so pairs compare sorted arrays instead of building sets.
+  const ids = new Map<string, number>();
+  const idOf = (w: string) => { let n = ids.get(w); if (n === undefined) ids.set(w, (n = ids.size)); return n; };
   const items = requirements
     .filter((r) => r.status !== 'deprecated')
     .map((r) => {
       const t = text(r);
-      return { r, t, neg: NEGATION.test(t), terms: keyTerms(t), all: new Set(tokenize(t, { keepStop: true })), q: quantities(t) };
+      const terms = keyTerms(t);
+      const all = new Set(tokenize(t, { keepStop: true }));
+      return {
+        r, neg: NEGATION.test(t), terms, q: quantities(t),
+        termIds: Int32Array.from([...terms].map(idOf)).sort(),
+        // Which side of each antonym pair this requirement uses.
+        sides: ANTONYMS.map(([x, y]) => (hasAny(all, x) ? 1 : 0) | (hasAny(all, y) ? 2 : 0)),
+        all,
+      };
     });
+  // Candidate pairs share at least one key term: an inverted index avoids the rest.
+  const postings = new Map<number, number[]>();
+  items.forEach((it, i) => { for (const t of it.termIds) { const l = postings.get(t); if (l) l.push(i); else postings.set(t, [i]); } });
   const out: Contradiction[] = [];
+  const sharedWords = (a: typeof items[number], b: typeof items[number]) => [...a.terms].filter((w) => b.terms.has(w));
   for (let i = 0; i < items.length; i++) {
-    for (let j = i + 1; j < items.length; j++) {
-      const a = items[i], b = items[j];
-      const overlap = jaccard(a.terms, b.terms);
-      const shared = [...a.terms].filter((w) => b.terms.has(w));
-      if (shared.length < 1) continue;
+    const a = items[i];
+    const candidates = new Set<number>();
+    for (const t of a.termIds) for (const j of postings.get(t)!) if (j > i) candidates.add(j);
+    for (const j of [...candidates].sort((x, y) => x - y)) {
+      const b = items[j];
+      let inter = 0;
+      for (let x = 0, y = 0; x < a.termIds.length && y < b.termIds.length;) {
+        if (a.termIds[x] === b.termIds[y]) { inter++; x++; y++; } else if (a.termIds[x] < b.termIds[y]) x++; else y++;
+      }
+      const overlap = inter / (a.termIds.length + b.termIds.length - inter);
 
       // 1. Same subject, opposite polarity.
-      if (a.neg !== b.neg && overlap >= 0.3 && shared.length >= 2) {
-        out.push({ aId: a.r.id, bId: b.r.id, kind: 'polarity', score: overlap, reason: `One allows and the other forbids an action on the same subject (${shared.slice(0, 4).join(', ')}).` });
+      if (a.neg !== b.neg && overlap >= 0.3 && inter >= 2) {
+        out.push({ aId: a.r.id, bId: b.r.id, kind: 'polarity', score: overlap, reason: `One allows and the other forbids an action on the same subject (${sharedWords(a, b).slice(0, 4).join(', ')}).` });
         continue;
       }
       // 2. Antonym concepts on a shared subject.
-      let found = false;
-      for (const [x, y] of ANTONYMS) {
-        if ((hasAny(a.all, x) && hasAny(b.all, y)) || (hasAny(a.all, y) && hasAny(b.all, x))) {
-          if (overlap >= 0.1) {
-            const wa = [...x, ...y].find((w) => a.all.has(stem(w)) || a.all.has(w));
-            const wb = [...x, ...y].find((w) => b.all.has(stem(w)) || b.all.has(w));
-            out.push({ aId: a.r.id, bId: b.r.id, kind: 'antonym', score: overlap + 0.2, reason: `"${wa}" vs "${wb}" on ${shared.slice(0, 3).join(', ')}.` });
-            found = true;
-            break;
-          }
+      if (overlap >= 0.1) {
+        const k = a.sides.findIndex((sa, n) => ((sa & 1) && (b.sides[n] & 2)) || ((sa & 2) && (b.sides[n] & 1)));
+        if (k >= 0) {
+          const [x, y] = ANTONYMS[k];
+          const wa = [...x, ...y].find((w) => a.all.has(stem(w)) || a.all.has(w));
+          const wb = [...x, ...y].find((w) => b.all.has(stem(w)) || b.all.has(w));
+          out.push({ aId: a.r.id, bId: b.r.id, kind: 'antonym', score: overlap + 0.2, reason: `"${wa}" vs "${wb}" on ${sharedWords(a, b).slice(0, 3).join(', ')}.` });
+          continue;
         }
       }
-      if (found) continue;
       // 3. Same unit, different numbers, similar subject.
       if (overlap >= 0.25) {
         for (const qa of a.q) {
           const qb = b.q.find((q) => q.unit === qa.unit && q.value !== qa.value);
           if (qb) {
-            out.push({ aId: a.r.id, bId: b.r.id, kind: 'numeric', score: overlap, reason: `${qa.value} ${qa.unit} vs ${qb.value} ${qb.unit} for ${shared.slice(0, 3).join(', ')}.` });
+            out.push({ aId: a.r.id, bId: b.r.id, kind: 'numeric', score: overlap, reason: `${qa.value} ${qa.unit} vs ${qb.value} ${qb.unit} for ${sharedWords(a, b).slice(0, 3).join(', ')}.` });
             break;
           }
         }

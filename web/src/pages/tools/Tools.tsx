@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { DEFAULT_PINS, SECTIONS, type Section, type Tool } from '../../nav.ts';
+import { DEFAULT_PINS, type Section, type Tool } from '../../nav.ts';
 import { now, updateMe, useGraph, useMe } from '../../store.ts';
 import { Link } from '../../router.tsx';
-import { usePins } from '../../shell.tsx';
+import { usePins, useSections } from '../../shell.tsx';
 import { Empty, PageHead, errorToast, toast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 
@@ -41,20 +41,21 @@ function SectionBlock({ section, pins, toggle, counts }: { section: Section; pin
   );
 }
 
-function useToolCounts() {
+function useToolCounts(sections: Section[]) {
   const g = useGraph();
   return useMemo(() => {
     const today = now();
     const m = new Map<string, { n: number; alert?: boolean } | null>();
-    for (const s of SECTIONS) for (const t of s.tools) m.set(t.id, t.count ? t.count(g, today) : null);
+    for (const s of sections) for (const t of s.tools) m.set(t.id, t.count ? t.count(g, today) : null);
     return m;
-  }, [g]);
+  }, [g, sections]);
 }
 
 export function ToolsPage() {
   const [pins, toggle] = usePins();
   const me = useMe();
-  const counts = useToolCounts();
+  const { sections } = useSections();
+  const counts = useToolCounts(sections);
   const persona = me?.prefs.persona ?? 'both';
   const reset = (p: 'po' | 'ba' | 'both') => {
     updateMe({ prefs: { persona: p, pinned: DEFAULT_PINS[p] } }).then(() => toast('Sidebar updated')).catch(errorToast);
@@ -74,7 +75,7 @@ export function ToolsPage() {
         }
       />
       <div className="col" style={{ gap: 32 }}>
-        {SECTIONS.map((s) => <SectionBlock key={s.id} section={s} pins={pins} toggle={toggle} counts={counts} />)}
+        {sections.map((s) => <SectionBlock key={s.id} section={s} pins={pins} toggle={toggle} counts={counts} />)}
       </div>
     </div>
   );
@@ -82,8 +83,9 @@ export function ToolsPage() {
 
 export function SectionPage({ id }: { id: string }) {
   const [pins, toggle] = usePins();
-  const counts = useToolCounts();
-  const section = SECTIONS.find((s) => s.id === id);
+  const { sections } = useSections();
+  const counts = useToolCounts(sections);
+  const section = sections.find((s) => s.id === id);
   if (!section) return <div className="page"><Empty icon="search">No such section. <Link to="/tools">See all tools</Link></Empty></div>;
   return (
     <div className="page">

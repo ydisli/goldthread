@@ -1,5 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { createReadStream, existsSync, statSync } from 'node:fs';
+import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
 import { extname, join, normalize as normalizePath, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ValidationError } from './db.ts';
@@ -82,9 +83,21 @@ function serveStatic(res: ServerResponse, url: URL) {
     return;
   }
   const immutable = /\/assets\//.test(url.pathname);
-  res.writeHead(200, { 'Content-Type': MIME[extname(file)] ?? 'application/octet-stream', 'Cache-Control': immutable ? 'public, max-age=31536000, immutable' : 'no-cache' });
+  const headers: Record<string, string> = { 'Content-Type': MIME[extname(file)] ?? 'application/octet-stream', 'Cache-Control': immutable ? 'public, max-age=31536000, immutable' : 'no-cache', 'X-Content-Type-Options': 'nosniff' };
+  // Text assets are gzipped once and kept in memory (the bundle is about 1 MB before compression).
+  if (/\.(js|css|html|svg|json|webmanifest|txt)$/.test(file) && /\bgzip\b/.test(String(res.req?.headers['accept-encoding'] ?? ''))) {
+    const mtime = statSync(file).mtimeMs;
+    let hit = gzCache.get(file);
+    if (!hit || hit.mtime !== mtime) gzCache.set(file, (hit = { mtime, data: gzipSync(readFileSync(file), { level: 9 }) }));
+    res.writeHead(200, { ...headers, 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding', 'Content-Length': String(hit.data.length) });
+    res.end(hit.data);
+    return;
+  }
+  res.writeHead(200, headers);
   createReadStream(file).pipe(res);
 }
+
+const gzCache = new Map<string, { mtime: number; data: Buffer }>();
 
 const CORS_HEADERS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-TL-Token, X-TL-Actor, Mcp-Protocol-Version, Mcp-Session-Id', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE' };
 

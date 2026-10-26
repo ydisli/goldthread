@@ -4,7 +4,8 @@ import { actorOf } from './auth.ts';
 import { broadcast } from './live.ts';
 import { ROLE_RANK } from './system.ts';
 import { Graph } from '../core/graph.ts';
-import { ENTITIES, ENTITY_MAP, nameOf, titleOf, type Entity } from '../core/schema.ts';
+import { ENTITIES, ENTITY_MAP, nameOf, titleOf, type Entity, type FieldDef } from '../core/schema.ts';
+import { customFieldDefs, type Customisation } from '../core/custom.ts';
 import { SearchIndex } from '../core/engines/search.ts';
 import { dailyBrief } from '../core/engines/brief.ts';
 import { prepBrief } from '../core/engines/stakeholders.ts';
@@ -188,10 +189,17 @@ const TOOLS: Tool[] = [
     name: 'workspace_schema', title: 'Item types and fields',
     description: 'The item types in Throughline and their fields (with allowed values for enums). Call before create_item or update_item.',
     inputSchema: obj({ type: { type: 'string', enum: TYPES } }),
-    run: ({ type }) => ENTITIES.filter((d) => (type ? d.type === type : d.type !== 'comment')).map((d) => ({
-      type: d.type, label: d.label, description: d.description,
-      fields: type ? d.fields.filter((f) => !f.hidden && f.kind !== 'json').map((f) => ({ key: f.key, label: f.label, kind: f.kind, required: !!f.required, options: f.options, references: f.ref, help: f.help })) : undefined,
-    })),
+    run: ({ type }, ctx) => {
+      const custom = ctx.ws.store.settings().custom as Customisation | undefined;
+      const field = (f: FieldDef) => ({ key: f.key, label: f.label, kind: f.kind, required: !!f.required, options: f.options, references: f.ref, help: f.help });
+      const types = ENTITIES.filter((d) => (type ? d.type === type : d.type !== 'comment' && d.type !== 'attachment')).map((d) => ({
+        type: d.type, label: d.label, description: d.description,
+        fields: type ? [...d.fields.filter((f) => !f.hidden && f.kind !== 'json').map(field), ...customFieldDefs(d.type, custom).map(field)] : undefined,
+      }));
+      // The workspace's own item types are records with a recordType and their own fields.
+      const own = (custom?.types ?? []).map((t) => ({ recordType: t.id, label: t.label, description: t.description, fields: customFieldDefs('record', custom, t.id).map(field) }));
+      return own.length && (!type || type === 'record') ? { types, workspaceRecordTypes: own } : types;
+    },
   },
   {
     name: 'capture', title: 'Capture something quickly', write: true,
@@ -222,6 +230,7 @@ const TOOLS: Tool[] = [
     description: 'Create any item (requirement, decision, story, risk, stakeholder…) with field values keyed as in workspace_schema. References take ids.',
     inputSchema: obj({ type: { type: 'string', enum: TYPES }, fields: { type: 'object' } }, ['type', 'fields']),
     run: ({ type, fields }, ctx) => {
+      ctx.ws.store.checkCustom(type, fields ?? {});
       const e = ctx.ws.store.create(type, fields ?? {}, actorOf(ctx));
       broadcast(ctx.ws.workspace.id, [{ op: 'upsert', entity: e }]);
       return { created: brief(e) };
@@ -232,7 +241,9 @@ const TOOLS: Tool[] = [
     description: 'Change fields of an existing item (by id or key). Only the given fields change. Edits to approved requirements create a new version automatically.',
     inputSchema: obj({ id_or_key: { type: 'string' }, fields: { type: 'object' } }, ['id_or_key', 'fields']),
     run: ({ id_or_key, fields }, ctx, g) => {
-      const e = ctx.ws.store.update(find(g, id_or_key).id, fields ?? {}, actorOf(ctx));
+      const cur = find(g, id_or_key);
+      ctx.ws.store.checkCustom(cur.type, { ...cur, ...(fields ?? {}) }, Object.keys(fields ?? {}));
+      const e = ctx.ws.store.update(cur.id, fields ?? {}, actorOf(ctx));
       broadcast(ctx.ws.workspace.id, [{ op: 'upsert', entity: e }]);
       return { updated: brief(e) };
     },

@@ -5,7 +5,8 @@ import type { SystemDB } from './system.ts';
 import type { Workspaces, Sample } from './workspaces.ts';
 import { aiStatus } from './ai.ts';
 import { Graph } from '../core/graph.ts';
-import { ENTITY_MAP, type Entity } from '../core/schema.ts';
+import { ENTITIES, ENTITY_MAP, type Entity } from '../core/schema.ts';
+import { cleanCustomisation, customFieldDefs, type Customisation } from '../core/custom.ts';
 import { dailyBrief } from '../core/engines/brief.ts';
 import { SearchIndex } from '../core/engines/search.ts';
 import { lint, lintSummary } from '../core/engines/lint.ts';
@@ -58,6 +59,7 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
       const members = new Set(sys.members(wsId(ctx)).map((m) => m.userId));
       fields.mentions = Array.isArray(fields.mentions) ? [...new Set(fields.mentions as string[])].filter((id) => members.has(id) && id !== ctx.user.id) : [];
     }
+    ctx.ws.store.checkCustom(type, fields);
     const e = ctx.ws.store.create(type, fields, actorOf(ctx));
     broadcast(wsId(ctx), [{ op: 'upsert', entity: e }]);
     if (type === 'comment') notifyMentions(sys, e, ctx.ws.store.get(e.entityId), ctx.ws.workspace.name, baseUrl(ctx.req));
@@ -84,11 +86,12 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
         const by = ctx.ws.store.activity({ entityId: cur.id, limit: 1 })[0]?.actor ?? 'Someone';
         const def = ENTITY_MAP[cur.type];
         throw new HttpError(409, `${by} changed ${clashing.length === 1 ? 'a field' : 'some fields'} you were editing.`, {
-          conflict: { by, current: cur, fields: clashing.map((k) => ({ key: k, label: def?.fields.find((f) => f.key === k)?.label ?? k, theirs: cur[k] ?? null, yours: patch[k] ?? null })) },
+          conflict: { by, current: cur, fields: clashing.map((k) => ({ key: k, label: [...(def?.fields ?? []), ...customFieldDefs(cur.type, ctx.ws.store.settings().custom as Customisation | undefined, cur.recordType)].find((f) => f.key === k)?.label ?? k, theirs: cur[k] ?? null, yours: patch[k] ?? null })) },
         });
       }
     }
     const before = ctx.ws.store.get(ctx.params.id);
+    if (before) ctx.ws.store.checkCustom(before.type, { ...before, ...patch }, Object.keys(patch));
     const e = ctx.ws.store.update(ctx.params.id, patch, actorOf(ctx));
     if (e.type === 'release' && e.status === 'released' && before?.status !== 'released') {
       void postToChat(sys, wsId(ctx), 'releases', { title: `Released: ${e.title}`, text: String(e.goals ?? '').slice(0, 300), link: `${baseUrl(ctx.req)}/#/deliver/releases/${e.id}` });
@@ -132,6 +135,7 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
       const data = resolveRefs(o.data ?? {}) as Record<string, unknown>;
       const id = resolveRefs(o.id) as string | undefined;
       if (o.op === 'create') {
+        store.checkCustom(o.type!, data);
         const e = store.create(o.type!, data, actor);
         created.push(e.id);
         changes.push({ op: 'upsert', entity: e });
@@ -139,6 +143,8 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
       }
       created.push(id ?? '');
       if (o.op === 'update') {
+        const cur = id ? store.get(id) : undefined;
+        if (cur) store.checkCustom(cur.type, { ...cur, ...data }, Object.keys(data));
         const e = store.update(id!, data, actor);
         changes.push({ op: 'upsert', entity: e });
         return e;
@@ -156,6 +162,7 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
   r.add('GET', '/api/settings', 'viewer', (ctx) => ctx.ws.store.settings());
   r.add('PATCH', '/api/settings', 'admin', async (ctx) => {
     const { captureToken: _t, ...patch } = await ctx.body();
+    if ('custom' in patch) patch.custom = cleanCustomisation(patch.custom, ENTITIES.map((d) => d.type));
     ctx.ws.store.setSettings(patch);
     broadcast(wsId(ctx), [{ op: 'settings' }]);
     return ctx.ws.store.settings();

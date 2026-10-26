@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { gzipSync } from 'node:zlib';
 import type { Store } from './db.ts';
 import type { Role, User, Workspace } from './system.ts';
 
@@ -14,9 +15,17 @@ export class HttpError extends Error {
   }
 }
 
+/** Send JSON; larger bodies (a whole workspace) are gzipped when the client accepts it. */
 export function send(res: ServerResponse, status: number, body: unknown, headers: Record<string, string> = {}) {
+  const json = JSON.stringify(body);
+  const accepts = /\bgzip\b/.test(String(res.req?.headers['accept-encoding'] ?? ''));
+  if (accepts && json.length > 16_384) {
+    res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding', ...headers });
+    res.end(gzipSync(json, { level: 6 }));
+    return;
+  }
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...headers });
-  res.end(JSON.stringify(body));
+  res.end(json);
 }
 
 export async function readBody(req: IncomingMessage, limit = 20 * 1024 * 1024): Promise<any> {

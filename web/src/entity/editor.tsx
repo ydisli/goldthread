@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { defaultsFor, defOf, nameOf, type Entity } from '../../../core/schema.ts';
+import { defaultsFor, nameOf, type Entity } from '../../../core/schema.ts';
 import { can, conflictOf, createEntity, deleteEntity, restoreEntity, updateEntity, useEntity, type Conflict } from '../store.ts';
 import { navigate } from '../router.tsx';
 import { Drawer, errorToast, toast } from '../ui/kit.tsx';
 import { Icon } from '../ui/icons.tsx';
 import { FieldInput, FieldValue } from './fields.tsx';
 import { hrefOf } from './links.ts';
+import { useCustomTypes, useDef } from './custom.ts';
 
 export interface EditorRequest {
   type: string;
@@ -36,10 +37,12 @@ export function EditorHost() {
 }
 
 function EntityForm({ req, onClose }: { req: EditorRequest; onClose: () => void }) {
-  const def = defOf(req.type);
   const existing = useEntity(req.id);
-  const initial = useMemo(() => (existing ? { ...existing } : { ...defaultsFor(req.type), ...req.defaults }) as Record<string, any>, [existing?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const customTypes = useCustomTypes();
+  const initial = useMemo(() => (existing ? { ...existing } : { ...defaultsFor(req.type), ...(req.type === 'record' && customTypes[0] ? { recordType: customTypes[0].id } : {}), ...req.defaults }) as Record<string, any>, [existing?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const [data, setData] = useState<Record<string, any>>(initial);
+  // Workspace fields come with the type; a record's fields come with its kind.
+  const def = useDef(req.type, data.recordType);
   const [errors, setErrors] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [conflict, setConflict] = useState<Conflict | null>(null);
@@ -151,6 +154,14 @@ function EntityForm({ req, onClose }: { req: EditorRequest; onClose: () => void 
       <fieldset disabled={readOnly} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
       <form className="form-grid" onSubmit={(e) => { e.preventDefault(); if (!readOnly) void save(); }}>
         {!existing && <p className="full small muted" style={{ margin: 0 }}>{def.description}</p>}
+        {req.type === 'record' && !existing && !req.defaults?.recordType && (
+          <div className="field full">
+            <label htmlFor="record-kind">Kind</label>
+            {customTypes.length
+              ? <select id="record-kind" className="select" value={data.recordType ?? ''} onChange={(e) => set('recordType', e.target.value)}>{customTypes.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}</select>
+              : <span className="help">This workspace has no item types of its own yet. An admin can add them in Settings → Workspace.</span>}
+          </div>
+        )}
         {fields.map((f) => {
           const wide = ['longtext', 'markdown', 'refs', 'tags', 'scale'].includes(f.kind) || f.key === def.titleField || (f.kind === 'ref' && f.ref === '*');
           return (
@@ -161,7 +172,7 @@ function EntityForm({ req, onClose }: { req: EditorRequest; onClose: () => void 
             </div>
           );
         })}
-        {errors.length > 0 && <div className="full err">{errors.join(' · ')}</div>}
+        {errors.length > 0 && <div className="full err" role="alert" ref={(el) => el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })}>{errors.join(' · ')}</div>}
         <button type="submit" hidden />
       </form>
       </fieldset>

@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { defOf, ENTITY_MAP, nameOf, type Entity, type FieldDef } from '../../../core/schema.ts';
+import { ENTITY_MAP, nameOf, type Entity, type FieldDef } from '../../../core/schema.ts';
 import { api, useEntity, useGraph, useStore, type Activity } from '../store.ts';
 import { Link, navigate } from '../router.tsx';
 import { Icon } from '../ui/icons.tsx';
 import { Avatar, Card, Empty, PageHead, StatusBadge, copyText, errorToast } from '../ui/kit.tsx';
-import { fmtDateTime, humanize } from '../ui/format.ts';
+import { fmtDateTime, humanize, relDays } from '../ui/format.ts';
 import { FieldValue, RefChip } from './fields.tsx';
 import { openEditor } from './editor.tsx';
 import { hrefOf } from './links.ts';
 import { Comments } from './comments.tsx';
 import { Attachments } from './attachments.tsx';
+import { customLabel, customOf, useDef, useEntityDef } from './custom.ts';
 
 export { Comments, Attachments };
 
@@ -23,12 +24,12 @@ export interface Column {
   className?: string;
 }
 
-export function EntityTable({ type, rows, columns, onRowClick, empty, filterable = true, initialSort }: {
-  type: string; rows?: Entity[]; columns?: (string | Column)[]; onRowClick?: (e: Entity) => void; empty?: ReactNode; filterable?: boolean; initialSort?: { key: string; dir: 1 | -1 };
+export function EntityTable({ type, recordType, rows, columns, onRowClick, empty, filterable = true, initialSort }: {
+  type: string; recordType?: string; rows?: Entity[]; columns?: (string | Column)[]; onRowClick?: (e: Entity) => void; empty?: ReactNode; filterable?: boolean; initialSort?: { key: string; dir: 1 | -1 };
 }) {
   const g = useGraph();
-  const def = defOf(type);
-  const data = rows ?? g.all(type);
+  const def = useDef(type, recordType);
+  const data = rows ?? (recordType ? g.all(type).filter((e) => e.recordType === recordType) : g.all(type));
   const [q, setQ] = useState('');
   const [status, setStatus] = useState('');
   const [sort, setSort] = useState<{ key: string; dir: 1 | -1 } | null>(initialSort ?? null);
@@ -124,14 +125,27 @@ export function EntityListPage({ type }: { type: string }) {
   );
 }
 
+/** Items of one of the workspace's own types: /r/:typeId */
+export function RecordListPage({ typeId }: { typeId: string }) {
+  const def = useDef('record', typeId);
+  if (def === ENTITY_MAP.record) return <div className="page"><Empty icon="boxes">This item type was removed. <Link to="/workspace/settings?tab=workspace">Workspace settings</Link></Empty></div>;
+  const extra = def.fields.filter((f) => f.key.startsWith('cf_') && !['longtext', 'markdown'].includes(f.kind)).slice(0, 3).map((f) => f.key);
+  return (
+    <div className="page">
+      <PageHead title={def.plural} sub={def.description} actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'record', defaults: { recordType: typeId } })}><Icon name="plus" size={14} />New {def.label.toLowerCase()}</button>} />
+      <Card flush><EntityTable type="record" recordType={typeId} columns={['title', ...extra, 'ownerId', { key: 'updatedAt', label: 'Updated', render: (e) => <span className="muted nowrap">{relDays(e.updatedAt.slice(0, 10))}</span>, sort: (e) => e.updatedAt }]} /></Card>
+    </div>
+  );
+}
+
 // ---------------- Entity detail ----------------
 
 export function EntityHeader({ e, actions, sub }: { e: Entity; actions?: ReactNode; sub?: ReactNode }) {
-  const def = defOf(e.type);
+  const def = useEntityDef(e);
   const status = def.statusField ? e[def.statusField] : undefined;
   return (
     <PageHead
-      crumbs={<><Icon name={def.icon} size={13} /><Link to={listHref(e.type)}>{def.plural}</Link>{e.key && <><span>/</span><span className="key">{e.key}</span></>}</>}
+      crumbs={<><Icon name={def.icon} size={13} /><Link to={listHref(e.type, e.recordType)}>{def.plural}</Link>{e.key && <><span>/</span><span className="key">{e.key}</span></>}</>}
       title={<span className="row-wrap" style={{ gap: 10 }}>{nameOf(e)}{status && <StatusBadge value={status} />}</span>}
       sub={sub}
       actions={
@@ -146,7 +160,8 @@ export function EntityHeader({ e, actions, sub }: { e: Entity; actions?: ReactNo
   );
 }
 
-export function listHref(type: string): string {
+export function listHref(type: string, recordType?: string): string {
+  if (type === 'record' && recordType) return `/r/${recordType}`;
   const special: Record<string, string> = {
     stakeholder: '/stakeholders', evidence: '/discover/signals', opportunity: '/discover/opportunities', bet: '/discover/bets', assumption: '/discover/assumptions',
     experiment: '/discover/experiments', persona: '/discover/customers', journey: '/discover/customers', spec: '/define/specs', requirement: '/define/requirements',
@@ -162,7 +177,7 @@ export function listHref(type: string): string {
 
 /** Field grid for an entity — skips the title and empty values. */
 export function FieldGrid({ e, skip = [], include }: { e: Entity; skip?: string[]; include?: string[] }) {
-  const def = defOf(e.type);
+  const def = useEntityDef(e);
   const fields = def.fields.filter((f) => !f.hidden && f.kind !== 'json' && f.key !== def.titleField && !skip.includes(f.key) && (!include || include.includes(f.key)));
   const filled = fields.filter((f) => isFilled(e[f.key]));
   const longKinds = ['longtext', 'markdown'];
@@ -242,7 +257,7 @@ export function ActivityFeed({ entityId, limit = 30 }: { entityId?: string; limi
             {a.changes && (
               <div className="small muted">
                 {Object.entries(a.changes).slice(0, 4).map(([k, v]) => (
-                  <div key={k} className="ellipsis">{defOf(a.entityType)?.fields.find((f) => f.key === k)?.label ?? k}: {fmtChange(v.from)} → {fmtChange(v.to)}</div>
+                  <div key={k} className="ellipsis">{ENTITY_MAP[a.entityType]?.fields.find((f) => f.key === k)?.label ?? customLabel(customOf(s.settings), k) ?? k}: {fmtChange(v.from)} → {fmtChange(v.to)}</div>
                 ))}
               </div>
             )}
@@ -265,6 +280,7 @@ function fmtChange(v: unknown): string {
 /** Generic detail page: /e/:type/:id — also used as the base for specialised pages. */
 export function EntityPage({ id, children, side, headerActions, sub, hideFields, wide }: { id: string; children?: ReactNode; side?: ReactNode; headerActions?: ReactNode; sub?: ReactNode; hideFields?: boolean; wide?: ReactNode }) {
   const e = useEntity(id);
+  const icon = useDef(e?.type && ENTITY_MAP[e.type] ? e.type : 'story', e?.recordType).icon;
   if (!e) return <div className="page"><Empty icon="search">This item does not exist or was deleted. <Link to="/today">Back to today</Link></Empty></div>;
   return (
     <div className={`page ${wide ? 'page-wide' : ''}`}>
@@ -272,7 +288,7 @@ export function EntityPage({ id, children, side, headerActions, sub, hideFields,
       {wide}
       <div className="grid g-side">
         <div className="stack">
-          {!hideFields && <Card title="Details" icon={defOf(e.type).icon}><FieldGrid e={e} /></Card>}
+          {!hideFields && <Card title="Details" icon={icon}><FieldGrid e={e} /></Card>}
           {children}
         </div>
         <div className="stack">

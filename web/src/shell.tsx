@@ -5,7 +5,8 @@ import { similar } from '../../core/engines/clustering.ts';
 import { isoDate } from '../../core/util.ts';
 import { api, can, createEntity, logout, now, switchWorkspace, updateMe, useGraph, useMe, useStore, type Role } from './store.ts';
 import { Link, navigate, useRoute } from './router.tsx';
-import { ALL_TOOLS, ASK, DEFAULT_PINS, GUIDE, HOME, INBOX, SECTIONS, sectionOf, type Tool } from './nav.ts';
+import { ALL_TOOLS, ASK, DEFAULT_PINS, GUIDE, HOME, INBOX, SECTIONS, customSection, sectionOf, type Section, type Tool } from './nav.ts';
+import { useCustomTypes } from './entity/custom.ts';
 import { Icon } from './ui/icons.tsx';
 import { Avatar, Dropdown, Modal, Seg, errorToast, toast } from './ui/kit.tsx';
 import { EntityPicker } from './entity/fields.tsx';
@@ -40,14 +41,23 @@ export function usePins(): [string[], (id: string) => void] {
 
 // ---------------- sidebar ----------------
 
-function useCounts() {
+/** Built-in sections plus the workspace's own item types, and every tool in them. */
+export function useSections(): { sections: Section[]; tools: Tool[] } {
+  const types = useCustomTypes();
+  return useMemo(() => {
+    const custom = customSection(types);
+    return custom ? { sections: [...SECTIONS, custom], tools: [...ALL_TOOLS, ...custom.tools] } : { sections: SECTIONS, tools: ALL_TOOLS };
+  }, [types]);
+}
+
+function useCounts(tools: Tool[]) {
   const g = useGraph();
   return useMemo(() => {
     const today = now();
     const out = new Map<string, { n: number; alert?: boolean } | null>();
-    for (const t of ALL_TOOLS) out.set(t.id, t.count ? t.count(g, today) : null);
+    for (const t of tools) out.set(t.id, t.count ? t.count(g, today) : null);
     return out;
-  }, [g]);
+  }, [g, tools]);
 }
 
 function NavLink({ tool, active, count, onNavigate }: { tool: Tool; active: boolean; count?: { n: number; alert?: boolean } | null; onNavigate: () => void }) {
@@ -62,11 +72,12 @@ function NavLink({ tool, active, count, onNavigate }: { tool: Tool; active: bool
 export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
   const s = useStore();
   const { path } = useRoute();
-  const counts = useCounts();
+  const { sections, tools } = useSections();
+  const counts = useCounts(tools);
   const [pins] = usePins();
-  const here = sectionOf(path);
-  const pinned = pins.map((id) => ALL_TOOLS.find((t) => t.id === id)).filter((t): t is Tool => !!t);
-  const isActive = (t: Tool) => here?.tool.id === t.id || path === t.to;
+  const here = sectionOf(path) ?? (path.startsWith('/r/') ? { section: sections.at(-1)!, tool: tools.find((t) => path.startsWith(t.to)) } : null);
+  const pinned = pins.map((id) => tools.find((t) => t.id === id)).filter((t): t is Tool => !!t);
+  const isActive = (t: Tool) => here?.tool?.id === t.id || path === t.to;
 
   return (
     <nav className={`sidebar ${open ? 'open' : ''}`} aria-label="Main">
@@ -89,7 +100,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
 
         <div className="nav-group">
           <div className="nav-title">All tools<Link to="/tools" onClick={onNavigate}>Browse</Link></div>
-          {SECTIONS.map((sec) => (
+          {sections.map((sec) => (
             <Link key={sec.id} to={`/s/${sec.id}`} className={`nav-link ${here?.section.id === sec.id || path === `/s/${sec.id}` ? 'active' : ''}`} onClick={onNavigate} title={sec.blurb}>
               <Icon name={sec.icon} size={16} />{sec.label}
             </Link>
@@ -233,7 +244,10 @@ function UserMenu({ onNavigate }: { onNavigate: () => void }) {
 /** Tabs across the top of a tool, showing the other tools in the same section. */
 export function SectionNav() {
   const { path } = useRoute();
-  const here = sectionOf(path);
+  const { sections } = useSections();
+  const custom = path.startsWith('/r/') && sections.at(-1)?.id === 'custom' ? sections.at(-1)! : null;
+  const customTool = custom?.tools.find((t) => path === t.to || path.startsWith(`${t.to}/`));
+  const here = sectionOf(path) ?? (custom && customTool ? { section: custom, tool: customTool } : null);
   const [pins, togglePin] = usePins();
   if (!here) return null;
   const pinned = pins.includes(here.tool.id);
@@ -254,6 +268,7 @@ let paletteOpener: (() => void) | null = null;
 export const openPalette = () => paletteOpener?.();
 
 export function CommandPalette() {
+  const { tools } = useSections();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
   const [hl, setHl] = useState(0);
@@ -270,7 +285,7 @@ export function CommandPalette() {
   const results = useMemo(() => {
     const t = q.trim().toLowerCase();
     const items: { group: string; label: ReactNode; sub?: string; icon: string; run: () => void }[] = [];
-    const nav = ALL_TOOLS.filter((n) => !t || `${n.label} ${n.keywords ?? ''} ${n.blurb}`.toLowerCase().includes(t)).slice(0, t ? 6 : 8);
+    const nav = tools.filter((n) => !t || `${n.label} ${n.keywords ?? ''} ${n.blurb}`.toLowerCase().includes(t)).slice(0, t ? 6 : 8);
     for (const n of nav) items.push({ group: 'Go to', label: n.label, icon: n.icon, run: () => navigate(n.to) });
     if (t && index) {
       for (const h of index.search(q, 12)) {
@@ -282,7 +297,7 @@ export function CommandPalette() {
     for (const d of creatable) items.push({ group: 'Create', label: `New ${d.label.toLowerCase()}`, icon: d.icon, run: () => openEditor({ type: d.type }) });
     if (can('editor') && (!t || 'capture'.includes(t))) items.push({ group: 'Create', label: 'Quick capture', sub: 'Evidence, request, interaction, decision, risk', icon: 'zap', run: () => openCapture() });
     return items;
-  }, [q, index]);
+  }, [q, index, tools]);
   if (!open) return null;
   const run = (i: number) => { const r = results[i]; if (!r) return; setOpen(false); r.run(); };
   let lastGroup = '';

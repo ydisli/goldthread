@@ -129,6 +129,35 @@ export function tokenize(text: string | undefined | null, opts: { stem?: boolean
   return out;
 }
 
+/**
+ * All pairs of sets with Jaccard similarity ≥ `threshold`, without comparing every pair:
+ * the classic prefix filter. Tokens are ordered rarest first; two sets can only reach the
+ * threshold if they share a token among the first |A| − ⌈t·|A|⌉ + 1 of either. Exact.
+ */
+export function similarPairs<T>(sets: Set<T>[], threshold: number): { i: number; j: number; similarity: number }[] {
+  const df = new Map<T, number>();
+  for (const s of sets) for (const t of s) df.set(t, (df.get(t) ?? 0) + 1);
+  const order = (s: Set<T>) => [...s].sort((x, y) => (df.get(x)! - df.get(y)!) || (String(x) < String(y) ? -1 : 1));
+  const index = new Map<T, number[]>();
+  const out: { i: number; j: number; similarity: number }[] = [];
+  sets.forEach((s, i) => {
+    if (!s.size) return;
+    const toks = order(s);
+    const prefix = toks.length - Math.ceil(threshold * toks.length) + 1;
+    const seen = new Set<number>();
+    for (let k = 0; k < prefix; k++) {
+      for (const j of index.get(toks[k]) ?? []) {
+        if (seen.has(j)) continue;
+        seen.add(j);
+        const sim = jaccard(sets[j], s);
+        if (sim >= threshold) out.push({ i: j, j: i, similarity: sim });
+      }
+    }
+    for (let k = 0; k < prefix; k++) { const l = index.get(toks[k]); if (l) l.push(i); else index.set(toks[k], [i]); }
+  });
+  return out;
+}
+
 export function jaccard<T>(a: Set<T>, b: Set<T>): number {
   if (!a.size && !b.size) return 0;
   let inter = 0;

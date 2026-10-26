@@ -30,10 +30,6 @@ function cosine(a: Vec, b: Vec): number {
   return s;
 }
 
-function add(into: Vec, v: Vec) {
-  for (const [t, w] of v) into.set(t, (into.get(t) ?? 0) + w);
-}
-
 export interface Cluster {
   id: string;
   label: string;
@@ -74,28 +70,44 @@ export function sizeOf(items: Entity[]): { arr: number; people: number } {
 
 const textOf = (e: Entity) => `${e.title ?? ''} ${e.title ?? ''} ${e.detail ?? ''} ${(e.tags ?? []).join(' ')}`;
 
-/** Greedy centroid clustering of evidence by TF-IDF cosine similarity. */
+/**
+ * Greedy centroid clustering of evidence by TF-IDF cosine similarity. Centroid norms are kept
+ * up to date as items join, and only clusters sharing a term with the item are scored, so
+ * thousands of signals cluster in well under a second.
+ */
 export function clusterEvidence(evidence: Entity[], now: Date, threshold = 0.18): Cluster[] {
   if (!evidence.length) return [];
   const docs = evidence.map((e) => tokenize(textOf(e)));
   const vecs = tfidf(docs);
-  const clusters: { members: number[]; centroid: Vec }[] = [];
+  const clusters: { members: number[]; centroid: Vec; sumSq: number }[] = [];
+  const byTerm = new Map<string, number[]>();
+  const join = (ci: number, v: Vec) => {
+    const c = clusters[ci];
+    for (const [t, w] of v) {
+      const old = c.centroid.get(t);
+      if (old === undefined) { const l = byTerm.get(t); if (l) l.push(ci); else byTerm.set(t, [ci]); }
+      const next = (old ?? 0) + w;
+      c.centroid.set(t, next);
+      c.sumSq += next * next - (old ?? 0) * (old ?? 0);
+    }
+  };
   // Seed order: most recent first, so rising themes form their own clusters.
   const order = evidence.map((_, i) => i).sort((a, b) => String(evidence[b].date).localeCompare(String(evidence[a].date)));
   for (const i of order) {
+    const v = vecs[i];
+    const dots = new Map<number, number>();
+    for (const [t, w] of v) for (const ci of byTerm.get(t) ?? []) dots.set(ci, (dots.get(ci) ?? 0) + w * clusters[ci].centroid.get(t)!);
     let best = -1, bestSim = 0;
-    clusters.forEach((c, ci) => {
-      const norm = Math.sqrt([...c.centroid.values()].reduce((s, w) => s + w * w, 0)) || 1;
-      const sim = cosine(vecs[i], new Map([...c.centroid].map(([t, w]) => [t, w / norm])));
-      if (sim > bestSim) { bestSim = sim; best = ci; }
-    });
+    for (const [ci, dot] of dots) {
+      const sim = dot / (Math.sqrt(clusters[ci].sumSq) || 1);
+      if (sim > bestSim || (sim === bestSim && ci < best)) { bestSim = sim; best = ci; }
+    }
     if (best >= 0 && bestSim >= threshold) {
       clusters[best].members.push(i);
-      add(clusters[best].centroid, vecs[i]);
+      join(best, v);
     } else {
-      const centroid: Vec = new Map();
-      add(centroid, vecs[i]);
-      clusters.push({ members: [i], centroid });
+      clusters.push({ members: [i], centroid: new Map(), sumSq: 0 });
+      join(clusters.length - 1, v);
     }
   }
   return clusters

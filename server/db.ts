@@ -5,6 +5,7 @@ import { defaultsFor, ENTITY_MAP, validate, type Entity } from '../core/schema.t
 import { approvalStatus, type Approver } from '../core/engines/stakeholders.ts';
 import { versionPatch } from '../core/engines/requirements.ts';
 import { newId } from '../core/util.ts';
+import { validateCustom, type Customisation } from '../core/custom.ts';
 
 /** Who made a change: a person (with user id) or a system process. */
 export type Actor = string | { id?: string; name: string };
@@ -193,6 +194,15 @@ export class Store {
   getSetting(key: string): unknown {
     const row = this.db.prepare('SELECT value FROM settings WHERE key = ?').get(key) as { value: string } | undefined;
     return row ? JSON.parse(row.value) : undefined;
+  }
+
+  /**
+   * Check values against this workspace's own fields and types (Settings → Workspace). Forms,
+   * the API, batches and MCP go through here; quick capture doesn't, so it never blocks on them.
+   */
+  checkCustom(type: string, data: Record<string, unknown>, changed?: string[]): void {
+    const errors = validateCustom(type, data, this.settings().custom as Customisation | undefined, changed);
+    if (errors.length) throw new ValidationError(errors);
   }
 
   settings(): Settings {

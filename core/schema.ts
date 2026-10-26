@@ -909,6 +909,19 @@ export const ENTITIES: EntityDef[] = [
     ],
   },
   {
+    type: 'record', label: 'Record', plural: 'Records', area: 'workspace', icon: 'boxes',
+    description: 'An item of one of this workspace\'s own types (Settings → Workspace → Custom fields & types).',
+    titleField: 'title', columns: ['title', 'ownerId'],
+    fields: [
+      text('title', 'Title', { required: true }),
+      text('recordType', 'Kind', { hidden: true }),
+      md('description', 'Description'),
+      ref('ownerId', 'Owner', 'stakeholder'),
+      refs('relatedIds', 'Related', ANY),
+      tags(),
+    ],
+  },
+  {
     type: 'attachment', label: 'Attachment', plural: 'Attachments', area: 'workspace', icon: 'paperclip',
     description: 'A file attached to any item: a screenshot, a document, evidence for an audit.',
     titleField: 'name', columns: ['name', 'entityId', 'size', 'uploadedBy'],

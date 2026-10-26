@@ -2,6 +2,7 @@ import type { Graph } from '../../core/graph.ts';
 import { dailyBrief, openMentions } from '../../core/engines/brief.ts';
 import { hubSummary, pendingApprovalsFor } from '../../core/engines/stakeholders.ts';
 import { getState, type Persona } from './store.ts';
+import type { CustomType } from '../../core/custom.ts';
 
 export interface Tool {
   id: string;
@@ -110,6 +111,18 @@ export const SECTIONS: Section[] = [
 ];
 
 export const ALL_TOOLS: Tool[] = [HOME, INBOX, ASK, GUIDE, ...SECTIONS.flatMap((s) => s.tools)];
+
+/** The workspace's own item types (Settings → Workspace), as a section of tools you can pin. */
+export function customSection(types: CustomType[]): Section | null {
+  if (!types.length) return null;
+  return {
+    id: 'custom', label: 'Your item types', icon: 'boxes', blurb: 'Item types this workspace added for itself.',
+    tools: types.map((t) => ({
+      id: `r:${t.id}`, label: t.plural, to: `/r/${t.id}`, icon: t.icon, blurb: t.description || `Every ${t.label.toLowerCase()} in this workspace.`, keywords: `custom ${t.label}`,
+      count: (g) => { const n = g.all('record').filter((r) => r.recordType === t.id).length; return n ? { n } : null; },
+    })),
+  };
+}
 
 /** Sensible starting pins for each role; people can change them any time. */
 export const DEFAULT_PINS: Record<Persona, string[]> = {

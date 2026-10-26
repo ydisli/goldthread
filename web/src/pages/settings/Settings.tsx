@@ -8,6 +8,7 @@ import { fmtDate, relDays } from '../../ui/format.ts';
 import { openEditor } from '../../entity/editor.tsx';
 import { useTheme } from '../../shell.tsx';
 import { IntegrationsTab } from './Integrations.tsx';
+import { Customise } from './Customise.tsx';
 
 type Tab = 'profile' | 'workspace' | 'members' | 'connect' | 'integrations' | 'ai' | 'data';
 
@@ -196,6 +197,7 @@ function WorkspaceTab() {
         <Row label="Your access"><span>{cur?.role}{cur?.demo ? ' · demo workspace' : ''}{cur?.kind === 'personal' ? ' · personal' : ' · team'}</span></Row>
         {isAdmin ? <div className="row mt12"><span className="spacer" /><button className="btn btn-primary" onClick={save}>Save</button></div> : <div className="small muted mt12">Only admins and owners can change workspace settings.</div>}
       </Card>
+      <Customise />
       <Card title="Use it everywhere">
         <div className="small">Install Throughline as an app: in Chrome or Edge choose <b>Install app</b> in the address bar; in Safari use <b>File → Add to Dock</b> (macOS) or <b>Share → Add to Home Screen</b> (iPhone, iPad). The last copy of the workspace stays readable offline.</div>
       </Card>

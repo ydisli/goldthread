@@ -707,3 +707,9 @@ a.list-item:hover { background: var(--surface-2); text-decoration: none; }
 .thumbs a { display: block; aspect-ratio: 1; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); background: var(--surface-2); }
 .thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .drop-over { outline: 2px dashed var(--accent); outline-offset: -4px; }
+
+/* Settings → custom fields & types */
+.custom-field { display: grid; grid-template-columns: minmax(140px, 1.2fr) minmax(110px, 0.8fr) minmax(140px, 1.4fr) auto 27px; gap: 8px; align-items: center; }
+.custom-type { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.custom-type-head { display: grid; grid-template-columns: 18px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 150px) auto auto; gap: 8px; align-items: center; }
+@media (max-width: 720px) { .custom-field { grid-template-columns: 1fr 1fr; } .custom-field > :nth-child(3) { grid-column: 1 / -1; } .custom-type-head { grid-template-columns: 18px 1fr auto; } }

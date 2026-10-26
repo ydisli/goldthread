@@ -1,5 +1,5 @@
 import type { Entity } from '../schema.ts';
-import { daysBetween, jaccard, tokenize } from '../util.ts';
+import { daysBetween, similarPairs, tokenize } from '../util.ts';
 
 export interface InvestCheck { key: 'I' | 'N' | 'V' | 'E' | 'S' | 'T'; label: string; ok: boolean; hint: string }
 
@@ -69,16 +69,15 @@ export interface HygieneReport {
 /** Backlog hygiene scan over stories that are not done. */
 export function backlogHygiene(stories: Entity[], now: Date, staleDays = 90): HygieneReport {
   const open = stories.filter((s) => s.status !== 'done');
-  const tok = new Map(stories.map((s) => [s.id, new Set(tokenize(`${s.title} ${s.iWant ?? ''}`))]));
   // Open stories are compared with every story: a duplicate of a done story is "already delivered".
+  // Pairs come from a prefix-filtered join, so large backlogs don't compare every pair.
   const duplicates: HygieneReport['duplicates'] = [];
-  const openIds = new Set(open.map((s) => s.id));
-  for (let i = 0; i < open.length; i++)
-    for (const other of stories) {
-      if (other.id === open[i].id || (openIds.has(other.id) && stories.indexOf(other) < stories.indexOf(open[i]))) continue;
-      const sim = jaccard(tok.get(open[i].id)!, tok.get(other.id)!);
-      if (sim >= 0.6) duplicates.push({ a: open[i], b: other, similarity: sim });
-    }
+  const isOpen = (s: Entity) => s.status !== 'done';
+  for (const { i, j, similarity } of similarPairs(stories.map((s) => new Set(tokenize(`${s.title} ${s.iWant ?? ''}`))), 0.6)) {
+    const [x, y] = [stories[i], stories[j]]; // i < j
+    if (isOpen(x)) duplicates.push({ a: x, b: y, similarity });
+    else if (isOpen(y)) duplicates.push({ a: y, b: x, similarity });
+  }
   const stale = open.filter((s) => s.status === 'backlog' && daysBetween((s.updatedAt ?? s.createdAt ?? '').slice(0, 10), now) > staleDays);
   const orphans = open.filter((s) => !s.betId && !(s.requirementIds ?? []).length);
   const noAcceptance = open.filter((s) => ['ready', 'in-progress', 'backlog'].includes(s.status) && !hasGherkin(s.acceptance));

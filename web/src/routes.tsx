@@ -1,5 +1,5 @@
 import { Suspense, type ReactNode } from 'react';
-import { EntityListPage, EntityPage } from './entity/views.tsx';
+import { EntityListPage, EntityPage, RecordListPage } from './entity/views.tsx';
 import { useEntity } from './store.ts';
 import { InboxPage, TodayPage } from './pages/today/Today.tsx';
 import { StakeholderProfilePage, StakeholdersPage } from './pages/stakeholders/Overview.tsx';
@@ -105,6 +105,7 @@ export const ROUTES: Route[] = [
   { path: '/workspace/settings', render: () => <SettingsPage /> },
   // Generic
   { path: '/e/:type', render: (p) => <EntityListPage type={p.type} /> },
+  { path: '/r/:typeId', render: (p) => <RecordListPage key={p.typeId} typeId={p.typeId} /> },
   { path: '/e/:type/:id', render: (p) => <EntityPage key={p.id} id={p.id} /> },
 ];
 
