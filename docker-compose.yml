@@ -1,0 +1,28 @@
+# Example: Throughline behind Caddy with automatic HTTPS. Untested here (no Docker on the
+# build machine). Replace the domain, then: docker compose up -d
+services:
+  throughline:
+    build: .
+    restart: unless-stopped
+    environment:
+      TL_PUBLIC_URL: https://throughline.example.com
+      TL_SIGNUP: invite-only
+      # Optional: email, single sign-on, AI. See docs/SELF_HOSTING.md.
+      # TL_SMTP_URL: smtp://user:password@smtp.example.com:587
+      # TL_MAIL_FROM: Throughline <throughline@example.com>
+      # TL_OIDC_ISSUER: https://login.microsoftonline.com/<tenant>/v2.0
+      # TL_OIDC_CLIENT_ID: ...
+      # TL_OIDC_CLIENT_SECRET: ...
+      # TL_OIDC_NAME: Microsoft
+    volumes:
+      - throughline-data:/data
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    command: caddy reverse-proxy --from throughline.example.com --to throughline:4300
+    volumes:
+      - caddy-data:/data
+volumes:
+  throughline-data:
+  caddy-data:

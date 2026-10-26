@@ -73,7 +73,7 @@ export function authenticate(ctx: Ctx, need: Need, sys: SystemDB, workspaces: Wo
 
   if (token) {
     const t = sys.resolveToken(token);
-    if (!t) throw new HttpError(401, 'Invalid or revoked API token. Create a new one under Settings → Access & tokens.');
+    if (!t) throw new HttpError(401, 'Invalid or revoked API token. Create a new one under Settings → Tokens & integrations.');
     ctx.user = sys.user(t.userId);
     ctx.via = 'token';
     workspaceId = t.workspaceId;

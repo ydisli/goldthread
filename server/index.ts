@@ -169,5 +169,5 @@ server.listen(PORT, HOST, () => {
   const where = `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`;
   console.log(`Throughline running at ${where}${DEV ? ' (dev)' : ''}`);
   console.log(`Data: ${DATA}`);
-  console.log(`MCP endpoint for AI assistants: ${where}/mcp (create a token under Settings → Access & tokens)`);
+  console.log(`MCP endpoint for AI assistants: ${where}/mcp (create a token under Settings → Tokens & integrations)`);
 });

@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api } from '../../store.ts';
-import { Card, errorToast, toast } from '../../ui/kit.tsx';
+import { api, getState } from '../../store.ts';
+import { Card, copyText, errorToast, toast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { fmtDateTime } from '../../ui/format.ts';
 
 export interface SyncStatus { at: string; created: number; updated: number; defects: number; pushed: number; skipped: number; error?: string; warnings?: string[] }
-interface Integration { connected: boolean; config: Record<string, any>; status: { lastSync?: SyncStatus } }
+interface Integration { connected: boolean; config: Record<string, any>; status: { lastSync?: SyncStatus; lastPost?: { at: string; ok: boolean; error?: string } }; hasWebhook?: boolean; hasVerification?: boolean }
 type Kind = 'jira' | 'ado';
+type AllKinds = Kind | 'slack' | 'teams' | 'email-in';
 
 interface FieldSpec { key: string; label: string; placeholder?: string; help?: string; kind?: 'text' | 'textarea' | 'secret' | 'check' | 'interval'; advanced?: boolean }
 
@@ -104,9 +105,86 @@ function IntegrationCard({ kind, current, onChange }: { kind: Kind; current: Int
   );
 }
 
+const EVENT_LABELS: Record<string, string> = { requests: 'New requests', approvals: 'Sign-offs requested', decisions: 'Decisions logged', releases: 'Releases shipped' };
+
+function ChatCard({ kind, current, onChange }: { kind: 'slack' | 'teams'; current: Integration | null; onChange: () => void }) {
+  const slack = kind === 'slack';
+  const [webhookUrl, setWebhook] = useState('');
+  const [verify, setVerify] = useState('');
+  const [events, setEvents] = useState<string[]>(current?.config.events ?? Object.keys(EVENT_LABELS));
+  const [busy, setBusy] = useState(false);
+  const ws = getState().auth?.current?.id ?? '';
+  const inbound = `${location.origin}/api/inbound/${kind}/${ws}`;
+  const save = async () => {
+    setBusy(true);
+    try {
+      await api(`/api/admin/integrations/${kind}`, { method: 'PUT', json: { webhookUrl: webhookUrl || undefined, [slack ? 'signingSecret' : 'securityToken']: verify || undefined, config: { events } } });
+      setWebhook(''); setVerify('');
+      toast(`${slack ? 'Slack' : 'Teams'} saved`);
+    } catch (err) { errorToast(err); } finally { setBusy(false); onChange(); }
+  };
+  const test = async () => {
+    setBusy(true);
+    try { toast((await api<{ message: string }>(`/api/admin/integrations/${kind}/test`, { method: 'POST' })).message); } catch (err) { errorToast(err); } finally { setBusy(false); onChange(); }
+  };
+  const disconnect = async () => { if (confirm(`Disconnect ${slack ? 'Slack' : 'Teams'}?`)) { await api(`/api/admin/integrations/${kind}`, { method: 'DELETE' }).catch(errorToast); onChange(); } };
+  return (
+    <Card title={<span className="row" style={{ gap: 8 }}>{slack ? 'Slack' : 'Microsoft Teams'}{current?.connected && <span className="badge green">Connected</span>}</span>}
+      sub={slack ? 'Post updates to a channel, and capture from any conversation with a /throughline slash command.' : 'Post updates to a channel through a Workflows webhook, and capture by @mentioning an outgoing webhook.'}>
+      <form className="form-grid" onSubmit={(e) => { e.preventDefault(); void save(); }}>
+        <div className="field full">
+          <label htmlFor={`${kind}-hook`}>{slack ? 'Incoming webhook URL' : 'Workflows webhook URL'}</label>
+          <input id={`${kind}-hook`} className="input" type="password" autoComplete="off" value={webhookUrl} onChange={(e) => setWebhook(e.target.value)} placeholder={current?.hasWebhook ? 'Saved — paste a new one to replace it' : slack ? 'https://hooks.slack.com/services/…' : 'https://…logic.azure.com/workflows/…'} />
+          <span className="help">{slack ? 'In your Slack app: Incoming Webhooks → Add New Webhook to Workspace, pick the channel.' : 'In Teams: the channel’s ⋯ → Workflows → “Post to a channel when a webhook request is received”.'}</span>
+        </div>
+        <div className="field full">
+          <label>Post when</label>
+          <div className="row-wrap" style={{ gap: 12 }}>{Object.entries(EVENT_LABELS).map(([id, label]) => (
+            <label key={id} className="check-row small"><input type="checkbox" checked={events.includes(id)} onChange={(e) => setEvents(e.target.checked ? [...events, id] : events.filter((x) => x !== id))} />{label}</label>
+          ))}</div>
+        </div>
+        <div className="field full">
+          <label htmlFor={`${kind}-verify`}>{slack ? 'Signing secret (for the slash command)' : 'Security token (for the outgoing webhook)'}</label>
+          <input id={`${kind}-verify`} className="input" type="password" autoComplete="off" value={verify} onChange={(e) => setVerify(e.target.value)} placeholder={current?.hasVerification ? 'Saved — paste a new one to replace it' : ''} />
+          <span className="help">{slack ? <>Slack app → Basic Information → Signing Secret. Create a slash command <code>/throughline</code> with this request URL:</> : <>Team → Manage team → Apps → Create an outgoing webhook with this callback URL; Teams shows the token once:</>} <code className="selectable">{inbound}</code></span>
+        </div>
+        <div className="full row-wrap">
+          <span className="small muted grow">{slack ? 'Try: /throughline request: bulk unlock for shift leads' : 'Try: @Throughline risk: CRM connector rate-limits bulk provisioning'}</span>
+          {current?.connected && <button type="button" className="btn btn-ghost btn-danger" onClick={disconnect}>Disconnect</button>}
+          {current?.hasWebhook && <button type="button" className="btn" onClick={test} disabled={busy}>Send a test message</button>}
+          <button className="btn btn-primary" disabled={busy}>Save</button>
+        </div>
+      </form>
+      {current?.status.lastPost && <div className={`small mt12 ${current.status.lastPost.ok ? 'muted' : 'err'}`}>Last post {fmtDateTime(current.status.lastPost.at)}: {current.status.lastPost.ok ? 'delivered' : current.status.lastPost.error}</div>}
+    </Card>
+  );
+}
+
+function EmailInCard({ current, onChange }: { current: Integration | null; onChange: () => void }) {
+  const [url, setUrl] = useState('');
+  useEffect(() => { if (current?.connected) api<{ url: string }>('/api/admin/integrations/email-in/address').then((r) => setUrl(r.url)).catch(() => {}); }, [current?.connected]);
+  const enable = async (regenerate = false) => {
+    if (regenerate && !confirm('Create a new address? The old one stops working straight away.')) return;
+    try { await api('/api/admin/integrations/email-in', { method: 'PUT', json: { regenerate } }); toast(regenerate ? 'New address created' : 'Email-in is on'); } catch (err) { errorToast(err); } finally { onChange(); }
+  };
+  const disable = async () => { if (confirm('Turn off email-in? The address stops working.')) { await api('/api/admin/integrations/email-in', { method: 'DELETE' }).catch(errorToast); setUrl(''); onChange(); } };
+  return (
+    <Card title={<span className="row" style={{ gap: 8 }}>Email in{current?.connected && <span className="badge green">On</span>}</span>}
+      sub="Forward an email to capture it. The subject becomes the title; start it with Request:, Decision:, Risk: or Idea: to choose the kind. The sender is matched to a stakeholder by email.">
+      {!current?.connected ? <button className="btn" onClick={() => void enable()}>Turn on email-in</button> : (
+        <div className="col" style={{ gap: 8 }}>
+          <div className="small">Point your mail provider's inbound webhook at this address (Postmark inbound, Mailgun routes, or anything that can POST JSON or a form with from, subject and text). Keep it private: anyone with it can add signals.</div>
+          <div className="row"><input className="input mono" readOnly value={url} onFocus={(e) => e.target.select()} aria-label="Inbound webhook address" /><button className="btn" onClick={() => copyText(url, 'Address copied')}><Icon name="copy" size={14} />Copy</button></div>
+          <div className="row"><span className="spacer" /><button className="btn btn-ghost btn-danger" onClick={disable}>Turn off</button><button className="btn" onClick={() => void enable(true)}>New address</button></div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 export function IntegrationsTab() {
-  const [all, setAll] = useState<Record<Kind, Integration | null> | null>(null);
-  const load = useCallback(() => { api<Record<Kind, Integration | null>>('/api/integrations').then(setAll).catch(errorToast); }, []);
+  const [all, setAll] = useState<Record<AllKinds, Integration | null> | null>(null);
+  const load = useCallback(() => { api<Record<AllKinds, Integration | null>>('/api/integrations').then(setAll).catch(errorToast); }, []);
   useEffect(load, [load]);
   if (!all) return null;
   return (
@@ -114,6 +192,9 @@ export function IntegrationsTab() {
       <p className="small muted" style={{ margin: 0 }}>Your team keeps working in its delivery tool; Throughline keeps the backlog in step for analysis, forecasts and traceability. A sync behaves like re-importing an export: known items are updated by key, and links or notes you made here are kept.</p>
       <IntegrationCard key={`jira-${!!all.jira}`} kind="jira" current={all.jira} onChange={load} />
       <IntegrationCard key={`ado-${!!all.ado}`} kind="ado" current={all.ado} onChange={load} />
+      <ChatCard key={`slack-${!!all.slack}`} kind="slack" current={all.slack} onChange={load} />
+      <ChatCard key={`teams-${!!all.teams}`} kind="teams" current={all.teams} onChange={load} />
+      <EmailInCard current={all['email-in']} onChange={load} />
     </div>
   );
 }

@@ -86,6 +86,7 @@ export class Store {
   }
 
   get(id: string): Entity | undefined {
+    if (!id) return undefined;
     const row = this.db.prepare('SELECT * FROM entities WHERE id = ? AND deleted = 0').get(id) as any;
     return row ? rowToEntity(row) : undefined;
   }

@@ -1,4 +1,5 @@
 import { mkdtempSync, rmSync } from 'node:fs';
+import { Readable } from 'node:stream';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { SystemDB } from '../system.ts';
@@ -24,11 +25,11 @@ export function harness() {
   oidcRoutes(router, sys, ws);
   integrationRoutes(router, sys, ws);
   fileRoutes(router, ws);
-  const call = async (method: string, path: string, opts: { session?: string; workspace?: string; body?: unknown } = {}) => {
+  const call = async (method: string, path: string, opts: { session?: string; workspace?: string; body?: unknown; raw?: string; headers?: Record<string, string> } = {}) => {
     const url = new URL(`http://localhost${path}`);
     const hit = router.match(method, url.pathname);
     if (!hit) throw new Error(`no route ${method} ${path}`);
-    const headers: Record<string, string> = {};
+    const headers: Record<string, string> = { ...(opts.headers ?? {}) };
     if (opts.session) headers.cookie = `tl_session=${opts.session}`;
     if (opts.workspace) headers['x-tl-workspace'] = opts.workspace;
     const res: any = {
@@ -37,7 +38,8 @@ export function harness() {
       writeHead(status: number, h: Record<string, string> = {}) { this.statusCode = status; for (const [k, v] of Object.entries(h)) this.headers[k.toLowerCase()] = v; this.headersSent = true; return this; },
       end() { this.headersSent = true; },
     };
-    const ctx = { req: { headers, socket: {} } as any, res, url, params: hit.params, body: async () => opts.body ?? {} } as Ctx;
+    const req = Object.assign(Readable.from(opts.raw !== undefined ? [Buffer.from(opts.raw)] : []), { headers, socket: {} });
+    const ctx = { req: req as any, res, url, params: hit.params, body: async () => opts.body ?? {} } as Ctx;
     authenticate(ctx, hit.route.need, sys, ws);
     try {
       const body = await hit.route.handler(ctx) as any;

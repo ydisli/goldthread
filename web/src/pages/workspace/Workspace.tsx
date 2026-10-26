@@ -16,6 +16,7 @@ import { hrefOf } from '../../entity/links.ts';
 import { ExtractPanel } from '../define/Toolkit.tsx';
 import { mergedMessage, saveText } from '../../entity/autosave.ts';
 import { downloadDocx, printMarkdown } from '../../ui/export.ts';
+import { readTranscript } from '../../ui/transcript.ts';
 
 // ---------------- Meetings ----------------
 
@@ -87,7 +88,18 @@ export function MeetingPage({ id }: { id: string }) {
       <div className="grid g-side">
         <div className="stack">
           {m.agenda && <Card title="Agenda" icon="list-checks"><div className="pre small">{m.agenda}</div></Card>}
-          <Card title="Notes / transcript" icon="pencil" sub="Paste a transcript or type notes. Lines like “Decision: …”, “Action: @name … by Friday”, “Risk: …” are extracted below.">
+          <Card title="Notes / transcript" icon="pencil" sub="Type notes, paste a transcript, or import one from Teams or Zoom. Lines like “Decision: …”, “Action: @name … by Friday”, “Risk: …” are extracted below."
+            actions={<label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer' }}><Icon name="file-up" size={13} />Import transcript<input type="file" hidden accept=".vtt,.srt,.txt,.docx,text/vtt,text/plain" onChange={async (e) => {
+              const f = e.target.files?.[0];
+              e.target.value = '';
+              if (!f) return;
+              try {
+                const t = await readTranscript(f);
+                if (!t.trim()) { toast(`Nothing to import in ${f.name}`, 'error'); return; }
+                onNotes(notes.trim() ? `${notes.trimEnd()}\n\n— Transcript: ${f.name} —\n${t}` : t);
+                toast(`Imported ${t.split('\n').length} lines from ${f.name}. Check what was extracted below.`);
+              } catch (err) { errorToast(err); }
+            }} /></label>}>
             <textarea className="textarea" rows={12} value={notes} onChange={(e) => onNotes(e.target.value)} placeholder="- Decision: …&#10;- Action: @maya to … by Friday&#10;- Risk: …" />
           </Card>
           <ExtractPanel e={{ ...m, notes }} field="notes" />

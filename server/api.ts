@@ -11,9 +11,10 @@ import { SearchIndex } from '../core/engines/search.ts';
 import { lint, lintSummary } from '../core/engines/lint.ts';
 import { completeness, completenessScore } from '../core/engines/completeness.ts';
 import { reviewSpec } from '../core/engines/review.ts';
-import { similar } from '../core/engines/clustering.ts';
 import { isoDate } from '../core/util.ts';
 import { baseUrl } from './mail.ts';
+import { capture } from './capture.ts';
+import { postToChat } from './chat.ts';
 import { notifyApproval, notifyMentions } from './notify.ts';
 
 export const graphFor = (ctx: WCtx) => new Graph(ctx.ws.store.all(), { meUserId: ctx.user.id });
@@ -61,6 +62,10 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
     broadcast(wsId(ctx), [{ op: 'upsert', entity: e }]);
     if (type === 'comment') notifyMentions(sys, e, ctx.ws.store.get(e.entityId), ctx.ws.workspace.name, baseUrl(ctx.req));
     if (type === 'approval') notifyApproval(sys, e, graphFor(ctx), ctx.ws.workspace.name, baseUrl(ctx.req));
+    const link = `${baseUrl(ctx.req)}/#/e/${e.type}/${e.id}`;
+    if (type === 'request') void postToChat(sys, wsId(ctx), 'requests', { title: `New request: ${e.title}`, text: `From ${(e.requesterId && ctx.ws.store.get(e.requesterId)?.name) || ctx.user.name}`, link });
+    if (type === 'approval') void postToChat(sys, wsId(ctx), 'approvals', { title: `Sign-off requested: ${e.title}`, text: e.dueDate ? `Due ${e.dueDate}` : '', link });
+    if (type === 'decision') void postToChat(sys, wsId(ctx), 'decisions', { title: `Decision: ${e.title}`, text: String(e.chosen ?? e.context ?? '').slice(0, 300), link });
     return e;
   });
 
@@ -83,7 +88,11 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
         });
       }
     }
+    const before = ctx.ws.store.get(ctx.params.id);
     const e = ctx.ws.store.update(ctx.params.id, patch, actorOf(ctx));
+    if (e.type === 'release' && e.status === 'released' && before?.status !== 'released') {
+      void postToChat(sys, wsId(ctx), 'releases', { title: `Released: ${e.title}`, text: String(e.goals ?? '').slice(0, 300), link: `${baseUrl(ctx.req)}/#/deliver/releases/${e.id}` });
+    }
     broadcast(wsId(ctx), [{ op: 'upsert', entity: e }]);
     return e;
   });
@@ -194,28 +203,11 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
   /** Quick capture from the CLI, the browser extension, chat bots and scripts. */
   r.add('POST', '/api/capture', 'editor', async (ctx) => {
     const b = await ctx.body();
-    const kind = String(b.kind ?? 'evidence');
-    const text = String(b.text ?? '').trim();
-    if (!text) throw new HttpError(400, 'text is required');
-    const store = ctx.ws.store;
-    const actor = actorOf(ctx);
-    const today = isoDate(new Date());
-    const people = store.byType('stakeholder');
-    const from = b.from ? people.find((p) => String(p.name).toLowerCase().includes(String(b.from).toLowerCase())) : undefined;
-    const title = text.split('\n')[0].slice(0, 200);
-    const detail = b.detail ?? (text.length > title.length ? text : undefined);
-    let e: Entity;
-    if (kind === 'request') e = store.create('request', { title, description: detail, requesterId: from?.id, receivedAt: today, status: 'new' }, actor);
-    else if (kind === 'interaction') {
-      if (!from) throw new HttpError(400, 'Interactions need "from" matching a stakeholder name');
-      e = store.create('interaction', { title, summary: detail, date: today, stakeholderIds: [from.id], kind: b.channel ?? 'chat', sentiment: Number(b.sentiment ?? 0) }, actor);
-    } else if (kind === 'decision') e = store.create('decision', { title, context: detail, date: today, status: 'proposed' }, actor);
-    else if (kind === 'risk') e = store.create('raid', { title, description: detail, kind: 'risk', status: 'open', ownerId: from?.id }, actor);
-    else if (kind === 'idea') e = store.create('bet', { title, hypothesis: detail, status: 'idea', horizon: 'later' }, actor);
-    else e = store.create('evidence', { title, detail, source: b.source ?? 'internal', kind: b.evidenceKind ?? 'said', account: b.account, reach: b.reach ? Number(b.reach) : undefined, url: b.url, date: today, relayedById: from?.id, tags: b.tags ?? [] }, actor);
-    broadcast(wsId(ctx), [{ op: 'upsert', entity: e }]);
-    const dupes = similar(text, store.byType(e.type).filter((x) => x.id !== e.id)).slice(0, 3).map((d) => ({ id: d.entity.id, title: d.entity.title, similarity: d.similarity }));
-    return { entity: e, similar: dupes };
+    if (!String(b.text ?? '').trim()) throw new HttpError(400, 'text is required');
+    let out;
+    try { out = capture(ctx.ws.store, { ...b, text: String(b.text) }, actorOf(ctx)); } catch (err) { throw new HttpError(400, (err as Error).message); }
+    broadcast(wsId(ctx), [{ op: 'upsert', entity: out.entity }]);
+    return out;
   }, { cors: true });
 
   r.add('GET', '/api/events', 'viewer', (ctx) => {

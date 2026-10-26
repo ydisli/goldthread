@@ -362,7 +362,7 @@ export const ENTITIES: EntityDef[] = [
     fields: [
       text('title', 'Signal', { required: true, help: 'A quote or one-line summary.' }),
       long('detail', 'Detail'),
-      en('source', 'Source', ['support', 'interview', 'survey', 'analytics', 'sales-call', 'app-review', 'nps', 'internal', 'audit', 'monitoring', 'social', 'competitor']),
+      en('source', 'Source', ['support', 'interview', 'survey', 'analytics', 'sales-call', 'app-review', 'nps', 'internal', 'audit', 'monitoring', 'social', 'competitor', 'email', 'chat']),
       en('kind', 'Kind', ['said', 'did'], { help: 'Said = opinion/quote; did = observed behaviour/data.' }),
       text('account', 'Account / department', { help: 'Customer account, business unit or department the signal came from.' }),
       text('segment', 'Segment / group', { placeholder: 'e.g. enterprise, frontline staff, EMEA' }),
