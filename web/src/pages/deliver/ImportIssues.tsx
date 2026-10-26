@@ -14,8 +14,8 @@ export function ImportIssuesDrawer({ onClose }: { onClose: () => void }) {
   const [fileName, setFileName] = useState('');
   const [bugs, setBugs] = useState(true);
   const [busy, setBusy] = useState(false);
-  const plan = useMemo(() => (text.trim() ? planIssueImport(parseCsv(text), g.all('story'), { bugsAsDefects: bugs }) : null), [text, g, bugs]);
-  const total = plan ? plan.creates.length + plan.updates.length + (bugs ? plan.defects.length : 0) : 0;
+  const plan = useMemo(() => (text.trim() ? planIssueImport(parseCsv(text), [...g.all('story'), ...g.all('defect')], { bugsAsDefects: bugs }) : null), [text, g, bugs]);
+  const total = plan ? plan.creates.length + plan.updates.length + (bugs ? plan.defects.length + plan.defectUpdates.length : 0) : 0;
 
   const run = async () => {
     if (!plan) return;
@@ -23,6 +23,7 @@ export function ImportIssuesDrawer({ onClose }: { onClose: () => void }) {
       ...plan.creates.map((data) => ({ op: 'create' as const, type: 'story', data })),
       ...plan.updates.map((u) => ({ op: 'update' as const, id: u.id, data: u.data })),
       ...(bugs ? plan.defects.map((data) => ({ op: 'create' as const, type: 'defect', data })) : []),
+      ...(bugs ? plan.defectUpdates.map((u) => ({ op: 'update' as const, id: u.id, data: u.data })) : []),
     ];
     setBusy(true);
     try {

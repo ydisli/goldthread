@@ -866,6 +866,7 @@ export const ENTITIES: EntityDef[] = [
       ref('releaseId', 'Release', 'release'),
       date('reportedAt', 'Reported'),
       long('detail', 'Detail'),
+      text('externalKey', 'Jira / ADO key'),
     ],
   },
 

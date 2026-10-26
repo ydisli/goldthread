@@ -150,6 +150,10 @@ export class SystemDB {
         id TEXT PRIMARY KEY, to_addr TEXT NOT NULL, subject TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL,
         sent_at TEXT, attempts INTEGER NOT NULL DEFAULT 0, next_at INTEGER NOT NULL DEFAULT 0, last_error TEXT
       );
+      CREATE TABLE IF NOT EXISTS integrations (
+        workspace_id TEXT NOT NULL REFERENCES workspaces(id), kind TEXT NOT NULL, config TEXT NOT NULL DEFAULT '{}',
+        secret_enc TEXT, status TEXT NOT NULL DEFAULT '{}', updated_at TEXT NOT NULL, updated_by TEXT, PRIMARY KEY (workspace_id, kind)
+      );
       CREATE TABLE IF NOT EXISTS ai_config (
         workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id), provider TEXT NOT NULL, model TEXT, base_url TEXT, key_enc TEXT,
         updated_at TEXT NOT NULL, updated_by TEXT
@@ -491,6 +495,39 @@ export class SystemDB {
     const d = createDecipheriv('aes-256-gcm', this.key, iv);
     d.setAuthTag(tag);
     return Buffer.concat([d.update(data), d.final()]).toString('utf8');
+  }
+
+  // ---------------- integrations (Jira, Azure DevOps, Slack/Teams, email-in) ----------------
+
+  /** Settings for one integration in a workspace. The secret is decrypted; never send it to a browser. */
+  integration<C = Record<string, unknown>>(workspaceId: string, kind: string): { config: C; secret?: string; status: Record<string, unknown>; updatedAt: string } | undefined {
+    const r = this.db.prepare('SELECT * FROM integrations WHERE workspace_id = ? AND kind = ?').get(workspaceId, kind) as any;
+    if (!r) return undefined;
+    let secret: string | undefined;
+    try { secret = r.secret_enc ? this.decrypt(r.secret_enc) : undefined; } catch { secret = undefined; }
+    return { config: JSON.parse(r.config || '{}'), secret, status: JSON.parse(r.status || '{}'), updatedAt: r.updated_at };
+  }
+
+  /** secret: undefined = keep, null/'' = clear, string = replace. */
+  setIntegration(workspaceId: string, kind: string, config: Record<string, unknown>, secret: string | null | undefined, by: string) {
+    const current = this.db.prepare('SELECT secret_enc FROM integrations WHERE workspace_id = ? AND kind = ?').get(workspaceId, kind) as any;
+    const enc = secret === undefined ? current?.secret_enc ?? null : secret ? this.encrypt(secret) : null;
+    this.db.prepare(`INSERT INTO integrations(workspace_id, kind, config, secret_enc, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT(workspace_id, kind) DO UPDATE SET config = excluded.config, secret_enc = excluded.secret_enc, updated_at = excluded.updated_at, updated_by = excluded.updated_by`)
+      .run(workspaceId, kind, JSON.stringify(config), enc, now(), by);
+  }
+
+  setIntegrationStatus(workspaceId: string, kind: string, status: Record<string, unknown>) {
+    this.db.prepare('UPDATE integrations SET status = ? WHERE workspace_id = ? AND kind = ?').run(JSON.stringify(status), workspaceId, kind);
+  }
+
+  deleteIntegration(workspaceId: string, kind: string) {
+    this.db.prepare('DELETE FROM integrations WHERE workspace_id = ? AND kind = ?').run(workspaceId, kind);
+  }
+
+  /** Workspaces with this kind of integration, for scheduled syncs. */
+  integrationsOfKind(kind: string): string[] {
+    return (this.db.prepare('SELECT i.workspace_id FROM integrations i JOIN workspaces w ON w.id = i.workspace_id WHERE i.kind = ? AND w.archived = 0').all(kind) as any[]).map((r) => r.workspace_id);
   }
 
   aiConfig(workspaceId: string): AiConfig | undefined {

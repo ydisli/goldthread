@@ -7,8 +7,9 @@ import { Icon } from '../../ui/icons.tsx';
 import { fmtDate, relDays } from '../../ui/format.ts';
 import { openEditor } from '../../entity/editor.tsx';
 import { useTheme } from '../../shell.tsx';
+import { IntegrationsTab } from './Integrations.tsx';
 
-type Tab = 'profile' | 'workspace' | 'members' | 'connect' | 'ai' | 'data';
+type Tab = 'profile' | 'workspace' | 'members' | 'connect' | 'integrations' | 'ai' | 'data';
 
 export function SettingsPage() {
   const { query } = useRoute();
@@ -18,6 +19,7 @@ export function SettingsPage() {
     { id: 'workspace', label: 'Workspace' },
     ...(isAdmin ? [{ id: 'members' as Tab, label: 'People & access' }] : []),
     { id: 'connect', label: 'Tokens & integrations' },
+    ...(isAdmin ? [{ id: 'integrations' as Tab, label: 'Jira, ADO & more' }] : []),
     { id: 'ai', label: 'AI' },
     { id: 'data', label: 'Data' },
   ];
@@ -32,6 +34,7 @@ export function SettingsPage() {
         {tab === 'workspace' && <WorkspaceTab />}
         {tab === 'members' && isAdmin && <MembersTab />}
         {tab === 'connect' && <ConnectTab />}
+        {tab === 'integrations' && isAdmin && <IntegrationsTab />}
         {tab === 'ai' && <AiTab />}
         {tab === 'data' && <DataTab />}
       </div>

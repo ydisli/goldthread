@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ENTITY_MAP, nameOf, type Entity } from '../../../../core/schema.ts';
 import { backlogHygiene, readiness, splitHints } from '../../../../core/engines/hygiene.ts';
 import { rank, rankingStability, sensitivity, type Method } from '../../../../core/engines/prioritization.ts';
@@ -6,7 +6,7 @@ import { concurrency, forecastScope, scopeCreep, weeklyThroughput } from '../../
 import { impactAnalysis, traceMatrix } from '../../../../core/engines/traceability.ts';
 import { AUDIENCES, commitmentRisk, tailoredUpdate, type Audience } from '../../../../core/engines/stakeholders.ts';
 import { addDays, daysBetween, isoDate } from '../../../../core/util.ts';
-import { can, deleteEntity, now, restoreEntity, updateEntity, useEntity, useGraph } from '../../store.ts';
+import { api, can, deleteEntity, now, restoreEntity, updateEntity, useEntity, useGraph } from '../../store.ts';
 import { Link, navigate, setQuery, useRoute } from '../../router.tsx';
 import { Badge, Card, Dropdown, Markdown, Meter, PageHead, Seg, Stat, StatusBadge, Tabs, copyText, errorToast, toast, Term } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
@@ -19,6 +19,7 @@ import { openEditor } from '../../entity/editor.tsx';
 import { hrefOf } from '../../entity/links.ts';
 import { AlignmentPanel } from '../stakeholders/Governance.tsx';
 import { ImportIssuesDrawer, exportStoriesCsv } from './ImportIssues.tsx';
+import { syncSummary, type SyncStatus } from '../settings/Integrations.tsx';
 
 // ---------------- Backlog health ----------------
 
@@ -29,6 +30,7 @@ export function BacklogPage() {
   const h = useMemo(() => backlogHygiene(stories, today), [g]); // eslint-disable-line react-hooks/exhaustive-deps
   const open = stories.filter((s) => s.status !== 'done');
   const [importing, setImporting] = useState(false);
+  const linked = useIntegrations();
   const archive = async (s: Entity) => {
     try {
       await deleteEntity(s.id);
@@ -49,7 +51,8 @@ export function BacklogPage() {
   return (
     <div className="page">
       <PageHead title="Backlog health" sub="Duplicates, stale items, orphans, missing acceptance criteria, oversized stories and dependency cycles — found automatically." actions={<>
-        {can('editor') && <button className="btn" onClick={() => setImporting(true)}><Icon name="file-up" size={14} />Import from Jira / ADO</button>}
+        {can('editor') && linked.map((l) => <button key={l.kind} className="btn" onClick={() => void l.sync()} disabled={l.busy} title={l.last ? `Last sync ${fmtDate(l.last.at.slice(0, 10))}: ${syncSummary(l.last)}` : undefined}><Icon name="refresh-cw" size={14} />{l.busy ? 'Syncing…' : `Sync with ${l.label}`}</button>)}
+        {can('editor') && <button className="btn" onClick={() => setImporting(true)}><Icon name="file-up" size={14} />{linked.length ? 'Import CSV' : 'Import from Jira / ADO'}</button>}
         <Dropdown align="right" width={250} trigger={(toggle) => <button className="btn" onClick={toggle}><Icon name="download" size={14} />Export</button>}>
           {(close) => <>
             <button className="menu-item" onClick={() => { exportStoriesCsv(true); close(); }}><Icon name="download" size={14} />New stories only (no Jira key yet)</button>
@@ -528,3 +531,21 @@ export function TracePage() {
   );
 }
 
+/** Connected Jira / Azure DevOps integrations, with a sync action for the backlog page. */
+function useIntegrations() {
+  const [state, setState] = useState<Record<string, { connected: boolean; status: { lastSync?: SyncStatus } } | null>>({});
+  const [busy, setBusy] = useState('');
+  useEffect(() => { api('/api/integrations').then(setState).catch(() => {}); }, []);
+  const labels: Record<string, string> = { jira: 'Jira', ado: 'Azure DevOps' };
+  return Object.entries(state).filter(([, v]) => v?.connected).map(([kind, v]) => ({
+    kind, label: labels[kind] ?? kind, last: v!.status.lastSync, busy: busy === kind,
+    sync: async () => {
+      setBusy(kind);
+      try {
+        const r = await api<SyncStatus>(`/api/integrations/${kind}/sync`, { method: 'POST' });
+        toast(`${labels[kind]}: ${syncSummary(r)}`);
+        api('/api/integrations').then(setState).catch(() => {});
+      } catch (err) { errorToast(err); } finally { setBusy(''); }
+    },
+  }));
+}

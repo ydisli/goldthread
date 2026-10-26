@@ -10,6 +10,7 @@ import { Workspaces } from './workspaces.ts';
 import { ensureDemo, resetDemo } from './demo.ts';
 import { accountRoutes } from './account.ts';
 import { oidcRoutes } from './oidc.ts';
+import { integrationRoutes, scheduledSyncs } from './integrations.ts';
 import { apiRoutes } from './api.ts';
 import { aiRoutes } from './ai.ts';
 import { mcpHandler } from './mcp.ts';
@@ -55,6 +56,7 @@ if (flag('reset-only')) {
 const router = new Router();
 accountRoutes(router, sys, workspaces);
 oidcRoutes(router, sys, workspaces);
+integrationRoutes(router, sys, workspaces);
 apiRoutes(router, sys, workspaces);
 aiRoutes(router, sys);
 router.add('GET', '/api/health', 'none', () => ({ ok: true, name: 'throughline', version: '0.2.0' }), { cors: true });
@@ -155,6 +157,9 @@ if (mailEnabled()) {
   setInterval(() => { try { sendDigests(sys, workspaces); } catch (err) { console.error('Digest failed:', err); } }, 3_600_000).unref();
   setTimeout(() => { void flushOutbox(sys); sendDigests(sys, workspaces); }, 5_000).unref();
 }
+
+// Jira / Azure DevOps: check every five minutes which workspaces are due a pull.
+setInterval(() => { scheduledSyncs(sys, workspaces).catch((err) => console.error('Scheduled sync failed:', err)); }, 5 * 60_000).unref();
 
 server.listen(PORT, HOST, () => {
   const where = `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`;

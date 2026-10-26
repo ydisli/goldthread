@@ -157,8 +157,8 @@ async function main() {
     case 'import': {
       const file = pos[0];
       if (!file) throw new Error('Usage: tl import <export.csv> [--dry-run] [--no-bugs]');
-      const stories = await call<Entity[]>('/api/entities?type=story');
-      const plan = planIssueImport(parseCsv(readFileSync(file, 'utf8')), stories, { bugsAsDefects: !flags['no-bugs'] });
+      const existing = [...await call<Entity[]>('/api/entities?type=story'), ...await call<Entity[]>('/api/entities?type=defect')];
+      const plan = planIssueImport(parseCsv(readFileSync(file, 'utf8')), existing, { bugsAsDefects: !flags['no-bugs'] });
       const source = { jira: 'Jira', ado: 'Azure DevOps', generic: 'CSV' }[plan.source];
       console.log(`${bold(source)} export: ${green(`${plan.creates.length} new`)}, ${plan.updates.length} updates${plan.defects.length && !flags['no-bugs'] ? `, ${yellow(`${plan.defects.length} defects`)}` : ''}`);
       for (const s of plan.skipped) console.log(dim(`  skipped ${s.count}: ${s.reason}`));
@@ -168,6 +168,7 @@ async function main() {
         ...plan.creates.map((data) => ({ op: 'create', type: 'story', data })),
         ...plan.updates.map((u) => ({ op: 'update', id: u.id, data: u.data })),
         ...(flags['no-bugs'] ? [] : plan.defects.map((data) => ({ op: 'create', type: 'defect', data }))),
+        ...(flags['no-bugs'] ? [] : plan.defectUpdates.map((u) => ({ op: 'update', id: u.id, data: u.data }))),
       ];
       for (let i = 0; i < ops.length; i += 500) await call('/api/batch', { method: 'POST', body: ops.slice(i, i + 500) });
       console.log(green(`✓ ${ops.length} changes written`));

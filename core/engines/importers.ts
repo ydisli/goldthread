@@ -114,6 +114,8 @@ export interface ImportPlan {
   creates: Record<string, unknown>[];
   updates: { id: string; key: string; data: Record<string, unknown> }[];
   defects: Record<string, unknown>[];
+  /** Defects already imported (same key) whose status or severity changed. */
+  defectUpdates: { id: string; key: string; data: Record<string, unknown> }[];
   skipped: { reason: string; count: number }[];
   /** Columns the plan used, for showing the mapping. */
   mapped: Partial<Record<Col, string>>;
@@ -141,7 +143,8 @@ export function planIssueImport(rows: string[][], existing: Entity[], opts: { bu
   const all = (r: string[], c: Col) => idx[c].flatMap((i) => (r[i] ?? '').split(/[;,]\s*/)).map((x) => x.trim()).filter(Boolean);
 
   const byKey = new Map(existing.filter((e) => e.type === 'story' && e.externalKey).map((e) => [String(e.externalKey).toLowerCase(), e]));
-  const plan: ImportPlan = { source, creates: [], updates: [], defects: [], skipped: [], mapped, warnings: [] };
+  const defectByKey = new Map(existing.filter((e) => e.type === 'defect' && e.externalKey).map((e) => [String(e.externalKey).toLowerCase(), e]));
+  const plan: ImportPlan = { source, creates: [], updates: [], defects: [], defectUpdates: [], skipped: [], mapped, warnings: [] };
   const skip = new Map<string, number>();
   const seen = new Set<string>();
   if (!idx.title.length) { plan.warnings.push('No Summary / Title column found — nothing can be imported.'); return plan; }
@@ -162,11 +165,19 @@ export function planIssueImport(rows: string[][], existing: Entity[], opts: { bu
     if (/bug|defect/.test(type) && opts.bugsAsDefects !== false) {
       const sev = one(r, 'severity') ?? '';
       const status = mapStatus(one(r, 'status'));
-      plan.defects.push({
-        title, detail: [key && `${key}`, description].filter(Boolean).join('\n\n') || undefined,
+      const defect: Record<string, unknown> = {
+        title, detail: description || undefined, externalKey: key,
         status: status === 'done' ? 'closed' : status === 'in-progress' || status === 'in-review' ? 'in-progress' : 'new',
         severity: SEVERITY.find(([re]) => re.test(sev))?.[1] ?? 's3-minor', foundIn: 'production', reportedAt: parseToolDate(r[h.indexOf('created')]),
-      });
+      };
+      for (const k of Object.keys(defect)) if (defect[k] === undefined) delete defect[k];
+      const known = key ? defectByKey.get(key.toLowerCase()) : undefined;
+      if (known) {
+        const patch: Record<string, unknown> = {};
+        for (const k of ['title', 'status', 'severity'] as const) if (defect[k] !== undefined && defect[k] !== known[k]) patch[k] = defect[k];
+        if (Object.keys(patch).length) plan.defectUpdates.push({ id: known.id, key: key!, data: patch });
+        else skip.set('unchanged', (skip.get('unchanged') ?? 0) + 1);
+      } else plan.defects.push(defect);
       continue;
     }
     const pointsRaw = one(r, 'points');

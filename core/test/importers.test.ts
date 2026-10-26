@@ -86,3 +86,12 @@ test('stories export to a CSV that round-trips', () => {
   assert.equal(row[3], 'Given x\nThen y');
   assert.equal(planIssueImport(parseCsv(csv), []).creates[0].estimate, 2);
 });
+
+test('re-importing bugs updates the defects already imported, by key', () => {
+  const existing = [{ id: 'def_1', type: 'defect', createdAt: '', updatedAt: '', title: 'VPN drops every hour', status: 'new', severity: 's3-minor', externalKey: 'SH-103' }] as Entity[];
+  const csv = 'Summary,Issue key,Issue Type,Status,Priority\nVPN drops every hour,SH-103,Bug,Done,High\nPrinter offline,SH-104,Bug,Open,Low';
+  const plan = planIssueImport(parseCsv(csv), existing);
+  assert.deepEqual(plan.defectUpdates, [{ id: 'def_1', key: 'SH-103', data: { status: 'closed', severity: 's2-major' } }]);
+  assert.equal(plan.defects.length, 1);
+  assert.equal(plan.defects[0].externalKey, 'SH-104');
+});
