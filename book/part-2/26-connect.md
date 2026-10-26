@@ -2,8 +2,8 @@
 id: connect
 title: Connecting AI assistants and other tools
 part: tool
-minutes: 13
-summary: Adding Claude or another model to your workspace, letting your own AI assistant work with Throughline over MCP, personal tokens, the command line, the browser extension, the REST API and keeping data safe.
+minutes: 17
+summary: Adding Claude or another model to your workspace, letting your own AI assistant work with Throughline over MCP, keeping Jira or Azure DevOps in step, Slack and Teams, capturing by email, personal tokens, the command line, the browser extension, the REST API and keeping data safe.
 tools: [ask, specs, signals, backlog]
 ---
 
@@ -62,6 +62,7 @@ The **Model Context Protocol (MCP)** is an open standard that lets AI assistants
 | `lint_spec` | Check a spec's wording and completeness |
 | `check_process` | Review a process model |
 | `generate_document` | PRD, BRD, PR/FAQ, steering pack, release notes or stakeholder update |
+| `guide_contents`, `read_guide` | This book: the contents, and any chapter with its quiz answers |
 | `capture` | Quickly capture a signal, request, interaction, decision, risk or idea (write token) |
 | `create_item`, `update_item` | Create or change items (write token) |
 
@@ -81,6 +82,34 @@ Your assistant only gets what your role allows, and write tools need a token wit
 
 > [!trap] Letting the assistant decide
 > An assistant connected to your workspace knows your items, but not your stakeholders' moods, the politics or the hallway conversation from this morning. Use it to gather, check and draft. The decisions, priorities and promises stay yours ([Chapter 16](guide:growing)).
+
+## Jira and Azure DevOps, kept in step
+
+Your team keeps working in Jira or Azure Boards. Throughline keeps a copy of the backlog in step so that health checks, forecasts, traceability and promises use real data. Admins connect it under **Settings → Jira, ADO & more**:
+
+- **Jira Cloud:** your site address, the email of the account to use, an API token, and a JQL query for which issues to bring in.
+- **Azure DevOps:** your organisation address, the project, and a personal access token with *Work Items: Read & write*.
+
+Choose how often to sync (every 15 minutes to once a day, or only when you click **Sync now**), then press **Test**. A sync behaves exactly like re-importing an export ([Chapter 22](guide:delivery-in-throughline)): new issues become stories, known ones are updated by key, bugs become defects, resolved dates feed the forecast, and the links and notes you added in Throughline are kept. Editors can sync on demand from the backlog.
+
+If you tick **Create issues for new stories written here**, stories you write in Throughline that don't have a key yet are created in Jira or Azure DevOps on the next sync, with their narrative and acceptance criteria, and get the new key back.
+
+> [!tip] Start with a narrow query
+> Connect with a query for one project and the last 90 days. Check the backlog looks right, then widen it. The account or token you use decides what Throughline can see, so a service account with access to just the right projects is safest.
+
+## Slack and Microsoft Teams
+
+Bring Throughline into the conversations your stakeholders already have:
+
+- **Posting:** choose which events go to a channel (new requests, sign-offs requested, decisions made, releases shipped). Each message links back to the item. For Slack, paste an incoming webhook URL. For Teams, paste the URL of a Workflows webhook.
+- **Capturing:** in Slack, a `/throughline` slash command captures whatever follows it. In Teams, an outgoing webhook does the same when someone @mentions it. Start with **request:**, **decision:**, **risk:** or **idea:** to choose the kind; anything else becomes a signal. For example, `/throughline request: contractors need laptops on day one`. The settings card shows the exact URL to paste into Slack or Teams, and every message is verified with Slack's signing secret or the Teams security token.
+
+## Email in
+
+Turn on **Email in** to get a private address for your mail provider's inbound webhook (Postmark, Mailgun or similar). Forward an email to it and it becomes a signal. The subject becomes the title, and the same **Request:** / **Decision:** / **Risk:** / **Idea:** prefixes choose the kind. The sender is matched to a stakeholder by email address, so a forwarded complaint from Hannah shows up on Hannah's profile. Keep the address private, and create a new one if it leaks.
+
+> [!trap] Capturing everything
+> Connecting chat and email makes capture effortless, and that's the risk. Signals still need triage ([Chapter 5](guide:discovery)). Route a channel or a mailbox that already filters for product-relevant messages, not the whole firehose.
 
 ## Tokens
 
@@ -137,6 +166,15 @@ Q: Your workspace holds sensitive HR data and policy forbids sending it to cloud
 - Only the review board
 - Cloud AI with redaction switched on
 Why: Every analysis has a built-in engine that needs no model, and a local OpenAI-compatible model keeps data on your own infrastructure. Redaction helps but doesn't override policy.
+```
+
+```quiz
+Q: Your team works in Jira and you've connected it to Throughline. A BA adds a link from a story to a requirement in Throughline, and the next sync updates that story's status from Jira. What happens to the link?
+- It's removed, because Jira is the source of truth
+- The sync stops and asks which to keep
+- * It's kept; the sync updates the fields that come from Jira and leaves Throughline's links and notes alone
+- The story is duplicated
+Why: A sync behaves like a re-import by key. It refreshes what Jira owns, such as the title, status, points and dates, and never overwrites what you added in Throughline.
 ```
 
 ```quiz

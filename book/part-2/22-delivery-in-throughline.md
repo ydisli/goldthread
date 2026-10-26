@@ -35,6 +35,8 @@ The page gives a **health score**, counts stories that meet the Definition of Re
 
 **Export** writes open stories as a CSV that Jira's importer or Azure DevOps can map directly: summary, description with the user story narrative, acceptance criteria, points, labels and sprint. Choose *new stories only* to push stories you wrote in Throughline (ones without a Jira key yet).
 
+**Live sync.** Instead of exporting and importing by hand, an admin can connect Jira Cloud or Azure DevOps directly ([Chapter 26](guide:connect)). The backlog then refreshes on a schedule and on **Sync now**, using exactly the same rules as an import, and new stories written here can be created in the delivery tool automatically.
+
 ## Prioritize
 
 **Delivery → Prioritize** ranks bets by **RICE** or **WSJF** ([Chapter 11](guide:prioritisation)). Edit an estimate directly in the table and the ranking updates immediately.

@@ -8,13 +8,29 @@ Every analysis runs locally on deterministic, explainable engines. Connect Claud
 
 It comes with **The Field Guide**, a ~50,000-word book in [`book/`](book/), readable inside the app: Part I teaches the craft of being a good PO or BA, Part II teaches Throughline.
 
-> Concept, gap analysis and module map: [docs/CONCEPT.md](docs/CONCEPT.md) · Architecture and phases: [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md)
+> Concept, gap analysis and module map: [docs/CONCEPT.md](docs/CONCEPT.md) · Architecture and phases: [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) · Running it for a team: [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md)
+
+![Home: what is waiting on you today](docs/screenshots/home.png)
+
+<table><tr>
+<td><img src="docs/screenshots/spec-studio.png" alt="Spec Studio with the ambiguity linter and review board" /></td>
+<td><img src="docs/screenshots/process-modeller.png" alt="The visual process modeller with swimlanes and live checks" /></td>
+</tr><tr>
+<td><img src="docs/screenshots/stakeholder.png" alt="A stakeholder's 360° profile" /></td>
+<td><img src="docs/screenshots/field-guide.png" alt="The Field Guide inside the app" /></td>
+</tr></table>
+
+## Status
+
+**Early, usable, and open for feedback.** Everything described here is built and covered by tests: 113 unit and integration tests, plus 14 browser tests that include accessibility scans. Some things have **not been tested against the real services yet**: email (SMTP), single sign-on, Jira Cloud, Azure DevOps, Slack, Microsoft Teams, inbound email, live AI model calls and the Docker image. Each was built against a local stand-in that follows the provider's documented API. See [what has been tested](docs/SELF_HOSTING.md#what-has-been-tested). If you connect one for real, please [tell us how it went](.github/ISSUE_TEMPLATE/integration_report.md).
+
+**How it was made.** Throughline, its tests and the Field Guide were written with substantial help from an AI model (Claude), directed and reviewed by the maintainer. Treat it as you would any young open-source project: read the code you rely on, and report what you find.
 
 ---
 
 ## Quick start
 
-Requires **Node.js ≥ 23.6** (Throughline uses Node's native TypeScript support and built-in SQLite — no build step for the server).
+Requires **Node.js 24 or newer** (Throughline uses Node's native TypeScript support and built-in SQLite — no build step for the server).
 
 ```bash
 npm install
@@ -38,24 +54,32 @@ npm run build && npm start
 |---|---|
 | `npm run dev` | Server + Vite dev middleware with hot reload on :4300 |
 | `npm start` | Serves the built PWA from `web/dist` |
-| `npm test` | 64 tests: every engine, the store, accounts/roles/tokens, MCP, sample integrity, PII redaction, Jira/ADO import, the Field Guide's structure |
+| `npm test` | 113 tests: every engine, the store, accounts, roles and tokens, MCP, email, SSO, Jira/ADO sync, Slack/Teams, files, backups, sample integrity, PII redaction, the Field Guide's structure |
+| `npm run e2e` | 14 browser tests in Chromium, including WCAG 2.1 AA scans in light and dark themes (after `npm run build`) |
 | `npm run typecheck` | `tsc --noEmit` over core, server, CLI and web |
 | `npm run seed` | Put the demo workspace back to its original content and exit |
+| `npm run backup -- <folder>` | Consistent backup of all data, safe while the server runs |
+| `npm run reset-password -- <email>` | Print a one-time password reset link (for operators) |
 
-Environment: `PORT` (4300), `HOST` (127.0.0.1), `TL_DATA` (`data/`), `TL_SIGNUP` (`open` or `invite-only`), `TL_DEMO` (`0` turns the demo accounts off), `ANTHROPIC_API_KEY` (optional server-wide default for Claude), `TL_MODEL` (`claude-opus-5-5`).
+Configuration is by environment variables: port, data folder, public URL, signup policy, email, single sign-on and AI. They're all listed in [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md). The demo accounts are only on under `npm run dev` (or `TL_DEMO=1`).
 
 ---
 
 ## Working as a team
 
 - **Accounts and workspaces.** Everyone signs in with their own account. A workspace holds one product or programme; you can be in several and switch from the top of the sidebar. New accounts get a personal workspace.
-- **Invites.** Admins create an invite link for an email address and a role (and optionally teams) under **Settings → People & access**, and share it however they like — Throughline sends no email. Links work once, for that address, for 14 days.
+- **Invites.** Admins create an invite link for an email address and a role (and optionally teams) under **Settings → People & access**. With email set up it's sent for them; otherwise they share it however they like. Links work once, for that address, for 14 days.
+- **Signing in.** Passwords, or single sign-on with any OpenID Connect provider (Entra ID, Okta, Google, Auth0, Keycloak). Forgotten passwords are reset by email or with a one-time link from an admin.
 - **Roles.** *Viewer* reads and comments (sponsors, auditors). *Editor* creates and edits. *Admin* also manages people, AI and imports. *Owner* also manages admins and can archive the workspace. The server enforces roles on every request; viewers see read-only screens.
 - **Teams** group people inside a workspace and feed capacity planning and RACI.
-- **Comments and @mentions** on every item; mentions land in the person's Inbox. Comments are always signed by the poster on the server.
+- **Comments and @mentions** on every item; mentions land in the person's Inbox and, if they want, their email, along with sign-off requests and a weekly digest. Comments are always signed by the poster on the server.
+- **No silent overwrites.** Two people editing the same item only clash if they changed the same field, and then the second person chooses which version to keep.
+- **Files** can be attached to any item (up to 25 MB each).
+- **Fields and item types of your own.** Add a *Vendor* to requirements, or a whole *Environments* type with its own list and form. They are validated like built-in fields and visible to AI assistants over MCP.
+- **Your data is yours.** Anyone can download everything about themselves, or delete their account; their comments stay, attributed to "Former member".
 - **Nothing is lost.** Deletes offer Undo, and editors can restore anything from **Settings → Data → Recently deleted**.
 - **Live.** Changes from any person, the CLI, the extension or an AI assistant appear instantly for everyone, and every change is attributed in the activity trail.
-- **Data layout.** `data/system.db` holds accounts, sessions, memberships, invites and hashed API tokens; each workspace is its own SQLite file in `data/workspaces/`; `data/secret.key` encrypts stored AI keys. Back up the folder; never commit it.
+- **Data layout.** `data/system.db` holds accounts, sessions, memberships, invites, hashed API tokens and the email queue; each workspace is its own SQLite file in `data/workspaces/`; uploads are in `data/files/`; `data/secret.key` encrypts stored AI keys and integration credentials. Back it up with `npm run backup`; never commit it.
 
 ---
 
@@ -85,15 +109,15 @@ The sidebar is short on purpose: **Home**, **Inbox**, **Ask**, **Field guide**, 
 
 **Define** — **Spec Studio**: live ambiguity linter with inline highlights, completeness checker, a 10-role **Review Board**, requirement extraction, contradiction detection · Requirements with versions, baselines, word-level diffs and change requests with impact · Decision log (reversibility, revisit triggers) · Decision tables (gaps, overlaps, pairwise test generation) · **Visual process modeller** — drag shapes onto horizontal or vertical swimlanes, drag steps between lanes, drag to connect, inline rename, undo/redo, tidy-up, zoom, SVG export, keyboard control, live modelling checks (no start, dead ends, unreachable steps, unlabelled decision outcomes) and as-is/to-be comparison · State models (reachability, dead ends) · Story map with drag-and-drop slicing · BA toolkit (elicitation → extraction, use cases, data dictionary with PII, gap analysis, capability map, SWOT, 5 whys/fishbone) · Glossary enforcement.
 
-**Deliver** — Backlog health (duplicates, stale, orphans, missing AC, cycles) with **Jira / Azure DevOps CSV import** (stories, defects, resolved dates for the forecast; re-imports update by key) and export for Jira · Prioritization (RICE/WSJF + sensitivity analysis + ranking stability) · Roadmap (Now/Next/Later + timeline with forecast bands, internal/external views) · Releases (launch readiness, rollout & rollback, notes per audience) · Delivery pulse · RAID with risk heatmap · UAT & defects by root cause · Generated traceability matrix (CSV export) and impact analysis.
+**Deliver** — Backlog health (duplicates, stale, orphans, missing AC, cycles) with **live Jira Cloud / Azure DevOps sync** on a schedule (and optionally creating issues for stories written here), plus CSV import (stories, defects, resolved dates for the forecast; re-imports update by key) and export · Prioritization (RICE/WSJF + sensitivity analysis + ranking stability) · Roadmap (Now/Next/Later + timeline with forecast bands, internal/external views) · Releases (launch readiness, rollout & rollback, notes per audience) · Delivery pulse · RAID with risk heatmap · UAT & defects by root cause · Generated traceability matrix (CSV export) and impact analysis.
 
 **Learn** — Bet ledger with calibration chart and Brier score · Feature catalog with removal candidates.
 
-**Meetings & docs** — Meetings (notes → decisions, actions, risks) · Document generator (PRD, BRD, PR/FAQ, steering pack, release notes, audience-specific updates) · Activity trail.
+**Meetings & docs** — Meetings (notes or imported Teams/Zoom transcripts → decisions, actions, risks) · Document generator (PRD, BRD, PR/FAQ, steering pack, release notes, audience-specific updates) as Markdown, Word or print-ready PDF · Activity trail.
 
-**Settings** — Profile and persona · Workspace · People & access (invites, roles, teams) · Tokens & integrations (personal access tokens, copy-paste MCP/CLI/REST setup) · AI provider · Data (export, import, replace with a sample).
+**Settings** — Profile, persona, notifications and your data · Workspace, custom fields and item types · People & access (invites, roles, teams, reset links) · Tokens & integrations (personal access tokens, copy-paste MCP/CLI/REST setup) · Jira, ADO & more (sync, Slack, Teams, email-in) · AI provider · Data (export, import, recently deleted).
 
-Every one of the 51 entity types also has generic create/edit/list/detail views with backlinks, comments and history, and a ⌘K palette searches everything. Press `c` anywhere for quick capture, `?` for shortcuts, and `g` then a letter to jump (`g h` Home, `g i` Inbox, `g f` Field guide…).
+Every one of the 53 item types (and any you add) also has generic create/edit/list/detail views with backlinks, comments and history, and a ⌘K palette searches everything. Press `c` anywhere for quick capture, `?` for shortcuts, and `g` then a letter to jump (`g h` Home, `g i` Inbox, `g f` Field guide…).
 
 ---
 
@@ -106,7 +130,9 @@ Every one of the 51 entity types also has generic create/edit/list/detail views 
 | **AI assistants (MCP)** | Claude Desktop, Claude Code, Cursor, VS Code or any MCP client: Streamable HTTP at `/mcp` with `Authorization: Bearer <token>`, or the stdio bridge `node mcp/stdio.ts` with `TL_URL` and `TL_TOKEN`. 17 tools: search, get/list items, daily brief, meeting prep, forecast, impact analysis, traceability gaps, spec checks, process-model checks, document generation, schema, the Field Guide (contents and chapters with quiz answers), and (with a write token) capture, create and update. **Settings → Tokens & integrations** shows ready-to-paste configs. |
 | **CLI** | `node cli/tl.ts help` — `capture`, `brief`, `search`, `prep "<name>"`, `import <jira-or-ado.csv>` (schedule it to keep the backlog fresh), `export`, and `lint <spec.md>` which runs fully offline and exits 1 on errors (use it in CI). Set `TL_URL` and `TL_TOKEN`. |
 | **Browser extension** | Load `extension/` unpacked in Chrome/Edge; right-click selected text → *Send to Throughline as signal / request*. Guesses the source from the site (service desk, review site, CRM…). |
-| **REST API** | `POST /api/capture` for chat bots, email-in, scripts. Full CRUD under `/api/entities`, `/api/batch`, live changes over SSE at `/api/events`. Authenticate with `Authorization: Bearer <token>` (or `X-TL-Token`). |
+| **Slack & Teams** | Post new requests, sign-off requests, decisions and releases to a channel; capture with `/throughline request: …` in Slack or by @mentioning an outgoing webhook in Teams. Requests are verified with Slack's signing secret or the Teams HMAC. |
+| **Email in** | Forward an email to a private inbound address (Postmark, Mailgun or similar) and it becomes a signal, request, decision or risk, matched to the sender. |
+| **REST API** | `POST /api/capture` for chat bots, scripts and alerts. Full CRUD under `/api/entities`, `/api/batch`, live changes over SSE at `/api/events`. Authenticate with `Authorization: Bearer <token>` (or `X-TL-Token`). |
 
 Tokens are personal: create one per tool under **Settings → Tokens & integrations**, as read-only or read & write (capped by your role in that workspace). They are stored hashed and can be revoked at any time.
 
@@ -129,21 +155,29 @@ Prefer your own assistant? Connect it over MCP instead (see Platforms) — it th
 ## Architecture
 
 ```
-core/        platform-agnostic TypeScript: schema (51 entity types), Intent Graph, 21 engines
+core/        platform-agnostic TypeScript: schema (53 item types + custom ones), Intent Graph, 25 engines
 server/      Node HTTP server: accounts, sessions, roles, invites, tokens (system.db); one SQLite store per
-             workspace with an append-only activity trail; REST + SSE; MCP; AI providers; IT and SaaS samples
+             workspace with an append-only activity trail; REST + SSE; MCP; AI providers; email; OIDC;
+             Jira/ADO sync; Slack, Teams and email-in; files; backups; IT and SaaS samples
 mcp/         stdio bridge for MCP clients that launch local commands
 web/         React PWA (hand-rolled design system, light/dark, charts per the data-viz palette)
 book/        The Field Guide: Markdown chapters with front matter and quiz blocks
 cli/         `tl` command — shares the core
 extension/   Chrome/Edge MV3 capture extension
-docs/        concept, gap analysis, build plan
+docs/        concept, build plan, self-hosting, accessibility, screenshots
+e2e/         Playwright browser tests and accessibility scans
 ```
 
 The graph is derived from typed reference fields in `core/schema.ts`, so traceability, impact analysis, backlinks and 360° profiles work for every entity type, including ones you add.
 
-**Security model:** the server binds to `127.0.0.1` by default; put it behind HTTPS before exposing it to a network. Passwords are hashed with scrypt; sessions are HttpOnly, SameSite=Lax cookies; sign-in is rate-limited. API tokens are stored as SHA-256 hashes and carry a read or write scope capped by the owner's role. Roles are checked on every request, per workspace. Cross-origin requests are refused except on token-authenticated read/capture endpoints. Deletes are soft and every change is attributed to a person (or their token) in the activity trail.
+**Security:** see [SECURITY.md](SECURITY.md) for how data is protected and how to report a vulnerability. The server binds to `127.0.0.1` by default; put it behind HTTPS before exposing it ([docs/SELF_HOSTING.md](docs/SELF_HOSTING.md)).
+
+**Accessibility:** WCAG 2.1 AA is the target. Automated scans and keyboard tests run on every change; screen-reader testing still needs people. See [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
 
 ## Not built yet
 
-SSO (SAML/OIDC), email delivery of invites, Slack/Teams app, email-in, meeting bots, live two-way Jira/ADO/ServiceNow sync (CSV import and export exist), native desktop/mobile wrappers. Accounts, tokens, MCP, the capture API and the shared core are the foundations for each.
+SAML single sign-on (OIDC is built), ServiceNow sync, meeting bots that join calls, native desktop and mobile wrappers (the PWA installs on both), translations (English only for now), keyboard alternatives to drag and drop on boards, and real-time co-editing of the same text field (edits to different fields merge; the same field asks). Ideas and help are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Licence
+
+The code is licensed under the [Apache License 2.0](LICENSE). The Field Guide in [`book/`](book/) is licensed under [Creative Commons Attribution 4.0](book/LICENSE.md). The sample companies, people and data are fictional.

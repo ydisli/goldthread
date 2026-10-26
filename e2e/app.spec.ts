@@ -21,7 +21,7 @@ async function firstOf(page: Page, type: string, where: (e: any) => boolean = ()
   const ws = await (await page.request.get('/api/workspace', { headers: await workspaceHeader(page) })).json();
   return ws.entities.find((e: any) => e.type === type && where(e));
 }
-async function workspaceHeader(page: Page) {
+async function workspaceHeader(page: Page): Promise<Record<string, string>> {
   const ws = await page.evaluate(() => localStorage.getItem('tl.workspace'));
   return ws ? { 'x-tl-workspace': ws } : {};
 }

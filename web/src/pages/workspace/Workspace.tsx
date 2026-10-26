@@ -173,7 +173,6 @@ export function DocsPage() {
           <button className="btn btn-sm" onClick={() => downloadFile(fileName, doc)}><Icon name="download" size={13} />.md</button>
           <button className="btn btn-sm" onClick={() => downloadDocx(docTitle, doc)}><Icon name="download" size={13} />Word</button>
           <button className="btn btn-sm" onClick={() => printMarkdown(docTitle, doc)}><Icon name="file-text" size={13} />Print / PDF</button>
-          <button className="btn btn-sm" onClick={() => window.print()}><Icon name="file-text" size={13} />Print / PDF</button>
         </>}>
           <Markdown text={doc} />
         </Card>

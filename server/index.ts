@@ -4,6 +4,7 @@ import { gzipSync } from 'node:zlib';
 import { extname, join, normalize as normalizePath, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ValidationError } from './db.ts';
+import { backupData } from './backup.ts';
 import { HttpError, Router, readBody, send, type Ctx, type WCtx } from './http.ts';
 import { authenticate, bearerToken } from './auth.ts';
 import { SystemDB } from './system.ts';
@@ -34,6 +35,17 @@ const DATA = resolve(process.env.TL_DATA ?? opt('data', join(ROOT, 'data')));
 
 // Demo accounts share a published password, so they are on for development only unless asked for.
 if (process.env.TL_DEMO === undefined) process.env.TL_DEMO = DEV || flag('reset-only') ? '1' : '0';
+
+// Operator command: `npm run backup -- /path/to/new/folder` copies everything, safely, even while running.
+if (flag('backup')) {
+  const out = opt('backup', '');
+  if (!out) { console.error('Usage: npm run backup -- /path/to/new/folder'); process.exit(1); }
+  try {
+    const r = await backupData(DATA, resolve(out));
+    console.log(`Backed up ${r.databases} database${r.databases === 1 ? '' : 's'}${r.files ? ', uploaded files' : ''} and the key to ${resolve(out)}.`);
+    process.exit(0);
+  } catch (err) { console.error((err as Error).message); process.exit(1); }
+}
 
 export const sys = new SystemDB(DATA);
 export const workspaces = new Workspaces(sys, DATA);

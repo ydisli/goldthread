@@ -27,7 +27,10 @@ Type notes during the meeting, or paste a transcript afterwards. Throughline rea
 - **Open questions:** lines starting with *Question:* or ending with a question mark.
 - **Requirement candidates:** sentences with *must*, *shall*, *needs to* and similar.
 
-Transcript formats work too: timestamps and speaker names ("Priya Nair: …") are handled.
+Transcript formats work too: timestamps and speaker names ("Priya Nair: …") are handled. Click **Import transcript** to bring in the file Teams or Zoom gives you after a recorded meeting: a WebVTT (`.vtt`), SubRip (`.srt`), Teams Word (`.docx`) or plain-text transcript. Throughline turns it into readable "Name: what they said" lines, merging consecutive lines from the same speaker, and runs the same extraction.
+
+> [!tip] Transcripts are long; decisions are short
+> A one-hour transcript holds a handful of decisions and actions. Read the extracted list against your memory of the meeting before you create anything. Spoken language is vaguer than notes, and *"we should probably look at that"* isn't an action until someone owns it.
 
 The **Extracted from notes** panel lists everything found. Untick anything that's wrong and click **Create selected**. Decisions go to the decision log, risks to the RAID log, action items to the meeting's action list (owners see them in their Inbox), and requirement candidates to Requirements as drafts. Open questions are listed for you to follow up. Everything created stays linked to the meeting, so you can always see where a decision was made.
 
@@ -61,7 +64,7 @@ Each meeting shows its **action items** with owners and due dates. Tick them off
 | **Release notes** | A release | Customer- or employee-facing notes |
 | **Stakeholder update** | A bet or release, for a chosen audience | Same facts, tailored per audience (Chapter 4) |
 
-Pick the document type and its subject, review the output, then **copy** the Markdown or **download** it as a file to paste into email, Confluence, SharePoint or Word. If your organisation needs a particular template, generate the document and adjust it: most of the work is gathering the content, and that's done.
+Pick the document type and its subject, review the output, then **copy** the Markdown, download it as **Markdown** or a **Word** document, or choose **Print / PDF** for a clean printable page you can save as a PDF. If your organisation needs a particular template, generate the document and adjust it: most of the work is gathering the content, and that's done.
 
 > [!trap] Editing the generated document instead of the source
 > If you fix a requirement in the downloaded PRD rather than in Throughline, the next generated version will have the old wording. Fix the source, then regenerate.

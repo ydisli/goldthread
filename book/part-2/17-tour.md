@@ -61,7 +61,9 @@ Open any item (a requirement, a bet, a stakeholder) and you'll find the same lay
 - a **header** with its key (like REQ-5), title, status and actions,
 - **Details**: its fields, editable by anyone with editor access,
 - tool-specific panels (a decision table editor, a process canvas, a forecast),
-- on the side: **Linked from** (everything that points here), **Comments** (with @mentions) and **History** (who changed what, when).
+- on the side: **Linked from** (everything that points here), **Files** (screenshots, documents, evidence), **Comments** (with @mentions) and **History** (who changed what, when).
+
+If your team tracks something extra, such as a vendor, a regulatory reference or a cost centre, an admin can add it as a field to any type, or add whole item types of your own ([Chapter 25](guide:teams)).
 
 ## Moves you'll use every day
 

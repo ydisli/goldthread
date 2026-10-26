@@ -2,8 +2,8 @@
 id: teams
 title: Working as a team
 part: tool
-minutes: 10
-summary: Personal and team workspaces, inviting people, roles and what each can do, teams inside a workspace, comments and mentions, approvals, the activity trail and restoring deleted work.
+minutes: 14
+summary: Personal and team workspaces, inviting people, roles, teams inside a workspace, comments and mentions, notifications, edits that clash, files, fields of your own, passwords and single sign-on, your own data, and restoring deleted work.
 tools: [inbox, approvals, raci, capacity]
 ---
 
@@ -27,7 +27,7 @@ Admins and owners invite people from **Settings → People & access**:
 
 1. Enter the person's email, choose their **role**, and optionally add them to **teams**.
 2. Click **Create invite link**.
-3. Share the link however you normally would (Slack, Teams, email). Throughline doesn't send email itself.
+3. If your server has email set up, leave **Email the invite to them** ticked and they'll get it straight away. Otherwise, share the link however you normally would (Slack, Teams, email).
 
 The link works **once**, for **that email address**, for **14 days**. The person opens it, creates their account (or signs in if they have one) and lands in the workspace. Someone already signed in with a different email can't use it. Pending invites are listed, and you can revoke one at any time.
 
@@ -61,6 +61,33 @@ Every item has **comments**. Type **@** to mention a teammate. They get it in th
 
 Comments are always signed by whoever posted them, whichever way they were posted.
 
+### Notifications
+
+Everything that needs you shows up in your **Inbox**. If your server has email set up, you can also get an email when someone mentions you or asks for your sign-off, plus a weekly digest of what's waiting on you. Choose which ones under **Settings → Profile → Notifications**. Email is a nudge, never the only copy: the Inbox always has everything.
+
+### When two people edit the same thing
+
+Two people can have the same item open. When you save, Throughline sends only the fields you changed, so someone else's edit to a different field is kept. If you both changed **the same field**, nothing is overwritten silently. You see what they saved next to what you wrote, choose which to keep for each field, and then save.
+
+> [!example] At Ashgrove
+> Jordan tightens the wording of REQ-12 while Priya, in a refinement session, changes the same statement to match what engineering can build. Priya saves first. When Jordan saves, Throughline shows both versions side by side. Jordan keeps Priya's wording and adds a comment explaining the audit constraint, rather than quietly reverting it.
+
+### Files
+
+Attach screenshots, documents, exports or audit evidence to any item: drop them on the **Files** panel, or click **Add**. Each file can be up to 25 MB. Images and PDFs open in the browser; other files download. Removing a file can be undone, and like any item it can be restored later from **Recently deleted**.
+
+### Fields and item types of your own
+
+Every team tracks something Throughline doesn't. Admins can add both under **Settings → Workspace**:
+
+- **Fields of your own** on any item type: a *Vendor* on requirements, a *Regulatory reference* on decisions, a *Cost centre* on requests. Choose the kind (text, number, date, pick one, yes/no, link) and whether it's required. A field you make required later doesn't block edits to older items, but it can't be cleared once set.
+- **Item types of your own** for things the built-in types don't cover, such as *Environments*, *Vendors*, *Controls* or *Contracts*. Each type gets its own list in the sidebar under *Your item types*, its own form and fields, and links to everything else like any other item.
+
+Custom fields appear in forms, on the item, in its history, in the workspace export, and to AI assistants over MCP. Removing a field hides it; the values stay on the items and come back if you add the field again with the same name.
+
+> [!trap] Rebuilding your old tool
+> Add a field when a real question needs it, such as *"Which requirements depend on Vendor X?"*. Don't add one because the old spreadsheet had a column for it. Every field is something someone has to fill in.
+
 ### Approvals and sign-offs
 
 Request approval on a spec, baseline, release or decision. Approvers see it in their Inbox; each response is recorded with who, when and what they said (Chapter 19).
@@ -76,6 +103,13 @@ Changes appear for everyone in the workspace as they happen: no refresh, no "who
 ### Restoring deleted work
 
 Deleting an item offers **Undo** straight away. After that, editors can restore anything from **Settings → Data → Recently deleted**, with its links intact. Deletes are never final, and they're recorded in the activity trail.
+
+## Signing in, passwords and leaving
+
+- **Forgotten password:** if your server has email, click **Forgot password?** on the sign-in page. Otherwise, ask a workspace admin. Under **People & access** they can create a one-time reset link that's valid for 24 hours.
+- **Single sign-on:** if your organisation has connected Microsoft, Okta, Google or another provider, the sign-in page shows **Continue with…** and you don't need a separate password.
+- **Your own data:** **Settings → Profile → Your data** downloads everything about you: your profile, memberships, comments, and the changes you made.
+- **Leaving:** you can delete your account from the same place. Your comments stay so discussions still make sense, attributed to "Former member", and your name is removed from the history.
 
 ## Access hygiene
 
@@ -98,6 +132,15 @@ Q: Your CIO wants to see the roadmap and steering pack but shouldn't change anyt
 - * Viewer: they can read everything and comment, without editing
 - Owner
 Why: Viewers have full visibility and can comment and mention people, which is exactly what sponsors and auditors need. Give the least access that works.
+```
+
+```quiz
+Q: You and a colleague both edited the acceptance criteria of the same story, and they saved first. What happens when you save?
+- Your version replaces theirs; the last save wins
+- Their version is kept and your change is discarded
+- * You see both versions side by side and choose which to keep before anything is saved
+- The story is locked until an admin decides
+Why: Edits to different fields merge on their own. When the same field was changed by both of you, Throughline asks rather than silently overwriting, so nobody loses work without knowing.
 ```
 
 ```quiz
