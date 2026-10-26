@@ -27,9 +27,9 @@ export function LedgerPage() {
       <PageHead title="Bet ledger" sub="Predicted vs actual for every bet. Over time this becomes your team's calibration: how much to trust a 70% confidence." />
       <div className="grid g4 mb16">
         <Stat label="Bets measured" value={measured.length} sub={`${due.length} awaiting measurement`} />
-        <Stat label="Success rate" value={measured.length ? `${Math.round((success / measured.length) * 100)}%` : '—'} sub={`${success} success · ${measured.filter((b) => b.result === 'partial').length} partial · ${measured.filter((b) => b.result === 'failed').length} failed`} />
-        <Stat label="Calibration bias" value={cal.bias === null ? '—' : `${cal.bias > 0 ? '+' : ''}${Math.round(cal.bias * 100)} pts`} tone={cal.bias !== null && Math.abs(cal.bias) > 0.1 ? 'amber' : undefined} sub={cal.bias === null ? '' : cal.bias > 0 ? 'overconfident' : 'underconfident'} />
-        <Stat label="Brier score" value={cal.brier === null ? '—' : cal.brier.toFixed(2)} sub="0 = perfect, 0.25 = coin flip" />
+        <Stat label="Success rate" value={measured.length ? `${Math.round((success / measured.length) * 100)}%` : '–'} sub={`${success} success · ${measured.filter((b) => b.result === 'partial').length} partial · ${measured.filter((b) => b.result === 'failed').length} failed`} />
+        <Stat label="Calibration bias" value={cal.bias === null ? '–' : `${cal.bias > 0 ? '+' : ''}${Math.round(cal.bias * 100)} pts`} tone={cal.bias !== null && Math.abs(cal.bias) > 0.1 ? 'amber' : undefined} sub={cal.bias === null ? '' : cal.bias > 0 ? 'overconfident' : 'underconfident'} />
+        <Stat label="Brier score" value={cal.brier === null ? '–' : cal.brier.toFixed(2)} sub="0 = perfect, 0.25 = coin flip" />
       </div>
       <div className="grid g-side mb16">
         <Card title="Awaiting measurement" icon="target" flush>
@@ -38,7 +38,7 @@ export function LedgerPage() {
               const late = daysBetween(today, b.checkDate) < 0;
               return (
                 <div key={b.id} className="list-item" style={{ alignItems: 'center' }}>
-                  <div className="grow"><Link to={hrefOf(b)} className="strong" style={{ color: 'inherit' }}>{b.title}</Link><div className="small muted">Predicted {b.predictedChange ?? '—'} on <RefChip id={b.metricId} /> · confidence {b.confidence}%</div></div>
+                  <div className="grow"><Link to={hrefOf(b)} className="strong" style={{ color: 'inherit' }}>{b.title}</Link><div className="small muted">Predicted {b.predictedChange ?? '–'} on <RefChip id={b.metricId} /> · confidence {b.confidence}%</div></div>
                   <Badge tone={late ? 'red' : daysBetween(today, b.checkDate) <= 7 ? 'amber' : ''}>measure {relDays(b.checkDate, today)}</Badge>
                   <button className="btn btn-sm btn-primary" onClick={() => record(b.id)}>Record result</button>
                 </div>
@@ -56,7 +56,7 @@ export function LedgerPage() {
           <thead><tr><th>Bet</th><th>Confidence</th><th>Predicted</th><th>Actual</th><th>Result</th></tr></thead>
           <tbody>{measured.map((b) => (
             <tr key={b.id} className="clickable" {...activate(() => navigate(hrefOf(b)), null)}>
-              <td className="strong">{b.title}</td><td className="num">{b.confidence}%</td><td>{b.predictedChange ?? '—'}</td><td className="small">{b.actualResult ?? '—'}</td><td><StatusBadge value={b.result} /></td>
+              <td className="strong">{b.title}</td><td className="num">{b.confidence}%</td><td>{b.predictedChange ?? '–'}</td><td className="small">{b.actualResult ?? '–'}</td><td><StatusBadge value={b.result} /></td>
             </tr>
           ))}</tbody>
         </table></div>
@@ -78,7 +78,7 @@ export function FeaturesPage() {
   const STAGES = ['alpha', 'beta', 'ga', 'deprecated', 'sunset'];
   return (
     <div className="page">
-      <PageHead title="Feature catalog" sub="What the product does today: lifecycle, adoption and cost — so removing things is as deliberate as adding them." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'feature' })}><Icon name="plus" size={14} />New feature</button>} />
+      <PageHead title="Feature catalog" sub="What the product does today: lifecycle, adoption and cost, so removing things is as deliberate as adding them." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'feature' })}><Icon name="plus" size={14} />New feature</button>} />
       {candidates.length > 0 && (
         <Card title={`Removal candidates · ${candidates.length}`} icon="trash-2" sub="GA for 90+ days, under 10% adoption, and not cheap to maintain." className="mb16" flush>
           <div className="list">{candidates.map((f) => (
@@ -96,7 +96,7 @@ export function FeaturesPage() {
             {features.filter((f) => f.status === s).sort((a, b) => (Number(b.adoption) || 0) - (Number(a.adoption) || 0)).map((f) => (
               <Link key={f.id} to={hrefOf(f)} className="tile">
                 <div className="strong small">{f.name}</div>
-                <div className="row small mt8"><span className="num">{f.adoption ?? '—'}%</span><Badge tone={f.adoptionTrend === 'rising' ? 'green' : f.adoptionTrend === 'falling' ? 'red' : ''}>{f.adoptionTrend ?? 'flat'}</Badge>{f.maintenanceCost === 'high' && <Badge tone="amber">high cost</Badge>}</div>
+                <div className="row small mt8"><span className="num">{f.adoption ?? '–'}%</span><Badge tone={f.adoptionTrend === 'rising' ? 'green' : f.adoptionTrend === 'falling' ? 'red' : ''}>{f.adoptionTrend ?? 'flat'}</Badge>{f.maintenanceCost === 'high' && <Badge tone="amber">high cost</Badge>}</div>
               </Link>
             ))}
           </div>

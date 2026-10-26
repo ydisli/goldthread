@@ -30,7 +30,7 @@ export function RequirementsPage() {
       <PageHead guide={<ToolGuide id="requirements" title="Managing requirements" steps={[
         <>Each requirement has a <Term explain="Must have, Should have, Could have, Won't have (this time).">MoSCoW</Term> priority, a status and a version. Editing an approved one creates a new version.</>,
         <>A <Term explain="A frozen snapshot of what was agreed, usually at sign-off. Later changes are compared against it.">baseline</Term> freezes what was agreed; change requests track what moved after that.</>,
-        <>Contradictions — say, 15 minutes in one requirement and 5 in another — are detected automatically.</>,
+        <>Contradictions (say, 15 minutes in one requirement and 5 in another) are detected automatically.</>,
       ]} />} title="Requirements" sub="Managed requirements with MoSCoW, versions, baselines, change control and automatic contradiction detection." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'requirement' })}><Icon name="plus" size={14} />New requirement</button>} />
       <div className="grid g4 mb16">
         <Stat label="Requirements" value={reqs.filter((r) => r.status !== 'deprecated').length} sub={`${reqs.filter((r) => r.priority === 'must').length} must-haves`} />
@@ -64,7 +64,7 @@ export function RequirementsPage() {
             return (
               <Card key={i} title={<span className="row"><Badge tone="red">{c.kind}</Badge><span>{c.reason}</span></span>}>
                 <div className="grid g2">
-                  {[a, b].map((r) => <Link key={r.id} to={hrefOf(r)} className="card pad" style={{ color: 'inherit' }}><div className="row"><span className="key">{r.key}</span><span className="strong">{r.title}</span><span className="spacer" /><StatusBadge value={r.status} /></div><div className="small mt8">{r.statement}</div><div className="small muted mt8">Source: {(r.sourceIds ?? []).map((s: string) => nameOf(g.get(s))).join(', ') || '—'}</div></Link>)}
+                  {[a, b].map((r) => <Link key={r.id} to={hrefOf(r)} className="card pad" style={{ color: 'inherit' }}><div className="row"><span className="key">{r.key}</span><span className="strong">{r.title}</span><span className="spacer" /><StatusBadge value={r.status} /></div><div className="small mt8">{r.statement}</div><div className="small muted mt8">Source: {(r.sourceIds ?? []).map((s: string) => nameOf(g.get(s))).join(', ') || '–'}</div></Link>)}
                 </div>
                 <div className="row-wrap mt12">
                   <button className="btn btn-sm" onClick={() => openEditor({ type: 'decision', defaults: { title: `Resolve: ${a.title} vs ${b.title}`, status: 'proposed', relatedIds: [a.id, b.id], context: c.reason } })}>Log a decision</button>
@@ -95,7 +95,7 @@ function BaselinesList() {
     const reqs = g.all('requirement').filter((r) => r.specId === spec || (s.betId && r.betId === s.betId));
     const n = g.all('baseline').filter((b) => b.specId === spec).length + 1;
     try {
-      const b = await createEntity('baseline', { title: `${s.title} — baseline v${n}`, date: isoDate(now()), specId: spec, snapshot: snapshotRequirements(reqs) });
+      const b = await createEntity('baseline', { title: `${s.title}: baseline v${n}`, date: isoDate(now()), specId: spec, snapshot: snapshotRequirements(reqs) });
       toast('Baseline captured');
       navigate(hrefOf(b));
     } catch (err) { errorToast(err); }
@@ -174,7 +174,7 @@ export function RequirementPage({ id }: { id: string }) {
         <Card title="Traceability" icon="network" actions={<Link className="btn btn-sm" to={`/deliver/trace?impact=${r.id}`}>Impact analysis</Link>}>
           <div className="grid g4" style={{ gap: 12 }}>
             <div><div className="label mb8">Stories</div><RefChips ids={tm.stories.map((s) => s.id)} /></div>
-            <div><div className="label mb8">Tests</div>{tm.tests.length ? <span className="row-wrap" style={{ gap: 4 }}>{tm.tests.map((t) => <Link key={t.id} to={hrefOf(t)} className="chip">{t.key}<StatusBadge value={t.status} /></Link>)}</span> : <span className="muted">—</span>}</div>
+            <div><div className="label mb8">Tests</div>{tm.tests.length ? <span className="row-wrap" style={{ gap: 4 }}>{tm.tests.map((t) => <Link key={t.id} to={hrefOf(t)} className="chip">{t.key}<StatusBadge value={t.status} /></Link>)}</span> : <span className="muted">–</span>}</div>
             <div><div className="label mb8">Releases</div><RefChips ids={tm.releases.map((x) => x.id)} /></div>
             <div><div className="label mb8">Defects</div><RefChips ids={tm.defects.map((x) => x.id)} /></div>
           </div>
@@ -216,7 +216,7 @@ export function DecisionsPage() {
       <div className="grid g4 mb16">
         <Stat label="Decisions" value={decisions.filter((d) => d.status === 'decided').length} />
         <Stat label="Proposed" value={decisions.filter((d) => d.status === 'proposed').length} sub="awaiting a decision" />
-        <Stat label="One-way doors" value={decisions.filter((d) => d.reversibility === 'one-way-door' && d.status !== 'superseded').length} sub="hard to reverse — decide slowly" />
+        <Stat label="One-way doors" value={decisions.filter((d) => d.reversibility === 'one-way-door' && d.status !== 'superseded').length} sub="hard to reverse: decide slowly" />
         <Stat label="Due for revisit" value={due.length} tone={due.length ? 'amber' : undefined} />
       </div>
       <Card flush><EntityTable type="decision" columns={['key', 'title', 'chosen', 'deciderIds', 'date', 'reversibility', 'status']} initialSort={{ key: 'date', dir: -1 }} /></Card>

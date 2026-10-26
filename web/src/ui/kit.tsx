@@ -10,11 +10,11 @@ export function Badge({ children, tone, title }: { children: ReactNode; tone?: T
 
 /** Badge for an enum/status value, coloured by meaning. */
 export function StatusBadge({ value, label }: { value: unknown; label?: string }) {
-  if (value === undefined || value === null || value === '') return <span className="muted">—</span>;
+  if (value === undefined || value === null || value === '') return <span className="muted">–</span>;
   return <span className={`status ${toneOf(value)}`}>{label ?? humanize(value)}</span>;
 }
 
-/** A card. `icon` is accepted for compatibility but intentionally not drawn — headings carry the meaning. */
+/** A card. `icon` is accepted for compatibility but intentionally not drawn: headings carry the meaning. */
 export function Card({ title, actions, children, flush, className, sub }: { title?: ReactNode; icon?: string; actions?: ReactNode; children?: ReactNode; flush?: boolean; className?: string; sub?: ReactNode }) {
   return (
     <section className={`card ${className ?? ''}`}>

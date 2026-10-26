@@ -75,14 +75,14 @@ async function viaAnthropic<T>(ai: Resolved, system: string, user: string, schem
     });
   } catch (err) {
     if (err instanceof Anthropic.AuthenticationError) throw new HttpError(502, 'Claude rejected the API key. Check it under Settings → AI.');
-    if (err instanceof Anthropic.RateLimitError) throw new HttpError(429, 'Claude is rate limited — try again in a minute.');
+    if (err instanceof Anthropic.RateLimitError) throw new HttpError(429, 'Claude is rate limited: try again in a minute.');
     if (err instanceof Anthropic.BadRequestError) throw new HttpError(502, `Claude request was rejected: ${err.message}`);
     if (err instanceof Anthropic.APIConnectionError) throw new HttpError(502, 'Could not reach the Claude API.');
     if (err instanceof Anthropic.APIError) throw new HttpError(502, `Claude API error ${err.status}: ${err.message}`);
     throw err;
   }
   if (response.stop_reason === 'refusal') throw new HttpError(422, 'Claude declined this request.');
-  if (response.stop_reason === 'max_tokens') throw new HttpError(502, 'The model ran out of output tokens — try a shorter input.');
+  if (response.stop_reason === 'max_tokens') throw new HttpError(502, 'The model ran out of output tokens: try a shorter input.');
   const text = response.content.filter((b) => b.type === 'text').map((b) => (b as { text: string }).text).join('');
   return parseJson<T>(text);
 }
@@ -111,10 +111,10 @@ async function viaOpenAICompatible<T>(ai: Resolved, system: string, user: string
     ({ res, body } = await call({ type: 'json_object' }, `\n\nRespond with a single JSON object matching this JSON Schema:\n${JSON.stringify(schema)}`));
   }
   if (res.status === 401 || res.status === 403) throw new HttpError(502, 'The model provider rejected the API key. Check it under Settings → AI.');
-  if (res.status === 429) throw new HttpError(429, 'The model provider is rate limiting — try again in a minute.');
+  if (res.status === 429) throw new HttpError(429, 'The model provider is rate limiting: try again in a minute.');
   if (!res.ok) throw new HttpError(502, `Model provider error ${res.status}: ${body?.error?.message ?? res.statusText}`);
   const choice = body?.choices?.[0];
-  if (choice?.finish_reason === 'length') throw new HttpError(502, 'The model ran out of output tokens — try a shorter input.');
+  if (choice?.finish_reason === 'length') throw new HttpError(502, 'The model ran out of output tokens: try a shorter input.');
   return parseJson<T>(String(choice?.message?.content ?? ''));
 }
 
@@ -129,9 +129,9 @@ function parseJson<T>(text: string): T {
 
 // ---------------- prompts & schemas ----------------
 
-const REVIEW_SYSTEM = `You are the review board for product specs at a company that builds software, often internal IT products. You read a spec the way ten reviewers would in refinement — developer, QA, security, privacy, support, data & analytics, legal & compliance, accessibility, finance, UX — and raise the questions each of them would ask before agreeing to build it.
+const REVIEW_SYSTEM = `You are the review board for product specs at a company that builds software, often internal IT products. You read a spec the way ten reviewers would in refinement (developer, QA, security, privacy, support, data & analytics, legal & compliance, accessibility, finance, UX) and raise the questions each of them would ask before agreeing to build it.
 
-Raise only questions the spec leaves genuinely open: ambiguities, missing edge cases, contradictions with the listed requirements or decisions, risks, and obligations the team may not have considered. Make each one specific to this spec — quote or point at the passage it concerns in "anchor" — and phrase the title as the question the reviewer would ask. Skip anything the spec already answers and anything already in the list of existing questions. Severity: critical = would block release or create a security/legal exposure; major = likely rework or user impact; minor = should be clarified; info = worth noting.`;
+Raise only questions the spec leaves genuinely open: ambiguities, missing edge cases, contradictions with the listed requirements or decisions, risks, and obligations the team may not have considered. Make each one specific to this spec: quote or point at the passage it concerns in "anchor", and phrase the title as the question the reviewer would ask. Skip anything the spec already answers and anything already in the list of existing questions. Severity: critical = would block release or create a security/legal exposure; major = likely rework or user impact; minor = should be clarified; info = worth noting.`;
 
 const REVIEW_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['findings'],
@@ -152,7 +152,7 @@ const REVIEW_SCHEMA = {
 
 const ASK_SYSTEM = `You answer questions about a product team's workspace: their stakeholders, user evidence, bets, requirements, decisions, releases and risks. You are given the workspace items most relevant to the question, each with an id.
 
-Answer only from those items. When they don't contain the answer, say so plainly and suggest what to look at or record. Keep the answer short and practical — a few sentences or a short list in Markdown. List the ids of every item your answer relies on in "citations".`;
+Answer only from those items. When they don't contain the answer, say so plainly and suggest what to look at or record. Keep the answer short and practical: a few sentences or a short list in Markdown. List the ids of every item your answer relies on in "citations".`;
 
 const ASK_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['answer', 'citations'],

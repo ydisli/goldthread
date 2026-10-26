@@ -132,7 +132,7 @@ export function RequestsPage() {
   const closeLoop = async (r: Entity) => {
     const requester = g.get(r.requesterId);
     const bet = g.get(r.betId);
-    const msg = `Hi ${String(requester?.name ?? '').split(' ')[0] || 'there'} — good news: what you asked for ("${r.title}") is now live as part of "${bet?.title}". Thanks for raising it; it shaped what we built. Happy to walk you through it.`;
+    const msg = `Hi ${String(requester?.name ?? '').split(' ')[0] || 'there'}, good news: what you asked for ("${r.title}") is now live as part of "${bet?.title}". Thanks for raising it; it shaped what we built. Happy to walk you through it.`;
     await copyText(msg, 'Close-the-loop message copied');
     try { await updateEntity(r.id, { loopClosed: true }); } catch (err) { errorToast(err); }
   };
@@ -140,7 +140,7 @@ export function RequestsPage() {
     <div className="page page-wide">
       <PageHead
         title="Requests"
-        sub="Every ask from a stakeholder: triage it, respond within the SLA, link it to evidence or a bet — and close the loop when it ships."
+        sub="Every ask from a stakeholder: triage it, respond within the SLA, link it to evidence or a bet, and close the loop when it ships."
         actions={<><Seg value={view} onChange={setView} options={[{ id: 'board', label: 'Board' }, { id: 'table', label: 'Table' }]} /><button className="btn btn-primary" onClick={() => openEditor({ type: 'request', defaults: { receivedAt: isoDate(today) } })}><Icon name="plus" size={14} />New request</button></>}
       />
       {loops.length > 0 && (
@@ -204,7 +204,7 @@ export function CommitmentsPage() {
     <div className="page">
       <PageHead
         title="Commitments"
-        sub="The promise ledger: what was promised to whom and by when — continuously checked against the Monte Carlo delivery forecast."
+        sub="The promise ledger: what was promised to whom and by when, continuously checked against the Monte Carlo delivery forecast."
         actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'commitment' })}><Icon name="plus" size={14} />Record a promise</button>}
       />
       <div className="grid g4 mb16">
@@ -221,7 +221,7 @@ export function CommitmentsPage() {
               {rows.map(({ c, r }) => (
                 <tr key={c.id} className="clickable" {...activate(() => navigate(hrefOf(c)), null)}>
                   <td className="strong">{c.title}{c.account && <div className="small muted">{c.account}</div>}</td>
-                  <td>{c.toId ? <PersonLink s={g.get(c.toId)} /> : <span className="muted">{c.account ?? '—'}</span>}</td>
+                  <td>{c.toId ? <PersonLink s={g.get(c.toId)} /> : <span className="muted">{c.account ?? '–'}</span>}</td>
                   <td className="small">{nameOf(g.get(c.promisedById))}</td>
                   <td className="nowrap">{fmtDate(c.dueDate)}<div className="small muted">{relDays(c.dueDate, today)}</div></td>
                   <td>{c.betId ? <RefChip id={c.betId} /> : c.releaseId ? <RefChip id={c.releaseId} /> : <span className="muted">not linked</span>}</td>
@@ -236,7 +236,7 @@ export function CommitmentsPage() {
           </table>
         </div>
       </Card>
-      <p className="small muted mt12">Risk = probability of the linked bet or release finishing by the promised date, simulated 5,000 times from the team's last 12 weeks of throughput. Promises not linked to delivery cannot be forecast — link them.</p>
+      <p className="small muted mt12">Risk = probability of the linked bet or release finishing by the promised date, simulated 5,000 times from the team's last 12 weeks of throughput. Promises not linked to delivery cannot be forecast: link them.</p>
     </div>
   );
 }

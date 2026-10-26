@@ -88,7 +88,7 @@ export function Customise() {
         {!fieldsOf(type).length && !isAdmin ? <div className="small muted">No fields of your own on {ENTITY_MAP[type].plural.toLowerCase()}.</div> : <FieldsEditor fields={fieldsOf(type)} onChange={(l) => setFields(type, l)} disabled={!isAdmin} />}
         {footer('Removing a field hides it; values stay on the items and return if you add it back with the same name.')}
       </Card>
-      <Card title="Item types of your own" sub="For things the built-in types don't cover — vendors, environments, controls, contracts. Each gets its own list, form and fields, and links to everything else like any other item.">
+      <Card title="Item types of your own" sub="For things the built-in types don't cover: vendors, environments, controls, contracts. Each gets its own list, form and fields, and links to everything else like any other item.">
         <div className="col" style={{ gap: 14 }}>
           {(draft.types ?? []).map((t, i) => {
             const n = t.id ? g.all('record').filter((r) => r.recordType === t.id).length : 0;

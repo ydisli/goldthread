@@ -12,7 +12,7 @@ import { hrefOf } from './links.ts';
 export function RefChip({ e, id, showType }: { e?: Entity; id?: string; showType?: boolean }) {
   const g = useGraph();
   const ent = e ?? g.get(id);
-  if (!ent) return id ? <span className="chip muted" title={id}>missing</span> : <span className="muted">—</span>;
+  if (!ent) return id ? <span className="chip muted" title={id}>missing</span> : <span className="muted">–</span>;
   const def = ENTITY_MAP[ent.type];
   return (
     <Link to={hrefOf(ent)} className="chip" title={`${def?.label ?? ent.type}: ${nameOf(ent)}`}>
@@ -25,7 +25,7 @@ export function RefChip({ e, id, showType }: { e?: Entity; id?: string; showType
 }
 
 export function RefChips({ ids, max = 6 }: { ids: string[] | undefined; max?: number }) {
-  if (!ids?.length) return <span className="muted">—</span>;
+  if (!ids?.length) return <span className="muted">–</span>;
   return (
     <span className="chips">
       {ids.slice(0, max).map((id) => <RefChip key={id} id={id} />)}
@@ -35,7 +35,7 @@ export function RefChips({ ids, max = 6 }: { ids: string[] | undefined; max?: nu
 }
 
 export function FieldValue({ f, value, compact }: { f: FieldDef; value: any; compact?: boolean }) {
-  if (value === undefined || value === null || value === '' || (Array.isArray(value) && !value.length)) return <span className="muted">—</span>;
+  if (value === undefined || value === null || value === '' || (Array.isArray(value) && !value.length)) return <span className="muted">–</span>;
   switch (f.kind) {
     case 'ref': return <RefChip id={value} />;
     case 'refs': return <RefChips ids={value} max={compact ? 3 : 20} />;
@@ -85,7 +85,7 @@ export function FieldInput({ f, value, onChange, entityId, id }: { f: FieldDef; 
     case 'enum':
       return (
         <select id={id} className="select" value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
-          {!f.default && <option value="">—</option>}
+          {!f.default && <option value="">–</option>}
           {f.options!.map((o) => <option key={o} value={o}>{humanize(o)}</option>)}
         </select>
       );

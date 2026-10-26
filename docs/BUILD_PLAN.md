@@ -1,4 +1,4 @@
-# Goldthread — Build Plan
+# Goldthread: Build Plan
 
 ## Architecture
 
@@ -18,13 +18,13 @@
                  one store per workspace · REST      responsive, installable     search · lint (CI)
                  SSE per workspace · MCP · AI
                             │
-                 extension/ (Chrome/Edge MV3) — highlight → evidence
-                 mcp/stdio.ts — bridge for MCP clients (Claude Desktop, Claude Code, Cursor, VS Code)
+                 extension/ (Chrome/Edge MV3): highlight → evidence
+                 mcp/stdio.ts: bridge for MCP clients (Claude Desktop, Claude Code, Cursor, VS Code)
 ```
 
 - **Runtime:** Node ≥ 24 (native TypeScript type-stripping + built-in `node:sqlite`). No build step for server/CLI.
 - **Web:** React + Vite, hand-rolled design system (tokens, light/dark), hash router, PWA (manifest + service worker).
-- **Data:** `data/system.db` (users, sessions, workspaces, memberships, invites, hashed tokens, encrypted AI settings) plus one SQLite file per workspace in `data/workspaces/` — a generic entity store (`entities` table, JSON data) and an append-only `activity` table attributed to a user id. The graph is derived from typed reference fields in the schema, so traceability, impact analysis and 360° profiles come for free for every entity type.
+- **Data:** `data/system.db` (users, sessions, workspaces, memberships, invites, hashed tokens, encrypted AI settings) plus one SQLite file per workspace in `data/workspaces/`: a generic entity store (`entities` table, JSON data) and an append-only `activity` table attributed to a user id. The graph is derived from typed reference fields in the schema, so traceability, impact analysis and 360° profiles come for free for every entity type.
 - **Access:** roles owner/admin/editor/viewer per workspace, enforced by the router on every request; cookie sessions for the web app, personal read/write tokens for CLI, extension, REST and MCP.
 - **AI:** every analysis has a deterministic engine; a workspace can add Claude or any OpenAI-compatible model, or be driven by the user's own assistant over MCP.
 - **Tests:** `node --test` for engines and server (an in-process harness, and local stand-ins for every external service); Playwright for browser journeys and axe accessibility scans.
@@ -47,7 +47,7 @@
 | 11. Finish the loop | comments signed server-side with @mentions into the Inbox, undo and restore for deletes, Jira / Azure DevOps CSV import (stories, defects, resolved dates; re-import by key) and export, `goldthread import`, keyboard shortcuts | A PO can bring their real backlog in, and nothing typed in Goldthread can be lost by accident |
 | 12. The Field Guide | a book in `book/` (craft, tool, templates, glossary) rendered in-app with reading paths, progress, quizzes, search, copyable templates; chapters linked from tool guides and readable by assistants over MCP; structure checked by tests | A new PO or BA can learn the job and the tool in one place |
 
-| 13. Open-source ready | Apache-2.0 code and CC BY 4.0 book; email (SMTP queue, invites, reset links, mention/approval notices, weekly digest); OIDC single sign-on; password reset, personal data export and account deletion; edit-conflict detection with field-level merge; live Jira Cloud and Azure DevOps sync with push; Slack and Teams posting and capture; email-in; attachments; Word and print-to-PDF documents; Teams/Zoom transcript import; custom fields and item types; sub-quadratic engines for large workspaces; online backups; Docker image; Playwright and axe tests; self-hosting, security, accessibility and contributor docs | A team can self-host it, connect their tools and contribute back — with every external integration marked as tested only against stand-ins until someone runs it for real |
+| 13. Open-source ready | Apache-2.0 code and CC BY 4.0 book; email (SMTP queue, invites, reset links, mention/approval notices, weekly digest); OIDC single sign-on; password reset, personal data export and account deletion; edit-conflict detection with field-level merge; live Jira Cloud and Azure DevOps sync with push; Slack and Teams posting and capture; email-in; attachments; Word and print-to-PDF documents; Teams/Zoom transcript import; custom fields and item types; sub-quadratic engines for large workspaces; online backups; Docker image; Playwright and axe tests; self-hosting, security, accessibility and contributor docs | A team can self-host it, connect their tools and contribute back, with every external integration marked as tested only against stand-ins until someone runs it for real |
 
 ## Not built yet
 

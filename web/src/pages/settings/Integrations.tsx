@@ -76,7 +76,7 @@ function IntegrationCard({ kind, current, onChange }: { kind: Kind; current: Int
               <>
                 <label htmlFor={`${kind}-${f.key}`}>{f.label}</label>
                 {f.kind === 'textarea' ? <textarea id={`${kind}-${f.key}`} className="textarea mono" rows={2} value={form[f.key] ?? ''} placeholder={f.placeholder} onChange={(e) => setForm({ ...form, [f.key]: e.target.value })} />
-                  : f.kind === 'secret' ? <input id={`${kind}-${f.key}`} className="input" type="password" autoComplete="off" value={secret} placeholder={current?.connected ? 'Saved — paste a new one to replace it' : ''} onChange={(e) => setSecret(e.target.value)} />
+                  : f.kind === 'secret' ? <input id={`${kind}-${f.key}`} className="input" type="password" autoComplete="off" value={secret} placeholder={current?.connected ? 'Saved: paste a new one to replace it' : ''} onChange={(e) => setSecret(e.target.value)} />
                   : f.kind === 'interval' ? (
                     <select id={`${kind}-${f.key}`} className="select" value={form[f.key] ?? 30} onChange={(e) => setForm({ ...form, [f.key]: Number(e.target.value) })}>
                       <option value={0}>Only when I click Sync now</option><option value={15}>Every 15 minutes</option><option value={30}>Every 30 minutes</option><option value={60}>Every hour</option><option value={240}>Every 4 hours</option><option value={1440}>Once a day</option>
@@ -134,7 +134,7 @@ function ChatCard({ kind, current, onChange }: { kind: 'slack' | 'teams'; curren
       <form className="form-grid" onSubmit={(e) => { e.preventDefault(); void save(); }}>
         <div className="field full">
           <label htmlFor={`${kind}-hook`}>{slack ? 'Incoming webhook URL' : 'Workflows webhook URL'}</label>
-          <input id={`${kind}-hook`} className="input" type="password" autoComplete="off" value={webhookUrl} onChange={(e) => setWebhook(e.target.value)} placeholder={current?.hasWebhook ? 'Saved — paste a new one to replace it' : slack ? 'https://hooks.slack.com/services/…' : 'https://…logic.azure.com/workflows/…'} />
+          <input id={`${kind}-hook`} className="input" type="password" autoComplete="off" value={webhookUrl} onChange={(e) => setWebhook(e.target.value)} placeholder={current?.hasWebhook ? 'Saved: paste a new one to replace it' : slack ? 'https://hooks.slack.com/services/…' : 'https://…logic.azure.com/workflows/…'} />
           <span className="help">{slack ? 'In your Slack app: Incoming Webhooks → Add New Webhook to Workspace, pick the channel.' : 'In Teams: the channel’s ⋯ → Workflows → “Post to a channel when a webhook request is received”.'}</span>
         </div>
         <div className="field full">
@@ -145,7 +145,7 @@ function ChatCard({ kind, current, onChange }: { kind: 'slack' | 'teams'; curren
         </div>
         <div className="field full">
           <label htmlFor={`${kind}-verify`}>{slack ? 'Signing secret (for the slash command)' : 'Security token (for the outgoing webhook)'}</label>
-          <input id={`${kind}-verify`} className="input" type="password" autoComplete="off" value={verify} onChange={(e) => setVerify(e.target.value)} placeholder={current?.hasVerification ? 'Saved — paste a new one to replace it' : ''} />
+          <input id={`${kind}-verify`} className="input" type="password" autoComplete="off" value={verify} onChange={(e) => setVerify(e.target.value)} placeholder={current?.hasVerification ? 'Saved: paste a new one to replace it' : ''} />
           <span className="help">{slack ? <>Slack app → Basic Information → Signing Secret. Create a slash command <code>/goldthread</code> with this request URL:</> : <>Team → Manage team → Apps → Create an outgoing webhook with this callback URL; Teams shows the token once:</>} <code className="selectable">{inbound}</code></span>
         </div>
         <div className="full row-wrap">

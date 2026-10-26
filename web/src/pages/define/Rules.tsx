@@ -21,7 +21,7 @@ export function DecisionTablesPage() {
       <PageHead guide={<ToolGuide id="decision-tables" title="Business rules as tables" steps={[
         <>Each column is a condition and each row a rule. Goldthread checks every combination of inputs.</>,
         <><b>Gaps</b> (no rule applies) and <b>overlaps</b> (two rules disagree) are flagged with the exact inputs.</>,
-        <>Test cases are generated for you — hand them to QA as they are.</>,
+        <>Test cases are generated for you: hand them to QA as they are.</>,
       ]} />} title="Decision tables" sub="Business rules as tables (DMN-style): every combination checked for gaps and conflicts, and tests generated automatically." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'decisionTable', defaults: { conditions: [{ name: 'Condition', values: ['yes', 'no'] }], actions: [{ name: 'Outcome' }], rules: [] } })}><Icon name="plus" size={14} />New table</button>} />
       <Card flush>
         <EntityTable type="decisionTable" columns={['title', 'requirementId', 'hitPolicy', { key: 'state', label: 'Analysis', render: (d) => {
@@ -73,7 +73,7 @@ export function DecisionTablePage({ id }: { id: string }) {
       await batch(tests.map((t) => ({ op: 'create' as const, type: 'testCase', data: {
         title: `${dt.title}: ${Object.entries(t.inputs).map(([k, v]) => `${k}=${v}`).join(', ')}`, kind: 'acceptance',
         requirementIds: dt.requirementId ? [dt.requirementId] : [], steps: Object.entries(t.inputs).map(([k, v]) => `Given ${k} is ${v}`).join('\n'),
-        expected: t.expected ? Object.entries(t.expected).map(([k, v]) => `${k}: ${v}`).join('\n') : 'UNDEFINED — no rule covers this combination', status: 'not-run',
+        expected: t.expected ? Object.entries(t.expected).map(([k, v]) => `${k}: ${v}`).join('\n') : 'UNDEFINED: no rule covers this combination', status: 'not-run',
       } })));
       toast(`${tests.length} test cases created`);
     } catch (err) { errorToast(err); }
@@ -129,7 +129,7 @@ export function DecisionTablePage({ id }: { id: string }) {
         <div style={{ padding: 10 }}><button className="btn btn-sm" onClick={() => addRule()}><Icon name="plus" size={13} />Add rule</button></div>
       </Card>
       <div className="grid g2">
-        <Card title={`Gaps · ${analysis.gaps.length}`} icon="circle-alert" sub="Combinations that no rule covers — the system has no defined behaviour." flush>
+        <Card title={`Gaps · ${analysis.gaps.length}`} icon="circle-alert" sub="Combinations that no rule covers: the system has no defined behaviour." flush>
           {analysis.gaps.length === 0 ? <Empty icon="circle-check">Complete: every combination is covered.</Empty> : (
             <div className="list">{analysis.gaps.slice(0, 30).map((gp, i) => (
               <div key={i} className="list-item" style={{ alignItems: 'center' }}>
@@ -148,13 +148,13 @@ export function DecisionTablePage({ id }: { id: string }) {
           {analysis.invalidValues.length > 0 && <div className="small err" style={{ padding: 12 }}>Invalid values: {analysis.invalidValues.map((v) => `${v.ruleId}.${v.condition}=${v.value}`).join(', ')}</div>}
         </Card>
       </div>
-      <Card title={`Generated tests · ${tests.length}`} icon="circle-check" className="mt16" sub={mode === 'pairwise' ? 'Pairwise: every pair of condition values appears in at least one test — far fewer tests, same pair coverage.' : 'Every combination.'}
+      <Card title={`Generated tests · ${tests.length}`} icon="circle-check" className="mt16" sub={mode === 'pairwise' ? 'Pairwise: every pair of condition values appears in at least one test; far fewer tests, same pair coverage.' : 'Every combination.'}
         actions={<><Seg value={mode} onChange={setMode} options={[{ id: 'pairwise', label: 'Pairwise' }, { id: 'all', label: `All (${analysis.combinations})` }]} /><button className="btn btn-sm btn-primary" onClick={createTests}>Create {tests.length} test cases</button></>} flush>
         <div className="table-wrap">
           <table className="table">
             <thead><tr><th>Test</th>{conditions.map((c) => <th key={c.name}>{c.name}</th>)}<th>Expected</th><th>Rule</th></tr></thead>
             <tbody>{tests.map((t) => (
-              <tr key={t.id}><td className="key">{t.id}</td>{conditions.map((c) => <td key={c.name}>{t.inputs[c.name]}</td>)}<td>{t.expected ? Object.entries(t.expected).map(([k, v]) => `${k}: ${v || '–'}`).join(' · ') : <Badge tone="red">undefined</Badge>}</td><td className="key">{t.ruleId ?? '—'}</td></tr>
+              <tr key={t.id}><td className="key">{t.id}</td>{conditions.map((c) => <td key={c.name}>{t.inputs[c.name]}</td>)}<td>{t.expected ? Object.entries(t.expected).map(([k, v]) => `${k}: ${v || '–'}`).join(' · ') : <Badge tone="red">undefined</Badge>}</td><td className="key">{t.ruleId ?? '–'}</td></tr>
             ))}</tbody>
           </table>
         </div>
@@ -199,7 +199,7 @@ export function StateModelPage({ id }: { id: string }) {
         <div className="table-wrap"><table className="table">
           <thead><tr><th>From</th><th>To</th><th>Trigger</th><th>Guard</th><th /></tr></thead>
           <tbody>
-            {transitions.map((t, i) => <tr key={i}><td>{t.from}</td><td>{t.to}</td><td>{t.trigger}</td><td className="muted">{t.guard ?? '—'}</td><td className="tight"><button className="btn btn-ghost btn-sm btn-icon" onClick={() => save({ transitions: transitions.filter((_, k) => k !== i) })}><Icon name="trash-2" size={12} /></button></td></tr>)}
+            {transitions.map((t, i) => <tr key={i}><td>{t.from}</td><td>{t.to}</td><td>{t.trigger}</td><td className="muted">{t.guard ?? '–'}</td><td className="tight"><button className="btn btn-ghost btn-sm btn-icon" onClick={() => save({ transitions: transitions.filter((_, k) => k !== i) })}><Icon name="trash-2" size={12} /></button></td></tr>)}
             <tr>
               <td><select aria-label="From state" className="select input-sm" value={tr.from} onChange={(e) => setTr({ ...tr, from: e.target.value })}><option value="">from…</option>{states.map((s) => <option key={s}>{s}</option>)}</select></td>
               <td><select aria-label="To state" className="select input-sm" value={tr.to} onChange={(e) => setTr({ ...tr, to: e.target.value })}><option value="">to…</option>{states.map((s) => <option key={s}>{s}</option>)}</select></td>

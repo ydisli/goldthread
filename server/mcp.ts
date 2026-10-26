@@ -21,7 +21,7 @@ import { PARTS, chapterText, quizzesOf } from '../core/book.ts';
 import { loadBook } from './book.ts';
 
 // Model Context Protocol server (Streamable HTTP, JSON responses). Any MCP
-// client — Claude Desktop, Claude Code, ChatGPT connectors, Cursor, VS Code —
+// client: Claude Desktop, Claude Code, ChatGPT connectors, Cursor, VS Code:
 // can connect with a personal API token and work with the workspace.
 
 const SUPPORTED = ['2025-06-18', '2025-03-26', '2024-11-05'];

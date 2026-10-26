@@ -71,7 +71,7 @@ const CHECKS: Check[] = [
     title: 'Retention of generated files?', detail: 'How long are generated files kept, and who can delete them?' },
   // Support
   { role: 'support', severity: 'major', when: /\b(async|background|schedul|job|queue)\w*/i, unless: /\b(notif|status|progress|email when)\w*/i,
-    title: 'How will users know it finished — or failed?', detail: 'Without a notification or status page, expect "is it stuck?" tickets.' },
+    title: 'How will users know it finished, or failed?', detail: 'Without a notification or status page, expect "is it stuck?" tickets.' },
   { role: 'support', severity: 'minor', unless: /\b(help cent|documentation|faq|macro|support article|enablement)\w*/i,
     title: 'Support readiness', detail: 'Plan the help-centre article, support macros and a short internal training before launch.' },
   { role: 'support', severity: 'minor', when: /\b(error|fail)\w*/i, unless: /\b(error message|copy|wording)\b/i,

@@ -24,9 +24,9 @@ export function SpecsPage() {
   return (
     <div className="page">
       <PageHead guide={<ToolGuide id="specs" title="Writing with Spec Studio" steps={[
-        <>Write or paste Markdown. Vague words — “fast”, “user-friendly”, “etc.” — are flagged as you type, with a suggestion.</>,
+        <>Write or paste Markdown. Vague words (“fast”, “user-friendly”, “etc.”) are flagged as you type, with a suggestion.</>,
         <>The completeness check lists what a reviewer will ask about: non-functional needs, errors, permissions, data, rollout.</>,
-        <>Run the review board to get the questions engineering, QA, security, legal and support would raise — before the meeting.</>,
+        <>Run the review board to get the questions engineering, QA, security, legal and support would raise: before the meeting.</>,
       ]} />} title="Spec Studio" sub="Write PRDs that engineers, QA, security and support can't poke holes in: live ambiguity linting, completeness checks, a review board of role agents and one-click requirement extraction." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'spec', defaults: { body: TEMPLATE } })}><Icon name="plus" size={14} />New spec</button>} />
       <Card flush>
         <EntityTable type="spec" columns={[
@@ -217,7 +217,7 @@ function QualityPanel({ issues, comp, onJump }: { issues: LintIssue[]; comp: Ret
           {missing.map((c) => (
             <div key={c.id} className="row small" style={{ alignItems: 'flex-start' }}>
               <Icon name="circle-alert" size={14} className="err" />
-              <div><strong>{c.label}</strong> — {c.question}{c.triggeredBy.length > 0 && <span className="muted"> (because the spec mentions {c.triggeredBy.slice(0, 3).join(', ')})</span>}</div>
+              <div><strong>{c.label}</strong>: {c.question}{c.triggeredBy.length > 0 && <span className="muted"> (because the spec mentions {c.triggeredBy.slice(0, 3).join(', ')})</span>}</div>
             </div>
           ))}
           {comp.filter((c) => c.relevant && c.covered).map((c) => <div key={c.id} className="row small muted"><Icon name="circle-check" size={14} />{c.label}</div>)}
@@ -236,7 +236,7 @@ function ReviewPanel({ spec, body }: { spec: Entity; body: string }) {
     const qs = reviewSpec(body);
     const existing = new Set(findings.map((f) => f.title));
     const fresh = qs.filter((q) => !existing.has(q.title));
-    if (!fresh.length) { toast('No new questions — the board is satisfied with what changed'); return; }
+    if (!fresh.length) { toast('No new questions: the board is satisfied with what changed'); return; }
     try {
       await batch(fresh.map((q) => ({ op: 'create' as const, type: 'reviewFinding', data: { specId: spec.id, role: q.role, severity: q.severity, title: q.title, detail: q.detail, anchor: q.anchor, status: 'open', source: 'engine' } })));
       toast(`${fresh.length} new review questions`);
@@ -265,7 +265,7 @@ function ReviewPanel({ spec, body }: { spec: Entity; body: string }) {
   for (const f of findings) byRole.set(f.role, [...(byRole.get(f.role) ?? []), f]);
   return (
     <div className="col" style={{ gap: 12 }}>
-      <div className="small muted">Ten reviewer roles read the spec and ask what they would ask in refinement. Answer here — answers become requirements or decisions — so the meeting is spent on judgement, not discovery.</div>
+      <div className="small muted">Ten reviewer roles read the spec and ask what they would ask in refinement. Answer here, answers become requirements or decisions, so the meeting is spent on judgement, not discovery.</div>
       <div className="row-wrap">
         <button className="btn btn-primary btn-sm" onClick={run}><Icon name="bot" size={13} />Run review board</button>
         {store.ai.enabled && <button className="btn btn-sm" onClick={runClaude} disabled={busy}><Icon name="sparkles" size={13} />{busy ? 'Claude is reading…' : 'Deep review with Claude'}</button>}

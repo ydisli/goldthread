@@ -74,8 +74,8 @@ export function ImportIssuesDrawer({ onClose }: { onClose: () => void }) {
                 <table className="table">
                   <thead><tr><th>Key</th><th>Story</th><th>Status</th><th>Points</th><th /></tr></thead>
                   <tbody>
-                    {plan.updates.slice(0, 5).map((u) => <tr key={u.id}><td className="mono small nowrap">{u.key}</td><td>{String(u.data.title ?? getGraph().get(u.id)?.title)}</td><td className="nowrap">{String(u.data.status ?? '—')}</td><td>{String(u.data.estimate ?? '')}</td><td><Badge>update</Badge></td></tr>)}
-                    {plan.creates.slice(0, 8).map((c, i) => <tr key={i}><td className="mono small nowrap">{String(c.externalKey ?? '—')}</td><td>{String(c.title)}</td><td className="nowrap">{String(c.status)}</td><td>{String(c.estimate ?? '')}</td><td><Badge tone="green">new</Badge></td></tr>)}
+                    {plan.updates.slice(0, 5).map((u) => <tr key={u.id}><td className="mono small nowrap">{u.key}</td><td>{String(u.data.title ?? getGraph().get(u.id)?.title)}</td><td className="nowrap">{String(u.data.status ?? '–')}</td><td>{String(u.data.estimate ?? '')}</td><td><Badge>update</Badge></td></tr>)}
+                    {plan.creates.slice(0, 8).map((c, i) => <tr key={i}><td className="mono small nowrap">{String(c.externalKey ?? '–')}</td><td>{String(c.title)}</td><td className="nowrap">{String(c.status)}</td><td>{String(c.estimate ?? '')}</td><td><Badge tone="green">new</Badge></td></tr>)}
                   </tbody>
                 </table>
                 {plan.creates.length > 8 && <div className="small muted mt8">…and {plan.creates.length - 8} more.</div>}

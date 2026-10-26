@@ -26,7 +26,7 @@ export interface Quiz {
 }
 
 export const PARTS: { id: BookPart; label: string; title: string; blurb: string }[] = [
-  { id: 'craft', label: 'Part I', title: 'The craft', blurb: 'How to be a good Product Owner or Business Analyst — in any tool, or none.' },
+  { id: 'craft', label: 'Part I', title: 'The craft', blurb: 'How to be a good Product Owner or Business Analyst: in any tool, or none.' },
   { id: 'tool', label: 'Part II', title: 'Working in Goldthread', blurb: 'How the craft maps onto Goldthread, tool by tool, with recipes for a real week.' },
   { id: 'appendix', label: 'Appendices', title: 'Templates & reference', blurb: 'Fill-in templates and a glossary of the terms used in the book.' },
 ];

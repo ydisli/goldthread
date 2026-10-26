@@ -175,14 +175,14 @@ Database changes are applied automatically when the server starts. Take a backup
 
 | Area | Tested how | Not yet tested against |
 |---|---|---|
-| Web app, accounts, roles, invites, password reset, workspace data | Unit, integration and browser tests (`npm test`, `npm run e2e`) | — |
-| Production start (`npm start`) | Browser tests run against it | — |
+| Web app, accounts, roles, invites, password reset, workspace data | Unit, integration and browser tests (`npm test`, `npm run e2e`) |: |
+| Production start (`npm start`) | Browser tests run against it |: |
 | Email (SMTP, STARTTLS, AUTH) | A local SMTP stand-in | Real providers (Microsoft 365, Google, SES, Postmark…) |
 | Single sign-on (OIDC + PKCE, JWKS) | A local identity-provider stand-in | Entra ID, Okta, Google, Auth0, Keycloak |
 | Jira Cloud and Azure DevOps sync | Local stand-ins of both REST APIs | Real Jira Cloud and Azure DevOps organisations |
 | Slack and Teams (posting, slash command, outgoing webhook, signatures) | Local stand-ins | Real Slack and Teams workspaces |
 | Inbound email (Postmark/Mailgun-style webhooks) | Requests in the formats those services document | Real Postmark, Mailgun or SendGrid accounts |
 | Claude and OpenAI-compatible AI | A local stand-in of each API | Live model calls |
-| Docker image and Caddy example | Not built | — |
+| Docker image and Caddy example | Not built |: |
 
 If you connect one of these for real, expect to fix a few things: the stand-ins follow each provider's documentation, and real services rarely match it exactly.

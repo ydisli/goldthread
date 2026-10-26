@@ -15,7 +15,7 @@ const wants = (u: User, what: keyof NotifyPrefs) => {
 };
 
 const itemLink = (base: string, e: Entity) => `${base}/#/e/${e.type}/${e.id}`;
-const footer = (base: string) => `\n\n—\nGoldthread · ${base}\nChange which emails you get under Settings → Profile → Notifications.`;
+const footer = (base: string) => `\n\n-- \nGoldthread · ${base}\nChange which emails you get under Settings → Profile → Notifications.`;
 
 export function notifyInvite(sys: SystemDB, input: { email: string; token: string; workspace: string; role: string; by: string; base: string }): boolean {
   return queueMail(sys, {

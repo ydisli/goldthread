@@ -1,4 +1,4 @@
-/* Goldthread — calm, editorial, precise. Neutral surfaces, ink actions, one accent. */
+/* Goldthread: calm, editorial, precise. Neutral surfaces, ink actions, one accent. */
 
 :root {
   color-scheme: light;
@@ -30,7 +30,7 @@
   --blue: #2f5b93;  --blue-soft: #edf2f8;
   --violet: #5d4fa8; --violet-soft: #f1effa;
 
-  /* Charts — validated reference palette (dataviz skill). */
+  /* Charts: validated reference palette (dataviz skill). */
   --chart-surface: #fcfcfb;
   --grid: #e8e6df;
   --axis: #c9c6bc;

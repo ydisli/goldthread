@@ -36,7 +36,7 @@ export function VisionPage() {
             {boxes.map(([k, label]) => (
               <div key={k} style={{ background: 'var(--surface-2)', borderRadius: 8, padding: 12 }}>
                 <div className="label mb8">{label}</div>
-                <div className="small pre">{vision[k] ?? <span className="muted">—</span>}</div>
+                <div className="small pre">{vision[k] ?? <span className="muted">–</span>}</div>
               </div>
             ))}
           </div>
@@ -99,8 +99,8 @@ export function MetricsPage() {
             {(bets.length > 0 || krs.length > 0) && <div className="chips mt8">{krs.map((k) => <RefChip key={k.id} e={k} />)}{bets.map((b) => <RefChip key={b.id} e={b} />)}</div>}
           </div>
           <div className="right">
-            <div className="strong num">{m.current ?? '—'} <span className="muted small">{m.unit}</span></div>
-            <div className="small muted">target {m.direction === 'down' ? '≤' : '≥'} {m.target ?? '—'}</div>
+            <div className="strong num">{m.current ?? '–'} <span className="muted small">{m.unit}</span></div>
+            <div className="small muted">target {m.direction === 'down' ? '≤' : '≥'} {m.target ?? '–'}</div>
             {good !== null && <Badge tone={good ? 'green' : 'amber'}>{good ? 'On target' : 'Off target'}</Badge>}
           </div>
         </div>
@@ -110,7 +110,7 @@ export function MetricsPage() {
   };
   return (
     <div className="page">
-      <PageHead title="Metric tree" sub="How everyday product metrics roll up into the north star — and which bets are trying to move which metric." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'metric' })}><Icon name="plus" size={14} />New metric</button>} />
+      <PageHead title="Metric tree" sub="How everyday product metrics roll up into the north star, and which bets are trying to move which metric." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'metric' })}><Icon name="plus" size={14} />New metric</button>} />
       <Tabs value={tab} onChange={setTab} tabs={[{ id: 'tree', label: 'Tree' }, { id: 'tracking', label: 'Tracking plan' }]} />
       {tab === 'tree' ? <Card flush><div className="list">{roots.map((r) => <Node key={r.id} m={r} depth={0} />)}</div></Card> : (
         <Card flush title="Tracking plan" sub="Events that must exist before a bet can be measured.">
@@ -140,13 +140,13 @@ export function BusinessCasesPage() {
                 return (
                   <tr key={bc.id} className="clickable" {...activate(() => navigate(hrefOf(bc)), null)}>
                     <td className="strong">{bc.title}</td>
-                    <td>{bet ? <RefChip e={bet} /> : '—'}</td>
+                    <td>{bet ? <RefChip e={bet} /> : '–'}</td>
                     <td className="num strong" style={{ color: r.npv < 0 ? 'var(--red)' : undefined }}>{money(r.npv)}</td>
                     <td className="num">{Math.round(r.roi * 100)}%</td>
-                    <td className="num">{r.paybackYears !== null ? `${r.paybackYears.toFixed(1)} y` : '—'}</td>
-                    <td className="num">{r.irr !== null ? `${Math.round(r.irr * 100)}%` : '—'}</td>
+                    <td className="num">{r.paybackYears !== null ? `${r.paybackYears.toFixed(1)} y` : '–'}</td>
+                    <td className="num">{r.irr !== null ? `${Math.round(r.irr * 100)}%` : '–'}</td>
                     <td className="num">{money(bc.costOfDelayPerWeek)}</td>
-                    <td className="num" title="Cost of delay ÷ duration (weeks): higher = do first">{cd !== null ? money(cd) : '—'}</td>
+                    <td className="num" title="Cost of delay ÷ duration (weeks): higher = do first">{cd !== null ? money(cd) : '–'}</td>
                     <td><StatusBadge value={bc.status} /></td>
                   </tr>
                 );
@@ -277,7 +277,7 @@ export function CapacityPage() {
   }, [g]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="page">
-      <PageHead title="Capacity & portfolio" sub="Planned allocation vs what teams actually spent their last 12 weeks on — plus the tech-debt register in business terms." actions={<><button className="btn" onClick={() => openEditor({ type: 'techDebt' })}><Icon name="plus" size={14} />Tech debt</button><button className="btn btn-primary" onClick={() => openEditor({ type: 'team' })}><Icon name="plus" size={14} />Team</button></>} />
+      <PageHead title="Capacity & portfolio" sub="Planned allocation vs what teams actually spent their last 12 weeks on, plus the tech-debt register in business terms." actions={<><button className="btn" onClick={() => openEditor({ type: 'techDebt' })}><Icon name="plus" size={14} />Tech debt</button><button className="btn btn-primary" onClick={() => openEditor({ type: 'team' })}><Icon name="plus" size={14} />Team</button></>} />
       <div className="grid g3 mb16">
         {teams.map((t) => {
           const a = actual.get(t.id) ?? {};
@@ -290,14 +290,14 @@ export function CapacityPage() {
               <StackBar parts={[{ label: 'New value', value: Number(t.targetFeature) || 0, color: 'var(--s1)' }, { label: 'Tech debt', value: Number(t.targetDebt) || 0, color: 'var(--s2)' }, { label: 'Maintenance', value: Number(t.targetMaintenance) || 0, color: 'var(--s3)' }]} />
               <div className="label mb8 mt12">Actual (last 12 weeks, story points)</div>
               <StackBar parts={Object.entries(a).map(([k, v]) => ({ label: humanize(k), value: v, color: CAT_COLOR[k] ?? 'var(--s8)' }))} />
-              <div className="small muted mt8">New value {Math.round(featureShare * 100)}% vs target {t.targetFeature ?? '—'}%{Math.abs(featureShare * 100 - (Number(t.targetFeature) || 0)) > 15 && <Badge tone="amber">off plan</Badge>}</div>
+              <div className="small muted mt8">New value {Math.round(featureShare * 100)}% vs target {t.targetFeature ?? '–'}%{Math.abs(featureShare * 100 - (Number(t.targetFeature) || 0)) > 15 && <Badge tone="amber">off plan</Badge>}</div>
               {active.length > 0 && <div className="chips mt12">{active.map((b) => <RefChip key={b.id} e={b} />)}</div>}
             </Card>
           );
         })}
       </div>
       <div className="mb16"><Legend items={[{ label: 'New value (feature)', color: 'var(--s1)' }, { label: 'Tech debt', color: 'var(--s2)' }, { label: 'Maintenance', color: 'var(--s3)' }, { label: 'Compliance', color: 'var(--s7)' }]} /></div>
-      <Card title="Tech-debt register" icon="layers" sub="Sorted by interest — the ongoing cost of not fixing it." flush>
+      <Card title="Tech-debt register" icon="layers" sub="Sorted by interest: the ongoing cost of not fixing it." flush>
         <EntityTable type="techDebt" rows={[...g.all('techDebt')].sort((a, b) => ['high', 'medium', 'low'].indexOf(a.interest) - ['high', 'medium', 'low'].indexOf(b.interest))} columns={['title', 'area', 'businessImpact', 'interest', 'effort', 'teamId', 'status']} />
       </Card>
     </div>

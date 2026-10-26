@@ -15,7 +15,7 @@ import { hrefOf } from '../../entity/links.ts';
 import { AlignmentList, PersonLink } from './common.tsx';
 
 const RACI_CYCLE: (RaciRole | '')[] = ['', 'R', 'A', 'C', 'I'];
-const RACI_HELP: Record<RaciRole, string> = { R: 'Responsible — does the work', A: 'Accountable — owns the outcome, signs off (exactly one)', C: 'Consulted — two-way input before the decision', I: 'Informed — told after the decision' };
+const RACI_HELP: Record<RaciRole, string> = { R: 'Responsible: does the work', A: 'Accountable: owns the outcome, signs off (exactly one)', C: 'Consulted: two-way input before the decision', I: 'Informed: told after the decision' };
 
 export function RaciListPage() {
   const g = useGraph();
@@ -32,10 +32,10 @@ export function RaciListPage() {
   return (
     <div className="page">
       <PageHead guide={<ToolGuide id="raci" title="RACI in one minute" steps={[
-        <><b>R</b>esponsible does the work · <b>A</b>ccountable owns the outcome and signs off — exactly one per activity · <b>C</b>onsulted gives input before · <b>I</b>nformed hears after.</>,
+        <><b>R</b>esponsible does the work · <b>A</b>ccountable owns the outcome and signs off: exactly one per activity · <b>C</b>onsulted gives input before · <b>I</b>nformed hears after.</>,
         <>Open a matrix and click a cell to cycle R → A → C → I.</>,
-        <>Activities with no A, or more than one, are flagged — that is usually where decisions stall.</>,
-      ]} />} title="RACI matrices" sub="Who is Responsible, Accountable, Consulted and Informed — validated so every activity has exactly one owner and nobody drowns in consultation." actions={<button className="btn btn-primary" onClick={create}><Icon name="plus" size={14} />New RACI</button>} />
+        <>Activities with no A, or more than one, are flagged: that is usually where decisions stall.</>,
+      ]} />} title="RACI matrices" sub="Who is Responsible, Accountable, Consulted and Informed: validated so every activity has exactly one owner and nobody drowns in consultation." actions={<button className="btn btn-primary" onClick={create}><Icon name="plus" size={14} />New RACI</button>} />
       <div className="grid g2">
         {g.all('raci').map((m) => {
           const issues = validateRaci(m.activities ?? [], m.memberIds ?? [], m.assignments ?? {}, (id) => nameOf(g.get(id)));
@@ -179,7 +179,7 @@ export function ApprovalsPage() {
     <div className="page">
       <PageHead
         title="Approvals & sign-offs"
-        sub="Specs, baselines, decisions, releases and UAT. Every response is timestamped and attributable — the trail auditors ask for."
+        sub="Specs, baselines, decisions, releases and UAT. Every response is timestamped and attributable: the trail auditors ask for."
         actions={<><Seg value={view} onChange={setView} options={[{ id: 'pending', label: 'Open' }, { id: 'all', label: 'All' }]} /><NewApprovalButton /></>}
       />
       <div className="col" style={{ gap: 14 }}>
@@ -214,7 +214,7 @@ function ApprovalCard({ a, focused, today }: { a: Entity; focused: boolean; toda
         <Icon name="clipboard-check" className="muted" />
         <div style={{ flex: 1, minWidth: 0 }}>
           <h2>{a.title}</h2>
-          <div className="small muted">On {a.subjectId ? <RefChip id={a.subjectId} showType /> : '—'} · requested by {nameOf(g.get(a.requestedById))} · due {fmtDate(a.dueDate)} ({relDays(a.dueDate, today)})</div>
+          <div className="small muted">On {a.subjectId ? <RefChip id={a.subjectId} showType /> : '–'} · requested by {nameOf(g.get(a.requestedById))} · due {fmtDate(a.dueDate)} ({relDays(a.dueDate, today)})</div>
         </div>
         {overdue && <Badge tone="red">Overdue</Badge>}
         <StatusBadge value={a.status} />
@@ -280,7 +280,7 @@ export function ConflictsPage() {
     <div className="page">
       <PageHead
         title="Conflicts & escalations"
-        sub="Separate positions (what people say they want) from interests (why they want it) — agreement usually lives in the interests."
+        sub="Separate positions (what people say they want) from interests (why they want it): agreement usually lives in the interests."
         actions={<><Seg value={view} onChange={setView} options={[{ id: 'open', label: 'Open' }, { id: 'all', label: 'All' }]} /><button className="btn btn-primary" onClick={() => openEditor({ type: 'conflict', defaults: { raisedAt: isoDate(today) } })}><Icon name="plus" size={14} />Log conflict</button></>}
       />
       <div className="col" style={{ gap: 14 }}>
@@ -290,8 +290,8 @@ export function ConflictsPage() {
             <div className="row-wrap mb12" style={{ gap: 12 }}>{(c.partyIds ?? []).map((id: string) => <PersonLink key={id} s={g.get(id)} />)}</div>
             {c.description && <p className="small">{c.description}</p>}
             <div className="grid g2">
-              <div><div className="label mb8">Positions</div><div className="pre small">{c.positions ?? <span className="muted">—</span>}</div></div>
-              <div><div className="label mb8">Underlying interests</div><div className="pre small">{c.interests ?? <span className="muted">Not explored yet — ask “why is that important to you?”</span>}</div></div>
+              <div><div className="label mb8">Positions</div><div className="pre small">{c.positions ?? <span className="muted">–</span>}</div></div>
+              <div><div className="label mb8">Underlying interests</div><div className="pre small">{c.interests ?? <span className="muted">Not explored yet: ask “why is that important to you?”</span>}</div></div>
             </div>
             {c.resolution && <div className="mt12 small" style={{ background: 'var(--green-soft)', padding: 10, borderRadius: 8 }}><strong>Resolution:</strong> {c.resolution}</div>}
             {c.status !== 'resolved' && (

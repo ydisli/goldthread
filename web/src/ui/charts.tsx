@@ -212,7 +212,7 @@ export function StackBar({ parts, height = 14 }: { parts: { label: string; value
 // ---------------- sparkline (sentiment) ----------------
 
 export function Sparkline({ values, min = -2, max = 2, width = 120, height = 28, color = 'var(--s1)', zero = true }: { values: number[]; min?: number; max?: number; width?: number; height?: number; color?: string; zero?: boolean }) {
-  if (!values.length) return <span className="muted small">—</span>;
+  if (!values.length) return <span className="muted small">–</span>;
   const p = 4;
   const sx = (i: number) => p + (values.length === 1 ? (width - 2 * p) / 2 : (i / (values.length - 1)) * (width - 2 * p));
   const sy = (v: number) => p + (1 - (v - min) / (max - min)) * (height - 2 * p);
@@ -326,7 +326,7 @@ export function LineChart({ series, xLabels, height = 220, yFormat = compact, yM
     const x = ((e.clientX - r.left) / r.width) * W;
     const i = Math.max(0, Math.min(xLabels.length - 1, Math.round(((x - m.l) / pw) * (xLabels.length - 1))));
     setHx(i);
-    tt.show(e, <><div className="t-title">{xLabels[i]}</div>{series.map((s) => <div key={s.label} className="row"><span className="swatch" style={{ background: s.color }} />{s.label}: {s.values[i] === null ? '—' : yFormat(s.values[i]!)}</div>)}</>);
+    tt.show(e, <><div className="t-title">{xLabels[i]}</div>{series.map((s) => <div key={s.label} className="row"><span className="swatch" style={{ background: s.color }} />{s.label}: {s.values[i] === null ? '–' : yFormat(s.values[i]!)}</div>)}</>);
   };
   return (
     <div className="chart">

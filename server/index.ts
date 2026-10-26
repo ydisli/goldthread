@@ -172,7 +172,7 @@ if (DEV) {
 
 server.on('error', (err: NodeJS.ErrnoException) => {
   if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is already in use — Goldthread is probably already running at http://${HOST}:${PORT}.`);
+    console.error(`Port ${PORT} is already in use: Goldthread is probably already running at http://${HOST}:${PORT}.`);
     console.error(`Open that URL, stop the other process, or start a second copy with: PORT=${PORT + 1} npm run dev`);
   } else {
     console.error(`Could not start the server: ${err.message}`);

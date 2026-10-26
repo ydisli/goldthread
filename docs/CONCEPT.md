@@ -1,10 +1,10 @@
-# Goldthread — Concept v2
+# Goldthread: Concept v2
 
-> Every requirement knows why it exists — and every stakeholder knows where they stand.
+> Every requirement knows why it exists, and every stakeholder knows where they stand.
 
 Goldthread is an overlay for Product Owners and Business Analysts. It keeps the
-*chain of intent* — strategy → evidence → problem → bet → requirement → story →
-release → outcome → learning — as a live graph, and wraps the people side of the
+*chain of intent*: strategy → evidence → problem → bet → requirement → story →
+release → outcome → learning: as a live graph, and wraps the people side of the
 job (stakeholders, approvals, commitments, communication) around that chain.
 
 It does not replace Jira/Linear/Azure DevOps (system of record for *work*). It is
@@ -12,39 +12,39 @@ the system of record for *intent* and *alignment*.
 
 ---
 
-## 1. Gap analysis — what v1 was missing
+## 1. Gap analysis: what v1 was missing
 
 v1 covered discovery → spec → delivery → learning well, but treated the people
 side and the strategy side as afterthoughts. Gaps found on review:
 
 | # | Gap in v1 | Why it matters for a PO / BA | v2 answer |
 |---|---|---|---|
-| 1 | **Stakeholder management** was a single "radar" | Half of a PO's week is alignment: who must be consulted, who signs off, who was promised what, who is drifting into opposition | **Stakeholder Hub** (§4) — registry, maps, engagement plan, comms cadence, requests, commitments, RACI, approvals, conflicts, meeting prep |
-| 2 | No **strategy layer** | Bets were not anchored to vision, OKRs or a metric tree, so prioritization had no "north" | **Strategy Studio** — vision board, OKRs, metric tree, strategy pillars |
-| 3 | **Roadmap** dropped | Roadmap is the PO's main communication artifact | **Roadmap** — Now/Next/Later + timeline, confidence, audience views |
+| 1 | **Stakeholder management** was a single "radar" | Half of a PO's week is alignment: who must be consulted, who signs off, who was promised what, who is drifting into opposition | **Stakeholder Hub** (§4): registry, maps, engagement plan, comms cadence, requests, commitments, RACI, approvals, conflicts, meeting prep |
+| 2 | No **strategy layer** | Bets were not anchored to vision, OKRs or a metric tree, so prioritization had no "north" | **Strategy Studio**: vision board, OKRs, metric tree, strategy pillars |
+| 3 | **Roadmap** dropped | Roadmap is the PO's main communication artifact | **Roadmap**: Now/Next/Later + timeline, confidence, audience views |
 | 4 | No **business case / financials** | BAs are asked for cost/benefit, ROI, NPV, payback | **Business Case** calculator linked to bets |
-| 5 | No **market & competitive intel** | Prioritization ignores competitive pressure and win/loss reasons | **Market** — competitor matrix, win/loss analysis |
-| 6 | No **user story mapping** | Backlogs lose the user journey; release slicing gets arbitrary | **Story Map** — activities → steps → stories, release slices |
-| 7 | No **personas / JTBD / journey maps** | Evidence had no "who"; pains were not placed in context | **Customer** — evidence-backed personas, journey maps |
-| 8 | No **research ops** | Interviews were ingested but never planned | **Research** — studies, interview guides, participants, synthesis |
-| 9 | Experiments had no **statistics** | "Cheapest test" was suggested, but results were eyeballed | **Experiment Lab** — sample size, significance, decision |
-| 10 | No **elicitation planning** (BABOK) | BAs plan workshops, interviews, observation, document analysis | **Elicitation Planner** — technique, question bank, notes → candidate requirements |
+| 5 | No **market & competitive intel** | Prioritization ignores competitive pressure and win/loss reasons | **Market**: competitor matrix, win/loss analysis |
+| 6 | No **user story mapping** | Backlogs lose the user journey; release slicing gets arbitrary | **Story Map**: activities → steps → stories, release slices |
+| 7 | No **personas / JTBD / journey maps** | Evidence had no "who"; pains were not placed in context | **Customer**: evidence-backed personas, journey maps |
+| 8 | No **research ops** | Interviews were ingested but never planned | **Research**: studies, interview guides, participants, synthesis |
+| 9 | Experiments had no **statistics** | "Cheapest test" was suggested, but results were eyeballed | **Experiment Lab**: sample size, significance, decision |
+| 10 | No **elicitation planning** (BABOK) | BAs plan workshops, interviews, observation, document analysis | **Elicitation Planner**: technique, question bank, notes → candidate requirements |
 | 11 | No **BA analysis toolkit** | Gap analysis, capability map, SWOT, root cause, use cases, state models, data dictionary are daily BA work | **BA Toolkit** |
 | 12 | No **requirements management** | Attributes, MoSCoW, baselines, versioning, change control are table stakes in enterprise/regulated work | **Requirements Manager** |
-| 13 | No **RAID log** | Risks/issues were invisible until they exploded | **RAID** — risk heatmap, owners, mitigations |
-| 14 | No **release & launch** | Shipping ≠ launching: docs, support training, sales enablement, rollout, rollback | **Release & Launch** — GTM readiness, tiers, rollout plan |
-| 15 | No **UAT & quality** | BAs run UAT and own business sign-off; defects should trace back to requirements | **UAT & Quality** — UAT plans, scenarios from AC, sign-off, defect root-cause |
-| 16 | No **capacity / portfolio** | PO must balance features vs tech debt vs maintenance across teams | **Capacity & Portfolio** — allocation, tech-debt register |
-| 17 | No **feature catalog / lifecycle** | Nobody knows what the product *does today*; deprecations are chaotic | **Feature Catalog** — status, adoption, sunset plans |
-| 18 | No **close-the-loop** | Customers who asked never hear back | **Close-the-loop** — notify requesters when their ask ships |
-| 19 | Ceremonies copilot dropped | Refinement, planning, review, retro, steering produce decisions & actions | **Meetings** — agendas, notes → decisions/actions/interactions |
-| 20 | No **document generation** | Orgs still need PRD, BRD, FRD, PR/FAQ, one-pagers, steering packs | **Doc Generator** — templates rendered from the graph |
+| 13 | No **RAID log** | Risks/issues were invisible until they exploded | **RAID**: risk heatmap, owners, mitigations |
+| 14 | No **release & launch** | Shipping ≠ launching: docs, support training, sales enablement, rollout, rollback | **Release & Launch**: GTM readiness, tiers, rollout plan |
+| 15 | No **UAT & quality** | BAs run UAT and own business sign-off; defects should trace back to requirements | **UAT & Quality**: UAT plans, scenarios from AC, sign-off, defect root-cause |
+| 16 | No **capacity / portfolio** | PO must balance features vs tech debt vs maintenance across teams | **Capacity & Portfolio**: allocation, tech-debt register |
+| 17 | No **feature catalog / lifecycle** | Nobody knows what the product *does today*; deprecations are chaotic | **Feature Catalog**: status, adoption, sunset plans |
+| 18 | No **close-the-loop** | Customers who asked never hear back | **Close-the-loop**: notify requesters when their ask ships |
+| 19 | Ceremonies copilot dropped | Refinement, planning, review, retro, steering produce decisions & actions | **Meetings**: agendas, notes → decisions/actions/interactions |
+| 20 | No **document generation** | Orgs still need PRD, BRD, FRD, PR/FAQ, one-pagers, steering packs | **Doc Generator**: templates rendered from the graph |
 | 21 | No **collaboration & governance** | Comments, mentions, approvals, audit trail, roles, SSO | **Platform** layer |
 | 22 | Single surface | POs/BAs work in meetings, chat, email, on the phone | **Multi-platform** (§2) |
 
 ---
 
-## 2. Platforms — one core, many surfaces
+## 2. Platforms: one core, many surfaces
 
 **Principle:** a single platform-agnostic core (domain model + analysis engines,
 written once in TypeScript) is shared by every client. A thin API exposes it.
@@ -65,65 +65,65 @@ Every client is just a view or a capture point.
 
 ---
 
-## 3. Module map — 7 areas, 38 modules
+## 3. Module map: 7 areas, 38 modules
 
 ### A. Today
-1. **Daily Brief** — what changed and what needs you: approvals waiting, overdue stakeholder touchpoints, at-risk commitments, rising signal clusters, bets due for measurement, RAID items escalating, backlog health.
-2. **Ask Goldthread** — search + Q&A over the whole graph, with citations.
-3. **Inbox** — stakeholder requests, review findings and approvals assigned to you.
+1. **Daily Brief**: what changed and what needs you: approvals waiting, overdue stakeholder touchpoints, at-risk commitments, rising signal clusters, bets due for measurement, RAID items escalating, backlog health.
+2. **Ask Goldthread**: search + Q&A over the whole graph, with citations.
+3. **Inbox**: stakeholder requests, review findings and approvals assigned to you.
 
 ### B. Strategy
-4. **Vision Board** — vision, target group, needs, product, business goals.
-5. **OKRs** — objectives & key results with progress and confidence.
-6. **Metric Tree** — north star → input metrics → feature metrics, guardrails; tracking plan.
-7. **Business Case** — costs, benefits, NPV, ROI, payback, cost of delay.
-8. **Market** — competitor matrix, win/loss analysis.
-9. **Capacity & Portfolio** — team capacity, allocation targets (e.g. 60/25/15 feature/debt/maintenance), tech-debt register.
+4. **Vision Board**: vision, target group, needs, product, business goals.
+5. **OKRs**: objectives & key results with progress and confidence.
+6. **Metric Tree**: north star → input metrics → feature metrics, guardrails; tracking plan.
+7. **Business Case**: costs, benefits, NPV, ROI, payback, cost of delay.
+8. **Market**: competitor matrix, win/loss analysis.
+9. **Capacity & Portfolio**: team capacity, allocation targets (e.g. 60/25/15 feature/debt/maintenance), tech-debt register.
 
 ### C. Stakeholders (see §4)
 10. **Registry & 360° profiles**
-11. **Maps** — power/interest grid, salience model, engagement matrix, influence network
-12. **Engagement & comms plan** — cadence, channel, overdue touchpoints, interaction log, sentiment trend
-13. **Requests** — intake, triage, SLA, link to evidence/bets, close-the-loop
-14. **Commitments (promise ledger)** — what was promised to whom, checked against forecast
+11. **Maps**: power/interest grid, salience model, engagement matrix, influence network
+12. **Engagement & comms plan**: cadence, channel, overdue touchpoints, interaction log, sentiment trend
+13. **Requests**: intake, triage, SLA, link to evidence/bets, close-the-loop
+14. **Commitments (promise ledger)**: what was promised to whom, checked against forecast
 15. **RACI / DACI**
 16. **Approvals & sign-offs**
 17. **Conflicts & escalations**
 18. **Meeting prep & tailored updates**
 
 ### D. Discover
-19. **Signal Hub** — evidence inbox, clustering, evidence strength, loud-customer detector, CSV import.
-20. **Opportunity Tree** — outcome → opportunities → bets → experiments.
-21. **Assumption Map** — importance × evidence; riskiest-first.
-22. **Experiment Lab** — sample size, significance, decision.
-23. **Customer** — personas, JTBD, journey maps.
-24. **Research** — studies, guides, participants, findings.
+19. **Signal Hub**: evidence inbox, clustering, evidence strength, loud-customer detector, CSV import.
+20. **Opportunity Tree**: outcome → opportunities → bets → experiments.
+21. **Assumption Map**: importance × evidence; riskiest-first.
+22. **Experiment Lab**: sample size, significance, decision.
+23. **Customer**: personas, JTBD, journey maps.
+24. **Research**: studies, guides, participants, findings.
 
 ### E. Define
-25. **Spec Studio** — PRD editor with ambiguity linter, completeness checker, contradiction detection, glossary enforcement, requirement extraction.
-26. **Review Board** — role agents (Dev, QA, Security/Privacy, Support, Data, Legal, Accessibility, Finance) critique a spec before refinement.
-27. **Requirements Manager** — attributes, MoSCoW, versions, baselines + diff, change requests with impact.
-28. **Decision Log** — ADR-style, reversibility, revisit triggers.
-29. **Decision Tables** — completeness/overlap/conflict checks, test generation.
-30. **Process Models** — swimlanes, as-is vs to-be diff.
-31. **BA Toolkit** — elicitation planner, gap analysis, capability map, SWOT, root cause (5 whys), use cases, state models (reachability check), data dictionary (PII tagging).
-32. **Story Map & Stories** — backbone, release slices, INVEST checks, Gherkin AC, splitting hints.
+25. **Spec Studio**: PRD editor with ambiguity linter, completeness checker, contradiction detection, glossary enforcement, requirement extraction.
+26. **Review Board**: role agents (Dev, QA, Security/Privacy, Support, Data, Legal, Accessibility, Finance) critique a spec before refinement.
+27. **Requirements Manager**: attributes, MoSCoW, versions, baselines + diff, change requests with impact.
+28. **Decision Log**: ADR-style, reversibility, revisit triggers.
+29. **Decision Tables**: completeness/overlap/conflict checks, test generation.
+30. **Process Models**: swimlanes, as-is vs to-be diff.
+31. **BA Toolkit**: elicitation planner, gap analysis, capability map, SWOT, root cause (5 whys), use cases, state models (reachability check), data dictionary (PII tagging).
+32. **Story Map & Stories**: backbone, release slices, INVEST checks, Gherkin AC, splitting hints.
 
 ### F. Deliver
-33. **Backlog & Prioritization** — hygiene scan, RICE / WSJF with sensitivity analysis, blind scoring.
-34. **Roadmap** — Now/Next/Later, timeline, confidence, audience filters.
-35. **Release & Launch** — scope, GTM readiness checklist, rollout & rollback, release notes per audience.
-36. **Delivery Pulse** — Monte Carlo forecast, scope creep, dependencies; **RAID** log; **UAT & Quality**; **Traceability & Impact**.
+33. **Backlog & Prioritization**: hygiene scan, RICE / WSJF with sensitivity analysis, blind scoring.
+34. **Roadmap**: Now/Next/Later, timeline, confidence, audience filters.
+35. **Release & Launch**: scope, GTM readiness checklist, rollout & rollback, release notes per audience.
+36. **Delivery Pulse**: Monte Carlo forecast, scope creep, dependencies; **RAID** log; **UAT & Quality**; **Traceability & Impact**.
 
 ### G. Learn
-37. **Bet Ledger** — predicted vs actual, learnings, calibration score.
-38. **Feature Catalog** — lifecycle, adoption, removal candidates, sunset plans.
+37. **Bet Ledger**: predicted vs actual, learnings, calibration score.
+38. **Feature Catalog**: lifecycle, adoption, removal candidates, sunset plans.
 
 Cross-cutting: **Meetings**, **Doc Generator** (PRD, BRD, PR/FAQ, steering pack, release notes), **Comments & activity trail**, **Import/Export**, **Glossary**.
 
 ---
 
-## 4. Stakeholder Hub — deep dive
+## 4. Stakeholder Hub: deep dive
 
 The PO is accountable for value; value is negotiated with people. The Hub makes
 alignment explicit, measurable and hard to forget.
@@ -141,7 +141,7 @@ them, decisions they made or were consulted on, conflicts they are part of,
 RACI roles, and the evidence/requests that originated from them.
 
 ### 4.2 Maps
-- **Power / interest grid** (Mendelow): Manage closely / Keep satisfied / Keep informed / Monitor — each quadrant implies a default cadence.
+- **Power / interest grid** (Mendelow): Manage closely / Keep satisfied / Keep informed / Monitor. Each quadrant implies a default cadence.
 - **Salience model** (Mitchell): power × legitimacy × urgency → Definitive, Dominant, Dangerous, Dependent, Dormant, Discretionary, Demanding.
 - **Engagement assessment matrix** (PMBOK): C = current, D = desired; the gap generates actions.
 - **Influence network**: who influences whom; find the person to convince first.
@@ -154,7 +154,7 @@ RACI roles, and the evidence/requests that originated from them.
 ### 4.4 Requests (intake)
 Asks from stakeholders: triage → accepted / planned / declined (with reason),
 response SLA, links to evidence and bets. Shipping a linked bet triggers
-**close-the-loop** — "tell the 6 requesters it's live".
+**close-the-loop**: "tell the 6 requesters it's live".
 
 ### 4.5 Commitments (promise ledger)
 Every promise made to a customer or exec: what, to whom, by when, by whom. Checked
@@ -187,7 +187,7 @@ Which affected stakeholders have resistant engagement?
 
 ---
 
-## 5. Intent Graph v2 — entities
+## 5. Intent Graph v2: entities
 
 Strategy: vision, objective, keyResult, metric, businessCase, competitor, winLoss, team, techDebt
 Stakeholders: stakeholder, interaction, request, commitment, raci, approval, conflict, commsItem

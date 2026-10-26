@@ -32,12 +32,12 @@ export function StakeholdersPage() {
   return (
     <div className="page">
       <PageHead guide={<ToolGuide id="stakeholders" title="Keeping track of people" steps={[
-        <>Add everyone with a stake — sponsors, approvers, users, the delivery team — and rate their <Term explain="How much they can change the outcome.">power</Term> and <Term explain="How much they care about the outcome.">interest</Term> from 1 to 5.</>,
+        <>Add everyone with a stake (sponsors, approvers, users, the delivery team) and rate their <Term explain="How much they can change the outcome.">power</Term> and <Term explain="How much they care about the outcome.">interest</Term> from 1 to 5.</>,
         <>Set how often you want to talk to each person. Overdue conversations show up on Home.</>,
         <>Open a person and use <b>Prep</b> before a meeting: their goals, concerns, open asks and what you promised them.</>,
       ]} />}
         title="Stakeholders"
-        sub="Who has power over, interest in, or impact from the product — and where each relationship stands today."
+        sub="Who has power over, interest in, or impact from the product, and where each relationship stands today."
         actions={<>
           <Link to="/stakeholders/maps" className="btn"><Icon name="radar" size={14} />Maps</Link>
           <button className="btn btn-primary" onClick={() => openEditor({ type: 'stakeholder' })}><Icon name="plus" size={14} />New stakeholder</button>
@@ -143,7 +143,7 @@ function PrepView({ s, brief }: { s: Entity; brief: ReturnType<typeof prepBrief>
         <Card title="Briefing" icon="sparkles" actions={<button className="btn btn-sm" onClick={() => copyText(asMarkdown(), 'Prep notes copied')}><Icon name="copy" size={13} />Copy as notes</button>}>
           <p>{brief.headline}</p>
           <div className="grid g2 mt12">
-            <div><div className="label mb8">What they care about</div>{brief.caresAbout.length ? <ul style={{ margin: 0, paddingLeft: 18 }}>{brief.caresAbout.map((x) => <li key={x}>{x}</li>)}</ul> : <span className="muted small">Not recorded — ask them, then add it to their profile.</span>}</div>
+            <div><div className="label mb8">What they care about</div>{brief.caresAbout.length ? <ul style={{ margin: 0, paddingLeft: 18 }}>{brief.caresAbout.map((x) => <li key={x}>{x}</li>)}</ul> : <span className="muted small">Not recorded: ask them, then add it to their profile.</span>}</div>
             <div><div className="label mb8">Concerns</div>{brief.concerns.length ? <ul style={{ margin: 0, paddingLeft: 18 }}>{brief.concerns.map((x) => <li key={x}>{x}</li>)}</ul> : <span className="muted small">None recorded.</span>}</div>
           </div>
         </Card>
@@ -263,7 +263,7 @@ function InteractionsView({ s, p }: { s: Entity; p: ReturnType<typeof profile360
       </Card>
       <Card title="Sentiment over time" icon="trending-up">
         <Sparkline values={p.sentiment.points.map((x) => x.sentiment)} width={300} height={80} color={p.sentiment.label === 'cooling' ? 'var(--critical)' : 'var(--s1)'} />
-        <div className="small muted mt8">Average {p.sentiment.average?.toFixed(1) ?? '—'} · trend: {p.sentiment.label}. Scale −2 (very negative) to +2 (very positive).</div>
+        <div className="small muted mt8">Average {p.sentiment.average?.toFixed(1) ?? '–'} · trend: {p.sentiment.label}. Scale −2 (very negative) to +2 (very positive).</div>
       </Card>
     </div>
   );

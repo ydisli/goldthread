@@ -9,10 +9,10 @@ import { concurrency, forecastScope } from './forecast.ts';
 export type Quadrant = 'manage-closely' | 'keep-satisfied' | 'keep-informed' | 'monitor';
 
 export const QUADRANTS: Record<Quadrant, { label: string; cadence: number; strategy: string }> = {
-  'manage-closely': { label: 'Manage closely', cadence: 7, strategy: 'Key player — involve in decisions, frequent 1:1s, no surprises.' },
-  'keep-satisfied': { label: 'Keep satisfied', cadence: 21, strategy: 'High power, lower interest — concise updates, consult before decisions that touch their area.' },
-  'keep-informed': { label: 'Keep informed', cadence: 14, strategy: 'High interest, lower power — regular updates, use as early feedback and champions.' },
-  monitor: { label: 'Monitor', cadence: 45, strategy: 'Light-touch — broadcast updates, watch for changes in power or interest.' },
+  'manage-closely': { label: 'Manage closely', cadence: 7, strategy: 'Key player: involve in decisions, frequent 1:1s, no surprises.' },
+  'keep-satisfied': { label: 'Keep satisfied', cadence: 21, strategy: 'High power, lower interest: concise updates, consult before decisions that touch their area.' },
+  'keep-informed': { label: 'Keep informed', cadence: 14, strategy: 'High interest, lower power: regular updates, use as early feedback and champions.' },
+  monitor: { label: 'Monitor', cadence: 45, strategy: 'Light-touch: broadcast updates, watch for changes in power or interest.' },
 };
 
 export const isHigh = (v: unknown) => Number(v) > 3;
@@ -30,13 +30,13 @@ export function cadenceDays(s: Entity): number {
 // ---------------- Salience (Mitchell, Agle & Wood) ----------------
 
 export const SALIENCE: Record<string, { label: string; description: string }> = {
-  definitive: { label: 'Definitive', description: 'Power, legitimacy and urgency — highest priority.' },
-  dominant: { label: 'Dominant', description: 'Power and legitimacy — formal influence; keep engaged.' },
-  dangerous: { label: 'Dangerous', description: 'Power and urgency without legitimacy — may act coercively; manage carefully.' },
-  dependent: { label: 'Dependent', description: 'Legitimacy and urgency but no power — rely on others to advocate for them.' },
-  dormant: { label: 'Dormant', description: 'Power only — little interaction now, but can become definitive.' },
-  discretionary: { label: 'Discretionary', description: 'Legitimacy only — no pressure; engage as goodwill.' },
-  demanding: { label: 'Demanding', description: 'Urgency only — loud but without power or legitimacy.' },
+  definitive: { label: 'Definitive', description: 'Power, legitimacy and urgency: highest priority.' },
+  dominant: { label: 'Dominant', description: 'Power and legitimacy: formal influence; keep engaged.' },
+  dangerous: { label: 'Dangerous', description: 'Power and urgency without legitimacy: may act coercively; manage carefully.' },
+  dependent: { label: 'Dependent', description: 'Legitimacy and urgency but no power: rely on others to advocate for them.' },
+  dormant: { label: 'Dormant', description: 'Power only: little interaction now, but can become definitive.' },
+  discretionary: { label: 'Discretionary', description: 'Legitimacy only: no pressure; engage as goodwill.' },
+  demanding: { label: 'Demanding', description: 'Urgency only: loud but without power or legitimacy.' },
   none: { label: 'Non-stakeholder', description: 'No power, legitimacy or urgency.' },
 };
 
@@ -177,19 +177,19 @@ export function validateRaci(activities: string[], memberIds: string[], assignme
     const roles = memberIds.map((m) => row[m]).filter(Boolean);
     const accountable = roles.filter((r) => r === 'A').length;
     if (accountable === 0) issues.push({ severity: 'error', message: `"${a}" has no Accountable person.`, activity: a });
-    if (accountable > 1) issues.push({ severity: 'error', message: `"${a}" has ${accountable} Accountable people — there must be exactly one.`, activity: a });
+    if (accountable > 1) issues.push({ severity: 'error', message: `"${a}" has ${accountable} Accountable people: there must be exactly one.`, activity: a });
     if (!roles.includes('R') && !roles.includes('A')) issues.push({ severity: 'warning', message: `"${a}" has nobody Responsible for doing the work.`, activity: a });
     if (!roles.includes('I') && !roles.includes('C')) issues.push({ severity: 'info', message: `Nobody is consulted or informed about "${a}".`, activity: a });
     const consulted = roles.filter((r) => r === 'C').length;
-    if (consulted >= 5) issues.push({ severity: 'warning', message: `"${a}" consults ${consulted} people — decisions will be slow.`, activity: a });
+    if (consulted >= 5) issues.push({ severity: 'warning', message: `"${a}" consults ${consulted} people: decisions will be slow.`, activity: a });
   }
   for (const m of memberIds) {
     const roles = activities.map((a) => assignments[a]?.[m]).filter(Boolean);
-    if (!roles.length) issues.push({ severity: 'info', message: `${names(m)} has no role — remove from the matrix?`, memberId: m });
+    if (!roles.length) issues.push({ severity: 'info', message: `${names(m)} has no role: remove from the matrix?`, memberId: m });
     const c = roles.filter((r) => r === 'C').length;
-    if (activities.length >= 3 && c / activities.length > 0.6) issues.push({ severity: 'warning', message: `${names(m)} is consulted on ${c} of ${activities.length} activities — consultation overload.`, memberId: m });
+    if (activities.length >= 3 && c / activities.length > 0.6) issues.push({ severity: 'warning', message: `${names(m)} is consulted on ${c} of ${activities.length} activities: consultation overload.`, memberId: m });
     const aCount = roles.filter((r) => r === 'A').length;
-    if (activities.length >= 4 && aCount / activities.length > 0.75) issues.push({ severity: 'info', message: `${names(m)} is accountable for almost everything — delegate?`, memberId: m });
+    if (activities.length >= 4 && aCount / activities.length > 0.75) issues.push({ severity: 'info', message: `${names(m)} is accountable for almost everything: delegate?`, memberId: m });
   }
   return issues;
 }
@@ -233,12 +233,12 @@ export function commitmentRisk(c: Entity, g: Graph, now: Date): CommitmentRisk {
   const bet = g.get(c.betId);
   const release = g.get(c.releaseId);
   if (release?.status === 'released' || bet?.status === 'shipped' || bet?.status === 'measured') {
-    return { level: 'low', probability: 1, reason: 'Delivered — confirm with the stakeholder and mark as kept.' };
+    return { level: 'low', probability: 1, reason: 'Delivered: confirm with the stakeholder and mark as kept.' };
   }
   if (!c.dueDate) return { level: 'unknown', reason: 'No promised date.' };
   const daysLeft = daysBetween(now, c.dueDate);
   const scope = bet ?? release;
-  if (!scope) return { level: daysLeft < 0 ? 'high' : 'unknown', reason: daysLeft < 0 ? 'Past the promised date and not linked to delivery.' : 'Not linked to a bet or release — cannot forecast.' };
+  if (!scope) return { level: daysLeft < 0 ? 'high' : 'unknown', reason: daysLeft < 0 ? 'Past the promised date and not linked to delivery.' : 'Not linked to a bet or release: cannot forecast.' };
   const fc = forecastScope(g.all('story'), scope, now, { targetDate: c.dueDate, concurrent: bet ? concurrency(g.all('bet'), bet) : 1 });
   if (!fc) return { level: 'unknown', reason: 'No throughput history to forecast from.' };
   const p = fc.probabilityBy ?? 0;
@@ -331,16 +331,16 @@ export function prepBrief(s: Entity, g: Graph, now: Date): PrepBrief {
     points.push({ kind: 'approval', refId: a.id, text: `Ask for sign-off: "${a.title}"${due}.` });
   }
   for (const { c, risk } of p.commitments) {
-    if (risk.level === 'high' || risk.level === 'medium') points.push({ kind: 'commitment', refId: c.id, text: `Reset expectations on "${c.title}" — ${risk.reason}` });
+    if (risk.level === 'high' || risk.level === 'medium') points.push({ kind: 'commitment', refId: c.id, text: `Reset expectations on "${c.title}": ${risk.reason}` });
   }
   for (const r of p.openRequests) {
     const overdue = r.respondBy && daysBetween(now, r.respondBy) < 0;
-    if (r.status === 'new' || r.status === 'triaging' || overdue) points.push({ kind: 'request', refId: r.id, text: `Respond to their request "${r.title}"${overdue ? ' — response is overdue' : ''}.` });
+    if (r.status === 'new' || r.status === 'triaging' || overdue) points.push({ kind: 'request', refId: r.id, text: `Respond to their request "${r.title}"${overdue ? ': response is overdue' : ''}.` });
   }
   for (const c of p.conflicts) points.push({ kind: 'conflict', refId: c.id, text: `Open conflict: "${c.title}" (${c.status}). Explore interests, not positions.` });
   if (p.engagement.action) points.push({ kind: 'engagement', text: `Engagement ${p.engagement.current} → ${p.engagement.desired}: ${p.engagement.action}` });
   for (const concern of lines(s.concerns).slice(0, 2)) points.push({ kind: 'concern', text: `Address their concern: ${concern}` });
-  if (p.sentiment.label === 'cooling') points.push({ kind: 'relationship', text: 'Sentiment is cooling over recent interactions — start by asking how things are going for them.' });
+  if (p.sentiment.label === 'cooling') points.push({ kind: 'relationship', text: 'Sentiment is cooling over recent interactions: start by asking how things are going for them.' });
 
   // Decisions since the last interaction that involve them or their bets.
   const theirBets = new Set<string>([...p.requests.map((r) => r.betId), ...p.commitments.map((x) => x.c.betId)].filter(Boolean));
@@ -354,12 +354,12 @@ export function prepBrief(s: Entity, g: Graph, now: Date): PrepBrief {
   });
   for (const d of sinceLastTime) {
     if (!(d.consultedIds ?? []).includes(s.id) && !(d.deciderIds ?? []).includes(s.id)) {
-      points.push({ kind: 'decision', refId: d.id, text: `Share decision "${d.title}" made since you last spoke — they were not consulted.` });
+      points.push({ kind: 'decision', refId: d.id, text: `Share decision "${d.title}" made since you last spoke: they were not consulted.` });
     }
   }
 
   const q = QUADRANTS[p.quadrant].label;
-  const headline = `${s.name} · ${s.title ?? ''} — ${q}, ${SALIENCE[p.salience].label.toLowerCase()} stakeholder; ${p.engagement.current}${p.engagement.gap > 0 ? ` (want ${p.engagement.desired})` : ''}; ${p.touch.status === 'never' ? 'no interactions logged' : `last spoke ${p.touch.daysSince} days ago`}.`;
+  const headline = `${s.name} · ${s.title ?? ''}: ${q}, ${SALIENCE[p.salience].label.toLowerCase()} stakeholder; ${p.engagement.current}${p.engagement.gap > 0 ? ` (want ${p.engagement.desired})` : ''}; ${p.touch.status === 'never' ? 'no interactions logged' : `last spoke ${p.touch.daysSince} days ago`}.`;
   return { stakeholder: s, headline, caresAbout: lines(s.goals), concerns: lines(s.concerns), talkingPoints: points, sinceLastTime, profile: p };
 }
 
@@ -403,7 +403,7 @@ export function alignmentCheck(subject: Entity, g: Graph, now: Date): AlignmentG
     }
   }
   for (const r of g.all('request')) {
-    if (r.betId && relatedIds.has(r.betId) && r.requesterId && !involved.has(r.requesterId)) add(g.get(r.requesterId), `Requested "${r.title}" — affected by this.`, 'low');
+    if (r.betId && relatedIds.has(r.betId) && r.requesterId && !involved.has(r.requesterId)) add(g.get(r.requesterId), `Requested "${r.title}": affected by this.`, 'low');
   }
   for (const c of g.all('commitment')) {
     if ((c.betId && relatedIds.has(c.betId)) && c.toId && !involved.has(c.toId)) add(g.get(c.toId), `Was promised "${c.title}" by ${c.dueDate ?? 'an open date'}.`, 'medium');
@@ -468,35 +468,35 @@ export function tailoredUpdate(subject: Entity, audience: Audience, g: Graph, no
 
   switch (audience) {
     case 'exec':
-      L.push(`## ${title} — executive update`, '');
-      L.push(`**Outcome:** ${bet?.hypothesis ?? bet?.title ?? '—'}`);
-      if (metric) L.push(`**Metric:** ${metric.name}${bet?.predictedChange ? ` — predicted ${bet.predictedChange}` : ''}`);
+      L.push(`## ${title}: executive update`, '');
+      L.push(`**Outcome:** ${bet?.hypothesis ?? bet?.title ?? '–'}`);
+      if (metric) L.push(`**Metric:** ${metric.name}${bet?.predictedChange ? `: predicted ${bet.predictedChange}` : ''}`);
       L.push(`**Status:** ${subject.status} · ${done}/${stories.length} stories done · ${when}`);
-      if (size.arr || size.people) L.push(`**Who is affected:** ${accounts.length} accounts or departments raised this — ${impactText(size.arr, size.people)}.`);
+      if (size.arr || size.people) L.push(`**Who is affected:** ${accounts.length} accounts or departments raised this: ${impactText(size.arr, size.people)}.`);
       L.push('', '**Top risks**');
-      L.push(...(raid.length ? raid.slice(0, 3).map((r) => `- ${r.title} (P${r.probability}×I${r.impact}) — ${r.mitigation ?? 'no mitigation yet'}`) : ['- None open.']));
+      L.push(...(raid.length ? raid.slice(0, 3).map((r) => `- ${r.title} (P${r.probability}×I${r.impact}): ${r.mitigation ?? 'no mitigation yet'}`) : ['- None open.']));
       L.push('', '**Decisions / approvals needed from you**');
       L.push(...(approvals.length ? approvals.map((a) => `- ${a.title}${a.dueDate ? ` (by ${a.dueDate})` : ''}`) : ['- None right now.']));
       break;
     case 'sales':
-      L.push(`## ${title} — for Sales & Customer Success`, '');
+      L.push(`## ${title}: for Sales & Customer Success`, '');
       L.push(`**What it is:** ${bet?.title ?? title}`);
       if (bet?.hypothesis) L.push(`**Why customers care:** ${bet.hypothesis}`);
       L.push(`**When:** ${when}. Please do not promise a date earlier than the 85% forecast.`);
       if (accounts.length) L.push(`**Accounts waiting for this:** ${accounts.join(', ')}`);
-      if (commitments.length) L.push('', '**Promises already made**', ...commitments.map((c) => `- ${c.title} → ${nameOf(g.get(c.toId))} by ${c.dueDate ?? '—'} (${c.status})`));
+      if (commitments.length) L.push('', '**Promises already made**', ...commitments.map((c) => `- ${c.title} → ${nameOf(g.get(c.toId))} by ${c.dueDate ?? '–'} (${c.status})`));
       L.push('', '**What it does not do (yet)**', ...(nonGoals.length ? nonGoals.map((n) => `- ${n}`) : ['- Scope still being finalised.']));
       break;
     case 'support':
-      L.push(`## ${title} — support briefing`, '');
+      L.push(`## ${title}: support briefing`, '');
       L.push(`**What changes for customers:** ${bet?.title ?? title}`);
       L.push(`**When:** ${when}`);
       L.push('', '**Known limitations**', ...(nonGoals.length ? nonGoals.map((n) => `- ${n}`) : ['- None documented yet.']));
-      L.push('', '**Questions customers will likely ask**', ...(findings.filter((f) => f.role === 'support' || f.role === 'qa').slice(0, 5).map((f) => `- ${f.title}${f.resolution ? ` — ${f.resolution}` : ''}`)));
+      L.push('', '**Questions customers will likely ask**', ...(findings.filter((f) => f.role === 'support' || f.role === 'qa').slice(0, 5).map((f) => `- ${f.title}${f.resolution ? `: ${f.resolution}` : ''}`)));
       if (requests.length) L.push('', `**Tickets/requests to update when live:** ${requests.length}`);
       break;
     case 'engineering':
-      L.push(`## ${title} — engineering sync`, '');
+      L.push(`## ${title}: engineering sync`, '');
       L.push(`**Scope:** ${stories.length} stories, ${stories.length - done} remaining · ${when}`);
       L.push('', '**Decisions**', ...(decisions.length ? decisions.map((d) => `- ${d.key ?? ''} ${d.title}${d.chosen ? ` → ${d.chosen}` : ''} (${d.reversibility ?? ''})`) : ['- None logged.']));
       L.push('', '**Open review findings**', ...(findings.filter((f) => f.status === 'open').slice(0, 6).map((f) => `- [${f.role}] ${f.title}`)));
@@ -506,7 +506,7 @@ export function tailoredUpdate(subject: Entity, audience: Audience, g: Graph, no
       L.push(`## ${bet?.title ?? title}`, '');
       L.push(bet?.hypothesis ? benefitLine(bet.hypothesis) : `${title} is ${subject.status === 'released' ? 'now available' : 'coming soon'}.`);
       L.push('', `**Availability:** ${subject.status === 'released' ? `available now${subject.version ? ` (v${subject.version})` : ''}` : 'coming soon'}.`);
-      L.push('', 'Thank you to everyone who asked for this — your feedback shaped it.');
+      L.push('', 'Thank you to everyone who asked for this: your feedback shaped it.');
       break;
   }
   return L.join('\n');

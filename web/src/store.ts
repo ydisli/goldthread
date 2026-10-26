@@ -158,7 +158,7 @@ export async function loadWorkspace() {
     try { localStorage.setItem(`${CACHE_KEY}.${currentWs}`, JSON.stringify({ settings: ws.settings, entities: ws.entities, members: ws.members })); } catch { /* quota or private mode */ }
   } catch (err) {
     if ((err as ApiError).status === 403) {
-      // Removed from this workspace — fall back to another one.
+      // Removed from this workspace: fall back to another one.
       setCurrentWs(null);
       return boot();
     }

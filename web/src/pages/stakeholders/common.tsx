@@ -10,7 +10,7 @@ export const ENGAGEMENT_COLOR: Record<string, string> = {
 };
 
 export function PersonLink({ s, sub }: { s: Entity | undefined; sub?: string }) {
-  if (!s) return <span className="muted">—</span>;
+  if (!s) return <span className="muted">–</span>;
   return (
     <Link to={hrefOf(s)} className="row" style={{ color: 'inherit', gap: 8, minWidth: 0 }} onClick={(e) => e.stopPropagation()}>
       <Avatar name={s.name} size="sm" />

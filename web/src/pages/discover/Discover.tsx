@@ -36,7 +36,7 @@ export function SignalsPage() {
     <div className="page">
       <PageHead
         title="Signal Hub"
-        sub="Every customer and market signal in one place — clustered into themes, weighed by accounts and ARR, linked to opportunities."
+        sub="Every customer and market signal in one place: clustered into themes, weighed by accounts and ARR, linked to opportunities."
         actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'evidence', defaults: { date: isoDate(today) } })}><Icon name="plus" size={14} />Add signal</button>}
       />
       <div className="grid g4 mb16">
@@ -129,7 +129,7 @@ function Unlinked({ items }: { items: Entity[] }) {
               <div className="row-wrap" style={{ gap: 6 }}>
                 <span className="small muted">Suggested:</span>
                 {sug.map((s) => <button key={s.opportunity.id} className="btn btn-sm" onClick={() => link(e, s.opportunity.id)} title={`Similarity ${s.similarity.toFixed(2)}`}><Icon name="link" size={12} />{s.opportunity.title}</button>)}
-                {!sug.length && <span className="small muted">no close match — new opportunity?</span>}
+                {!sug.length && <span className="small muted">no close match: new opportunity?</span>}
               </div>
             </div>
           );
@@ -162,7 +162,7 @@ function ImportSignals() {
   return (
     <Card title="Import signals from CSV" icon="upload" sub="Paste an export from your support desk, survey tool or CRM. Columns: title (required), source, kind, account, segment, arr, date, detail.">
       <textarea aria-label="Paste feedback" className="textarea mono" rows={10} value={text} onChange={(e) => setText(e.target.value)} />
-      <div className="row mt12"><span className="small muted">{body.length} rows detected · columns: {head.join(', ') || '—'}</span><span className="spacer" /><button className="btn btn-primary" disabled={!body.length} onClick={doImport}>Import {body.length} signals</button></div>
+      <div className="row mt12"><span className="small muted">{body.length} rows detected · columns: {head.join(', ') || '–'}</span><span className="spacer" /><button className="btn btn-primary" disabled={!body.length} onClick={doImport}>Import {body.length} signals</button></div>
     </Card>
   );
 }
@@ -201,7 +201,7 @@ export function OpportunitiesPage() {
             <Badge tone={st.verdict === 'strong' ? 'green' : st.verdict === 'moderate' ? 'blue' : st.verdict === 'weak' ? 'amber' : 'red'} title={st.breakdown.map((b) => `${b.label}: ${b.points}/${b.max}`).join('\n')}>evidence {st.score}/100 · {st.verdict}</Badge>
           </div>
           <div className="small muted mt8">{st.count} signals · {st.accounts} accounts · {money(st.arr)} ARR · {Math.round(st.didShare * 100)}% behavioural{o.metricId && <> · moves <RefChip id={o.metricId} /></>}</div>
-          {st.loudest && <div className="small mt8" style={{ color: 'var(--amber)' }}><Icon name="triangle-alert" size={12} /> {Math.round(st.loudest.share * 100)}% of signals come from {st.loudest.account} — a loud customer, not necessarily a market.</div>}
+          {st.loudest && <div className="small mt8" style={{ color: 'var(--amber)' }}><Icon name="triangle-alert" size={12} /> {Math.round(st.loudest.share * 100)}% of signals come from {st.loudest.account}: a loud customer, not necessarily a market.</div>}
           {bets.length > 0 && (
             <div className="row-wrap mt8" style={{ gap: 6 }}>
               {bets.map((b) => <Link key={b.id} to={hrefOf(b)} className="chip"><Icon name="rocket" size={12} />{b.title}<StatusBadge value={b.status} /></Link>)}
@@ -267,17 +267,17 @@ export function BetPage({ id }: { id: string }) {
       side={<AlignmentPanel e={b} />}
     >
       <div className="grid g4">
-        <Stat label="Confidence" value={`${b.confidence ?? '—'}%`} sub={b.predictedChange ?? undefined} />
+        <Stat label="Confidence" value={`${b.confidence ?? '–'}%`} sub={b.predictedChange ?? undefined} />
         <Stat label="Progress" value={`${done}/${stories.length}`} sub="stories done" />
         <Stat label="Evidence" value={`${st.score}/100`} sub={`${st.verdict} · ${st.accounts} accounts`} />
-        <Stat label="RICE · WSJF" value={`${r !== null ? r.toFixed(0) : '—'} · ${w !== null ? w.toFixed(1) : '—'}`} />
+        <Stat label="RICE · WSJF" value={`${r !== null ? r.toFixed(0) : '–'} · ${w !== null ? w.toFixed(1) : '–'}`} />
       </div>
       {fc && (
         <Card title="Delivery forecast" icon="activity" sub={`${fc.remaining} stories remaining · Monte Carlo over ${fc.trials.toLocaleString()} simulations of the team's weekly throughput${concurrency(g.all('bet'), b) > 1 ? ` (shared with ${concurrency(g.all('bet'), b) - 1} other bet)` : ''}.`}>
           <div className="grid g3 mb12">
             <div><div className="label">50% likely by</div><div className="strong">{fmtDate(fc.dates.p50)}</div></div>
             <div><div className="label">85% likely by</div><div className="strong">{fmtDate(fc.dates.p85)}</div></div>
-            <div><div className="label">Target {fmtDate(b.targetDate)}</div><div className="strong" style={{ color: (fc.probabilityBy ?? 1) < 0.5 ? 'var(--red)' : undefined }}>{fc.probabilityBy !== undefined ? `${Math.round(fc.probabilityBy * 100)}% chance` : '—'}</div></div>
+            <div><div className="label">Target {fmtDate(b.targetDate)}</div><div className="strong" style={{ color: (fc.probabilityBy ?? 1) < 0.5 ? 'var(--red)' : undefined }}>{fc.probabilityBy !== undefined ? `${Math.round(fc.probabilityBy * 100)}% chance` : '–'}</div></div>
           </div>
           <Histogram bins={fc.histogram.map((h) => ({ x: h.weeks, count: h.count }))} markers={[{ x: fc.weeks.p50, label: '50%' }, { x: fc.weeks.p85, label: '85%' }]} xLabel="Weeks from today" format={(v) => `${v} weeks`} />
           {creep && creep.added > 0 && <div className="small mt8" style={{ color: 'var(--amber)' }}>Scope grew by {creep.added} stories ({Math.round(creep.ratio * 100)}%) since commitment on {fmtDate(b.startDate)}.</div>}
@@ -295,7 +295,7 @@ export function BetPage({ id }: { id: string }) {
       <Card title={`Evidence · ${ev.length}`} icon="quote" sub={opps.map((o) => o.title).join(' · ')} flush>
         <div className="list">{ev.slice(0, 8).map((e) => <Link key={e.id} to={hrefOf(e)} className="list-item small"><span className="grow">“{e.title}”</span><span className="muted nowrap">{e.account ?? humanize(e.source)}</span></Link>)}</div>
       </Card>
-      {bc && (() => { const res = evaluateBusinessCase(bc); return <Card title="Business case" icon="briefcase-business" actions={<Link className="btn btn-sm" to={hrefOf(bc)}>Open</Link>}><div className="grid g3"><div><div className="label">NPV</div><div className="strong">{money(res.npv)}</div></div><div><div className="label">ROI</div><div className="strong">{Math.round(res.roi * 100)}%</div></div><div><div className="label">Payback</div><div className="strong">{res.paybackYears?.toFixed(1) ?? '—'} yrs</div></div></div></Card>; })()}
+      {bc && (() => { const res = evaluateBusinessCase(bc); return <Card title="Business case" icon="briefcase-business" actions={<Link className="btn btn-sm" to={hrefOf(bc)}>Open</Link>}><div className="grid g3"><div><div className="label">NPV</div><div className="strong">{money(res.npv)}</div></div><div><div className="label">ROI</div><div className="strong">{Math.round(res.roi * 100)}%</div></div><div><div className="label">Payback</div><div className="strong">{res.paybackYears?.toFixed(1) ?? '–'} yrs</div></div></div></Card>; })()}
     </EntityPage>
   );
 }
@@ -304,9 +304,9 @@ function FieldGridLite({ e }: { e: Entity }) {
   const g = useGraph();
   const items: [string, ReactNode][] = [
     ['Status', <StatusBadge value={e.status} />], ['Horizon', humanize(e.horizon)], ['Category', humanize(e.category)], ['Owner', nameOf(g.get(e.ownerId))],
-    ['Team', nameOf(g.get(e.teamId))], ['Metric', e.metricId ? <RefChip id={e.metricId} /> : '—'], ['Objective', e.objectiveId ? <RefChip id={e.objectiveId} /> : '—'],
-    ['Start', fmtDate(e.startDate)], ['Target', fmtDate(e.targetDate)], ['Measure on', e.checkDate ? `${fmtDate(e.checkDate)} (${relDays(e.checkDate)})` : '—'],
-    ['Result', e.result && e.result !== 'pending' ? <StatusBadge value={e.result} /> : '—'],
+    ['Team', nameOf(g.get(e.teamId))], ['Metric', e.metricId ? <RefChip id={e.metricId} /> : '–'], ['Objective', e.objectiveId ? <RefChip id={e.objectiveId} /> : '–'],
+    ['Start', fmtDate(e.startDate)], ['Target', fmtDate(e.targetDate)], ['Measure on', e.checkDate ? `${fmtDate(e.checkDate)} (${relDays(e.checkDate)})` : '–'],
+    ['Result', e.result && e.result !== 'pending' ? <StatusBadge value={e.result} /> : '–'],
   ];
   return (
     <>
@@ -387,8 +387,8 @@ export function ExperimentPage({ id }: { id: string }) {
               <div><div className="label">p-value</div><div className="strong">{t.pValue < 0.001 ? '< 0.001' : t.pValue.toFixed(3)}</div></div>
             </div>
             <div className="mt12"><Badge tone={t.significant ? 'green' : 'amber'}>{t.significant ? 'Statistically significant' : 'Not significant'}</Badge></div>
-            <div className="small muted mt8">95% CI for the absolute difference: {(t.ci[0] * 100).toFixed(1)} to {(t.ci[1] * 100).toFixed(1)} percentage points.{n && Math.min(Number(x.controlN), Number(x.variantN)) < n ? ' Sample is below the planned size — beware of peeking.' : ''}</div>
-          </> : single !== null ? <><div className="stat-value">{(single * 100).toFixed(1)}%</div><div className="small muted">{x.variantConversions} of {x.variantN} — {single * 100 >= Number(x.baselineRate) ? 'above' : 'below'} the {x.baselineRate}% threshold.</div></> : <span className="muted small">Enter visitors and conversions for control and variant.</span>}
+            <div className="small muted mt8">95% CI for the absolute difference: {(t.ci[0] * 100).toFixed(1)} to {(t.ci[1] * 100).toFixed(1)} percentage points.{n && Math.min(Number(x.controlN), Number(x.variantN)) < n ? ' Sample is below the planned size: beware of peeking.' : ''}</div>
+          </> : single !== null ? <><div className="stat-value">{(single * 100).toFixed(1)}%</div><div className="small muted">{x.variantConversions} of {x.variantN}: {single * 100 >= Number(x.baselineRate) ? 'above' : 'below'} the {x.baselineRate}% threshold.</div></> : <span className="muted small">Enter visitors and conversions for control and variant.</span>}
           <div className="row mt12"><span className="small muted">Decision:</span>{['persevere', 'pivot', 'kill'].map((d) => <button key={d} className={`btn btn-sm ${x.decision === d ? 'btn-primary' : ''}`} onClick={() => setDecision(d)}>{humanize(d)}</button>)}</div>
         </Card>
       </div>

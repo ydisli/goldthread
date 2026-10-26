@@ -147,7 +147,7 @@ export function planIssueImport(rows: string[][], existing: Entity[], opts: { bu
   const plan: ImportPlan = { source, creates: [], updates: [], defects: [], defectUpdates: [], skipped: [], mapped, warnings: [] };
   const skip = new Map<string, number>();
   const seen = new Set<string>();
-  if (!idx.title.length) { plan.warnings.push('No Summary / Title column found — nothing can be imported.'); return plan; }
+  if (!idx.title.length) { plan.warnings.push('No Summary / Title column found: nothing can be imported.'); return plan; }
   if (!idx.key.length) plan.warnings.push('No Issue key / ID column: re-importing later will create duplicates.');
 
   for (const r of body) {

@@ -1,5 +1,5 @@
 // Process models: layout, metrics and modelling checks for swimlane diagrams.
-// Pure functions — used by the web canvas, the MCP server and tests.
+// Pure functions: used by the web canvas, the MCP server and tests.
 
 export type StepKind = 'start' | 'task' | 'decision' | 'end';
 
@@ -114,7 +114,7 @@ export function checkProcess(steps: Step[], lanes: string[]): ProcessIssue[] {
   for (const s of steps) {
     for (const n of s.next) if (!byId.has(n)) issues.push({ severity: 'error', message: `“${s.label}” points to a step that no longer exists.`, stepId: s.id });
     if (starts.length && !reached.has(s.id)) issues.push({ severity: 'warning', message: `“${s.label}” can't be reached from the start.`, stepId: s.id });
-    if (s.kind !== 'end' && s.next.length === 0) issues.push({ severity: 'warning', message: `“${s.label}” is a dead end — connect it to the next step or make it an end event.`, stepId: s.id });
+    if (s.kind !== 'end' && s.next.length === 0) issues.push({ severity: 'warning', message: `“${s.label}” is a dead end: connect it to the next step or make it an end event.`, stepId: s.id });
     if (s.kind === 'end' && s.next.length) issues.push({ severity: 'info', message: `End event “${s.label}” has outgoing connections.`, stepId: s.id });
     if (s.kind === 'decision') {
       if (s.next.length < 2) issues.push({ severity: 'warning', message: `Decision “${s.label}” has ${s.next.length === 0 ? 'no' : 'only one'} outcome. A decision needs at least two.`, stepId: s.id });

@@ -52,7 +52,7 @@ export function dailyBrief(g: Graph, now: Date): BriefItem[] {
     items.push({ id: `req-${r.id}`, area: 'stakeholders', severity: r.priority === 'critical' || r.priority === 'high' ? 'high' : 'medium', title: `Response overdue: ${r.title}`, detail: `From ${g.get(r.requesterId)?.name ?? 'unknown'} · respond by ${r.respondBy}`, refId: r.id });
   }
   for (const { c, risk } of hub.riskyCommitments) {
-    items.push({ id: `com-${c.id}`, area: 'stakeholders', severity: risk.level === 'high' ? 'critical' : 'high', title: `Promise at risk: ${c.title}`, detail: `To ${g.get(c.toId)?.name ?? c.account ?? '—'} · ${risk.reason}`, refId: c.id });
+    items.push({ id: `com-${c.id}`, area: 'stakeholders', severity: risk.level === 'high' ? 'critical' : 'high', title: `Promise at risk: ${c.title}`, detail: `To ${g.get(c.toId)?.name ?? c.account ?? '–'} · ${risk.reason}`, refId: c.id });
   }
   for (const r of hub.loopsToClose) {
     items.push({ id: `loop-${r.id}`, area: 'stakeholders', severity: 'low', title: `Close the loop with ${g.get(r.requesterId)?.name ?? 'the requester'}`, detail: `"${r.title}" shipped with ${g.get(r.betId)?.title}`, refId: r.id });
@@ -112,7 +112,7 @@ export function dailyBrief(g: Graph, now: Date): BriefItem[] {
   // Learn
   for (const b of g.all('bet').filter((b) => b.status === 'shipped' && b.checkDate && daysBetween(now, b.checkDate) <= 7)) {
     const late = daysBetween(now, b.checkDate) < 0;
-    items.push({ id: `bet-${b.id}`, area: 'learn', severity: late ? 'medium' : 'low', title: `${late ? 'Overdue' : 'Due'}: measure "${b.title}"`, detail: `Predicted ${b.predictedChange ?? '—'} · check date ${b.checkDate}`, refId: b.id });
+    items.push({ id: `bet-${b.id}`, area: 'learn', severity: late ? 'medium' : 'low', title: `${late ? 'Overdue' : 'Due'}: measure "${b.title}"`, detail: `Predicted ${b.predictedChange ?? '–'} · check date ${b.checkDate}`, refId: b.id });
   }
   for (const f of g.all('feature').filter((f) => f.status === 'ga' && Number(f.adoption) < 5 && f.maintenanceCost !== 'low' && f.launchedAt && daysBetween(f.launchedAt, now) > 90)) {
     items.push({ id: `feat-${f.id}`, area: 'learn', severity: 'low', title: `Removal candidate: ${f.name}`, detail: `${f.adoption}% adoption · ${f.maintenanceCost} maintenance cost`, refId: f.id });

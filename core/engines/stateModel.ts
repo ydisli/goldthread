@@ -27,7 +27,7 @@ export function analyzeStateModel(states: string[], initial: string | undefined,
 
   for (const s of states) {
     const outgoing = transitions.filter((t) => t.from === s);
-    if (!finals.includes(s) && outgoing.length === 0) issues.push({ severity: 'warning', message: `"${s}" is a dead end — no way out and not marked final.`, state: s });
+    if (!finals.includes(s) && outgoing.length === 0) issues.push({ severity: 'warning', message: `"${s}" is a dead end: no way out and not marked final.`, state: s });
     if (finals.includes(s) && outgoing.length > 0) issues.push({ severity: 'info', message: `Final state "${s}" has outgoing transitions.`, state: s });
     const byTrigger = new Map<string, Transition[]>();
     for (const t of outgoing) {
@@ -36,10 +36,10 @@ export function analyzeStateModel(states: string[], initial: string | undefined,
     }
     for (const [k, ts] of byTrigger) {
       if (ts.length > 1 && new Set(ts.map((t) => t.to)).size > 1) {
-        issues.push({ severity: 'error', message: `"${s}" on "${k.split('|')[0]}" can go to ${ts.map((t) => t.to).join(' or ')} — add guards.`, state: s });
+        issues.push({ severity: 'error', message: `"${s}" on "${k.split('|')[0]}" can go to ${ts.map((t) => t.to).join(' or ')}: add guards.`, state: s });
       }
     }
   }
-  if (!finals.length) issues.push({ severity: 'info', message: 'No final states — is this lifecycle endless by design?' });
+  if (!finals.length) issues.push({ severity: 'info', message: 'No final states: is this lifecycle endless by design?' });
   return issues;
 }

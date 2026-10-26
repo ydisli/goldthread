@@ -19,7 +19,7 @@ export function StakeholderMapsPage() {
   return (
     <div className="page">
       <PageHead guide={<ToolGuide id="maps" title="Reading the maps" steps={[
-        <><b>Power / interest:</b> people top-right are key players — manage them closely; top-left keep satisfied; bottom-right keep informed.</>,
+        <><b>Power / interest:</b> people top-right are key players: manage them closely; top-left keep satisfied; bottom-right keep informed.</>,
         <><Term explain="Mitchell's model: does the person have power, a legitimate claim, and urgency? Those with all three are 'definitive' stakeholders.">Salience</Term> shows who needs attention first.</>,
         <><b>Engagement</b> compares where someone is today (say, resistant) with where you need them (supportive). The gap is your work.</>,
       ]} />} title="Stakeholder maps" sub="Four lenses on the same people: power & interest, salience, engagement gaps and who influences whom." />
@@ -75,7 +75,7 @@ function Salience() {
   };
   return (
     <>
-      <p className="muted small mb16">Mitchell, Agle & Wood: <strong>power</strong> (score ≥ 4), <strong>legitimacy</strong> (a rightful claim — contract, role, regulation) and <strong>urgency</strong> (time-critical claim). The more attributes, the more salient. Toggle attributes inline.</p>
+      <p className="muted small mb16">Mitchell, Agle & Wood: <strong>power</strong> (score ≥ 4), <strong>legitimacy</strong> (a rightful claim: contract, role, regulation) and <strong>urgency</strong> (time-critical claim). The more attributes, the more salient. Toggle attributes inline.</p>
       <div className="grid g2">
         {order.map((k) => {
           const list = people.filter((s) => salience(s) === k);
@@ -130,7 +130,7 @@ function EngagementMatrix() {
                       </td>
                     );
                   })}
-                  <td className="small" style={{ minWidth: 260 }}>{gap.action ?? <span className="muted">Maintain — at desired level.</span>}</td>
+                  <td className="small" style={{ minWidth: 260 }}>{gap.action ?? <span className="muted">Maintain: at desired level.</span>}</td>
                 </tr>
               );
             })}

@@ -168,7 +168,7 @@ function GettingStarted() {
   const steps = [
     { done: others >= 3, label: 'Add the people who matter', hint: 'Sponsors, approvers, users, the team. Rate power and interest so Goldthread knows who to keep close.', to: '/stakeholders', cta: 'Add stakeholders' },
     { done: g.all('spec').length > 0 || g.all('requirement').length > 0, label: 'Write or paste your first spec', hint: 'Spec Studio flags vague wording, missing acceptance criteria and contradictions as you type.', to: '/define/specs', cta: 'Open Spec Studio' },
-    { done: g.all('evidence').length > 0 || g.all('request').length > 0, label: 'Capture a signal or a request', hint: 'Press C anywhere. A ticket, a quote, a stakeholder ask — it all lands in one place.', to: '/discover/signals', cta: 'See signals' },
+    { done: g.all('evidence').length > 0 || g.all('request').length > 0, label: 'Capture a signal or a request', hint: 'Press C anywhere. A ticket, a quote, a stakeholder ask: it all lands in one place.', to: '/discover/signals', cta: 'See signals' },
     ...(can('admin') ? [{ done: s.members.length > 1, label: 'Invite your team', hint: 'Editors work alongside you; viewers (sponsors, auditors) can read and comment.', to: '/workspace/settings?tab=members', cta: 'Invite people' }] : []),
     { done: !!me.prefs.pinned, label: 'Pin the tools you use weekly', hint: 'Keep your sidebar short. Everything else stays one click away.', to: '/tools', cta: 'Choose tools' },
   ];

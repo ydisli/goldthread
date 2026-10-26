@@ -137,7 +137,7 @@ export function ExtractPanel({ e, field }: { e: Entity; field: string }) {
     if (!ops.length) return;
     try { await batch(ops); toast(`Created ${ops.length} items from the notes`); } catch (err) { errorToast(err); }
   };
-  if (!total) return <Card title="Extract from notes" icon="wand-sparkles"><div className="small muted">Write notes with lines like “Decision: …”, “Action: @name … by Friday”, “Risk: …”, or sentences with “must/shall” — they will be picked up here.</div></Card>;
+  if (!total) return <Card title="Extract from notes" icon="wand-sparkles"><div className="small muted">Write notes with lines like “Decision: …”, “Action: @name … by Friday”, “Risk: …”, or sentences with “must/shall”. They will be picked up here.</div></Card>;
   const Row = ({ k, text, sub }: { k: string; text: string; sub?: string }) => (
     <label className="row small" style={{ alignItems: 'flex-start', cursor: 'pointer' }}>
       <input type="checkbox" checked={picked[k] !== false} onChange={(ev) => setPicked((p) => ({ ...p, [k]: ev.target.checked }))} style={{ accentColor: 'var(--accent)', marginTop: 3 }} />
@@ -171,7 +171,7 @@ export function DataEntityPage({ id }: { id: string }) {
   const glossary = g.referencing(d.id, 'glossaryTerm', 'dataEntityId');
   return (
     <EntityPage id={id}>
-      <Card title={`Attributes · ${attrs.length}`} icon="boxes" sub={`${attrs.filter((a) => a.pii).length} contain personal data — exports, logs and retention rules must account for them.`} actions={<button className="btn btn-sm" onClick={() => save([...attrs, { name: 'new_attribute', type: 'string', required: false, pii: false, description: '' }])}>+ Attribute</button>} flush>
+      <Card title={`Attributes · ${attrs.length}`} icon="boxes" sub={`${attrs.filter((a) => a.pii).length} contain personal data: exports, logs and retention rules must account for them.`} actions={<button className="btn btn-sm" onClick={() => save([...attrs, { name: 'new_attribute', type: 'string', required: false, pii: false, description: '' }])}>+ Attribute</button>} flush>
         <div className="table-wrap"><table className="table">
           <thead><tr><th>Name</th><th>Type</th><th>Required</th><th>PII</th><th>Description</th><th /></tr></thead>
           <tbody>{attrs.map((a, i) => (
@@ -186,7 +186,7 @@ export function DataEntityPage({ id }: { id: string }) {
           ))}</tbody>
         </table></div>
       </Card>
-      {glossary.length > 0 && <Card title="Glossary terms" icon="book-open">{glossary.map((t) => <div key={t.id} className="small"><strong>{t.term}</strong> — {t.definition}</div>)}</Card>}
+      {glossary.length > 0 && <Card title="Glossary terms" icon="book-open">{glossary.map((t) => <div key={t.id} className="small"><strong>{t.term}</strong>: {t.definition}</div>)}</Card>}
     </EntityPage>
   );
 }

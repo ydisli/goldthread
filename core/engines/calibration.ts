@@ -14,7 +14,7 @@ export interface Calibration {
 /** How well do confidence estimates predict actual results? */
 export function calibration(bets: Entity[]): Calibration {
   const scored = bets.filter((b) => b.result in OUTCOME && typeof b.confidence === 'number');
-  if (!scored.length) return { n: 0, brier: null, buckets: [], bias: null, verdict: 'No measured bets yet — set check dates and record results.' };
+  if (!scored.length) return { n: 0, brier: null, buckets: [], bias: null, verdict: 'No measured bets yet: set check dates and record results.' };
   const brier = scored.reduce((s, b) => s + (b.confidence / 100 - OUTCOME[b.result]) ** 2, 0) / scored.length;
   const ranges: [number, number][] = [[0, 40], [40, 60], [60, 80], [80, 101]];
   const buckets = ranges.map(([lo, hi]) => {
@@ -27,6 +27,6 @@ export function calibration(bets: Entity[]): Calibration {
     };
   }).filter((b) => b.n > 0);
   const bias = scored.reduce((s, b) => s + (b.confidence / 100 - OUTCOME[b.result]), 0) / scored.length;
-  const verdict = Math.abs(bias) < 0.1 ? 'Well calibrated.' : bias > 0 ? `Overconfident by ${Math.round(bias * 100)} points on average — discount new estimates or demand more evidence.` : `Underconfident by ${Math.round(-bias * 100)} points — you can afford bolder bets.`;
+  const verdict = Math.abs(bias) < 0.1 ? 'Well calibrated.' : bias > 0 ? `Overconfident by ${Math.round(bias * 100)} points on average: discount new estimates or demand more evidence.` : `Underconfident by ${Math.round(-bias * 100)} points: you can afford bolder bets.`;
   return { n: scored.length, brier, buckets, bias, verdict };
 }

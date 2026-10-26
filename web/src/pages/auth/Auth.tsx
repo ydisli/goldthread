@@ -25,7 +25,7 @@ function Brand({ children }: { children?: ReactNode }) {
       </div>
       <div className="col" style={{ gap: 18 }}>
         <h1>The working notebook for product owners and business analysts.</h1>
-        <p>Stakeholders, specs, decisions and delivery in one place — linked, so a change in one shows up everywhere it matters.</p>
+        <p>Stakeholders, specs, decisions and delivery in one place: linked, so a change in one shows up everywhere it matters.</p>
         {children}
       </div>
       <ul className="auth-points">
@@ -53,7 +53,7 @@ export function AuthScreen() {
           )}
           {mode === 'signin' || !canSignup ? <SignIn /> : <SignUp />}
           {!!auth?.demo.length && <DemoAccounts accounts={auth.demo} />}
-          {!canSignup && <p className="small muted">New here? This server is invite-only — ask a workspace admin for an invite link.</p>}
+          {!canSignup && <p className="small muted">New here? This server is invite-only: ask a workspace admin for an invite link.</p>}
         </div>
       </section>
     </div>
@@ -114,8 +114,8 @@ function SignIn() {
 }
 
 const SAMPLES: { id: 'it' | 'saas' | 'empty'; label: string; hint: string }[] = [
-  { id: 'it', label: 'IT sample', hint: 'ServiceHub — an internal IT platform: SSO, access requests, ITSM migration. Explore every tool with realistic data.' },
-  { id: 'saas', label: 'SaaS sample', hint: 'Ledgerly — a B2B payments product. Good if you work on a customer-facing product.' },
+  { id: 'it', label: 'IT sample', hint: 'ServiceHub: an internal IT platform: SSO, access requests, ITSM migration. Explore every tool with realistic data.' },
+  { id: 'saas', label: 'SaaS sample', hint: 'Ledgerly: a B2B payments product. Good if you work on a customer-facing product.' },
   { id: 'empty', label: 'Blank', hint: 'Start clean. You can load a sample later from Settings.' },
 ];
 
@@ -187,7 +187,7 @@ function DemoAccounts({ accounts }: { accounts: { id: string; name: string; titl
         ))}
       </div>
       {error && <div className="err">{error}</div>}
-      <div className="small muted">Each role sees the same data with different rights — try a viewer to see what read-only looks like.</div>
+      <div className="small muted">Each role sees the same data with different rights: try a viewer to see what read-only looks like.</div>
     </div>
   );
 }
@@ -238,7 +238,7 @@ export function JoinScreen({ token }: { token: string }) {
                 <div className="eyebrow">You're invited</div>
                 <h2 style={{ fontSize: 22 }}>Join {info.workspaceName}</h2>
                 <div className="small muted" style={{ marginTop: 4 }}>
-                  {info.invitedBy ? `${info.invitedBy} invited ` : 'Invite for '}<b>{info.email}</b> as <b>{info.role}</b> — {ROLE_HINT[info.role]}.
+                  {info.invitedBy ? `${info.invitedBy} invited ` : 'Invite for '}<b>{info.email}</b> as <b>{info.role}</b>: {ROLE_HINT[info.role]}.
                 </div>
               </div>
               {signedInOther ? (

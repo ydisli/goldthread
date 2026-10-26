@@ -131,7 +131,7 @@ export function ProcessListPage() {
   });
   return (
     <div className="page">
-      <PageHead title="Process models" sub="Draw how work flows today (as-is) and after the change (to-be) — in horizontal or vertical swimlanes — and compare them step by step." actions={<button className="btn btn-primary" onClick={create}><Icon name="plus" size={14} />New process</button>} />
+      <PageHead title="Process models" sub="Draw how work flows today (as-is) and after the change (to-be), in horizontal or vertical swimlanes, and compare them step by step." actions={<button className="btn btn-primary" onClick={create}><Icon name="plus" size={14} />New process</button>} />
       <Card flush><EntityTable type="processModel" columns={['title', 'variant', 'orientation', 'counterpartId', { key: 'm', label: 'Steps · handoffs', render: (p) => { const m = processMetrics(p.steps ?? []); return `${m.steps} · ${m.handoffs}`; } }]} /></Card>
     </div>
   );
@@ -150,7 +150,7 @@ export function ProcessPage({ id }: { id: string }) {
   return (
     <EntityPage id={id} hideFields wide={<>
       <ToolGuide id="process-canvas" title="Drawing a process" steps={[
-        <>Drag a <b>Task</b>, <b>Decision</b>, <b>Start</b> or <b>End</b> from the bar onto a lane — or select a step and click one to add it right after.</>,
+        <>Drag a <b>Task</b>, <b>Decision</b>, <b>Start</b> or <b>End</b> from the bar onto a lane, or select a step and click one to add it right after.</>,
         <>Drag any step to move it; it snaps to the lane and position under your pointer.</>,
         <>Drag the small dot on a step's edge onto another step to connect them. Drop it on empty space to create and connect a new step.</>,
         <>Double-click to rename. <kbd>Delete</kbd> removes, arrow keys nudge, <kbd>⌘Z</kbd> undoes.</>,
@@ -764,7 +764,7 @@ function Inspector(props: {
           <div className="field"><label>Lane</label><select aria-label="Lane" className="select" value={step.lane} onChange={(e) => props.onUpdateStep(step.id, { lane: e.target.value })}>{model.lanes.map((l) => <option key={l}>{l}</option>)}</select></div>
           <div className="field">
             <label>Goes to</label>
-            {step.next.length === 0 && <div className="small muted">Nothing yet — drag the dot on the step's edge, or pick below.</div>}
+            {step.next.length === 0 && <div className="small muted">Nothing yet: drag the dot on the step's edge, or pick below.</div>}
             {step.next.map((n) => (
               <div key={n} className="row" style={{ gap: 6 }}>
                 <Icon name="arrow-right" size={13} className="muted" />

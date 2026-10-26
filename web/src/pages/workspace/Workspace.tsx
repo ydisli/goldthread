@@ -96,7 +96,7 @@ export function MeetingPage({ id }: { id: string }) {
               try {
                 const t = await readTranscript(f);
                 if (!t.trim()) { toast(`Nothing to import in ${f.name}`, 'error'); return; }
-                onNotes(notes.trim() ? `${notes.trimEnd()}\n\n— Transcript: ${f.name} —\n${t}` : t);
+                onNotes(notes.trim() ? `${notes.trimEnd()}\n\n[Transcript: ${f.name}]\n${t}` : t);
                 toast(`Imported ${t.split('\n').length} lines from ${f.name}. Check what was extracted below.`);
               } catch (err) { errorToast(err); }
             }} /></label>}>
@@ -144,7 +144,7 @@ export function DocsPage() {
   const audience = (query.get('audience') ?? 'exec') as Audience;
   const info = DOC_KINDS[kind];
   const doc = useMemo(() => generateDoc(kind, g, subjectId || undefined, now(), { audience }), [g, kind, subjectId, audience]);
-  const docTitle = `${DOC_KINDS[kind].label}${g.get(subjectId) ? ` — ${nameOf(g.get(subjectId))}` : ''}`;
+  const docTitle = `${DOC_KINDS[kind].label}${g.get(subjectId) ? `: ${nameOf(g.get(subjectId))}` : ''}`;
   const fileName = `${kind}-${(nameOf(g.get(subjectId)) || 'workspace').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.md`;
   return (
     <div className="page">
@@ -186,7 +186,7 @@ export function DocsPage() {
 export function ActivityPage() {
   return (
     <div className="page">
-      <PageHead title="Activity" sub="Append-only audit trail of every change, by whom and when — including changes from the CLI, the browser extension and integrations." />
+      <PageHead title="Activity" sub="Append-only audit trail of every change, by whom and when, including changes from the CLI, the browser extension and integrations." />
       <Card flush><ActivityFeed limit={200} /></Card>
     </div>
   );
@@ -212,7 +212,7 @@ export function AskPage() {
   const SUGGESTIONS = ['Why is Workday the source of truth?', 'What does the service desk complain about?', 'mailbox retention', 'type:request access', 'Who is resistant?'];
   return (
     <div className="page">
-      <PageHead title="Ask Goldthread" sub="Search everything — decisions, evidence, requirements, people. Every answer links to its source." />
+      <PageHead title="Ask Goldthread" sub="Search everything: decisions, evidence, requirements, people. Every answer links to its source." />
       <form className="row mb16" onSubmit={(e) => { e.preventDefault(); setQuery({ q: draft.trim() || undefined }); }}>
         <input aria-label="Ask a question or search" className="input" style={{ fontSize: 15, minHeight: 42 }} autoFocus placeholder="Ask a question or search… (type:decision, REQ-12 …)" value={draft} onChange={(e) => setDraft(e.target.value)} />
         <button className="btn btn-primary" style={{ height: 42 }}>Search</button>
@@ -232,7 +232,7 @@ export function AskPage() {
                   <Link key={h.entity.id} to={hrefOf(h.entity)} className="list-item" style={{ flexDirection: 'column', gap: 4 }}>
                     <div className="row"><span className="key">{h.entity.key}</span><span className="strong">{h.entity.title}</span><span className="spacer" /><span className="small muted">{fmtDate(h.entity.date)}</span></div>
                     {h.entity.rationale && <div className="small"><strong>Why:</strong> {h.entity.rationale}</div>}
-                    <div className="small muted">Decided by {(h.entity.deciderIds ?? []).map((id: string) => nameOf(g.get(id))).join(', ') || '—'}{(h.entity.consultedIds ?? []).length ? ` · consulted ${(h.entity.consultedIds as string[]).map((id) => nameOf(g.get(id))).join(', ')}` : ''}</div>
+                    <div className="small muted">Decided by {(h.entity.deciderIds ?? []).map((id: string) => nameOf(g.get(id))).join(', ') || '–'}{(h.entity.consultedIds ?? []).length ? ` · consulted ${(h.entity.consultedIds as string[]).map((id) => nameOf(g.get(id))).join(', ')}` : ''}</div>
                   </Link>
                 ))}</div>
               </Card>

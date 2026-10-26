@@ -104,7 +104,7 @@ export class Graph {
           visited.add(n.id);
           const path = [...via, e];
           result.push({ entity: n, depth, via: path });
-          // Do not expand through hub-like entities (stakeholders, teams) — they
+          // Do not expand through hub-like entities (stakeholders, teams): they
           // connect to everything and would make impact analysis meaningless.
           if (!['stakeholder', 'team', 'persona'].includes(n.type)) next.push({ e: n, via: path });
         }

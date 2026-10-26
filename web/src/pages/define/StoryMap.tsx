@@ -94,7 +94,7 @@ export function StoryMapPage({ id }: { id: string }) {
         ))}
       </div>
       {unplaced.length > 0 && (
-        <Card title={`Not on the map yet · ${unplaced.length}`} icon="kanban" sub="Stories of this bet — drag them onto the map." className="mt16">
+        <Card title={`Not on the map yet · ${unplaced.length}`} icon="kanban" sub="Stories of this bet: drag them onto the map." className="mt16">
           <div className="row-wrap" style={{ gap: 8 }}>{unplaced.map((s) => <div key={s.id} style={{ width: 220 }}><Tile s={s} /></div>)}</div>
         </Card>
       )}

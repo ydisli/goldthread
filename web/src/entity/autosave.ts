@@ -28,6 +28,6 @@ export async function saveText(id: string, field: string, base: string, mine: st
 
 export function mergedMessage(m: NonNullable<TextSave['merged']>, what: string): string {
   return m.conflicts
-    ? `Merged with ${m.by}'s edits to the ${what}. In ${m.conflicts === 1 ? 'one place' : `${m.conflicts} places`} you both changed the same lines, so both versions are there — tidy up.`
+    ? `Merged with ${m.by}'s edits to the ${what}. In ${m.conflicts === 1 ? 'one place' : `${m.conflicts} places`} you both changed the same lines, so both versions are there: tidy up.`
     : `Merged with ${m.by}'s edits to the ${what}.`;
 }

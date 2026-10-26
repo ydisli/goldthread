@@ -20,7 +20,7 @@ export function validateGherkin(ac: string | undefined): GherkinIssue[] {
     if (!has('given')) issues.push({ scenario: i + 1, message: `Scenario ${i + 1} has no Given (context).` });
     if (!has('when')) issues.push({ scenario: i + 1, message: `Scenario ${i + 1} has no When (action).` });
     if (!has('then')) issues.push({ scenario: i + 1, message: `Scenario ${i + 1} has no Then (outcome).` });
-    if ((b.match(/^\s*[-*]?\s*when\b/gim) ?? []).length > 1) issues.push({ scenario: i + 1, message: `Scenario ${i + 1} has several Whens — split it.` });
+    if ((b.match(/^\s*[-*]?\s*when\b/gim) ?? []).length > 1) issues.push({ scenario: i + 1, message: `Scenario ${i + 1} has several Whens: split it.` });
   });
   return issues;
 }
@@ -33,9 +33,9 @@ export function invest(s: Entity): InvestCheck[] {
   return [
     { key: 'I', label: 'Independent', ok: deps === 0, hint: deps ? `Depends on ${deps} other ${deps === 1 ? 'story' : 'stories'}.` : 'No dependencies.' },
     { key: 'N', label: 'Negotiable', ok: !/\b(pixel|exact(ly)? as|must use (react|sql|redis)|button colou?r)\b/i.test(text), hint: 'Describes the need, not the implementation.' },
-    { key: 'V', label: 'Valuable', ok: !!s.soThat?.trim(), hint: s.soThat ? 'Has a "so that".' : 'Missing "so that" — whose value?' },
+    { key: 'V', label: 'Valuable', ok: !!s.soThat?.trim(), hint: s.soThat ? 'Has a "so that".' : 'Missing "so that": whose value?' },
     { key: 'E', label: 'Estimable', ok: est > 0, hint: est > 0 ? `${est} points.` : 'Not estimated.' },
-    { key: 'S', label: 'Small', ok: est > 0 && est <= 8, hint: est > 8 ? `${est} points — split it.` : est > 0 ? 'Fits in a sprint.' : 'Unknown size.' },
+    { key: 'S', label: 'Small', ok: est > 0 && est <= 8, hint: est > 8 ? `${est} points: split it.` : est > 0 ? 'Fits in a sprint.' : 'Unknown size.' },
     { key: 'T', label: 'Testable', ok: hasGherkin(s.acceptance), hint: hasGherkin(s.acceptance) ? 'Has Given/When/Then.' : 'No Given/When/Then acceptance criteria.' },
   ];
 }
@@ -45,12 +45,12 @@ export function splitHints(s: Entity): string[] {
   const t = `${s.title ?? ''} ${s.iWant ?? ''} ${s.acceptance ?? ''}`;
   const hints: string[] = [];
   const formats = t.match(/\b(csv|xlsx|pdf|json|xml|excel)\b/gi);
-  if (formats && new Set(formats.map((f) => f.toLowerCase())).size > 1) hints.push(`Data: split by format (${[...new Set(formats.map((f) => f.toUpperCase()))].join(' / ')}) — ship the most-requested first.`);
-  if (/\b(and|or)\b/i.test(s.iWant ?? '')) hints.push('Path: the "I want" contains and/or — one story per path.');
+  if (formats && new Set(formats.map((f) => f.toLowerCase())).size > 1) hints.push(`Data: split by format (${[...new Set(formats.map((f) => f.toUpperCase()))].join(' / ')}): ship the most-requested first.`);
+  if (/\b(and|or)\b/i.test(s.iWant ?? '')) hints.push('Path: the "I want" contains and/or: one story per path.');
   if (/\b(web|mobile|api|ios|android)\b.*\b(web|mobile|api|ios|android)\b/i.test(t)) hints.push('Interface: split by channel (web first, then API/mobile).');
-  if ((t.match(/\b(if|unless|except|when)\b/gi) ?? []).length >= 3) hints.push('Rules: several business rules — implement the simplest rule first, add the others as stories.');
+  if ((t.match(/\b(if|unless|except|when)\b/gi) ?? []).length >= 3) hints.push('Rules: several business rules; implement the simplest rule first, add the others as stories.');
   if (/\b(investigate|unknown|research|spike|evaluate)\b/i.test(t)) hints.push('Spike: time-box the unknown first, then estimate.');
-  if (Number(s.estimate) > 8 && !hints.length) hints.push('Large story — split by workflow step or by happy path vs edge cases.');
+  if (Number(s.estimate) > 8 && !hints.length) hints.push('Large story: split by workflow step or by happy path vs edge cases.');
   return hints;
 }
 

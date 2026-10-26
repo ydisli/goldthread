@@ -64,7 +64,7 @@ export function integrationRoutes(r: Router, sys: SystemDB, workspaces: Workspac
     if (!c?.secret.signingSecret || !verifySlack(c.secret.signingSecret, ctx.req.headers, raw)) throw new HttpError(401, 'Bad signature.');
     const f = new URLSearchParams(raw);
     const { kind, text } = kindFromPrefix(f.get('text') ?? '');
-    if (!text.trim()) return { response_type: 'ephemeral', text: 'Usage: /goldthread <what you heard>  — or start with request:, decision:, risk: or idea:' };
+    if (!text.trim()) return { response_type: 'ephemeral', text: 'Usage: /goldthread <what you heard>, or start with request:, decision:, risk: or idea:' };
     const store = inboundStore(ctx.params.ws);
     const out = capture(store, { kind: kind ?? 'evidence', text, source: 'chat', channel: 'chat', from: f.get('user_name') ?? undefined }, { name: `${f.get('user_name') ?? 'someone'} (Slack)` });
     broadcast(ctx.params.ws, [{ op: 'upsert', entity: out.entity }]);

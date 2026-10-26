@@ -71,7 +71,7 @@ export function seededRandom(seed: number): () => number {
 }
 
 export function fmtMoney(n: number | undefined | null, currency = '$'): string {
-  if (n === undefined || n === null || Number.isNaN(n)) return '—';
+  if (n === undefined || n === null || Number.isNaN(n)) return '–';
   const sign = n < 0 ? '−' : '';
   const a = Math.abs(n);
   if (a >= 1_000_000) return `${sign}${currency}${(a / 1_000_000).toFixed(a >= 10_000_000 ? 0 : 1)}M`;
@@ -79,7 +79,7 @@ export function fmtMoney(n: number | undefined | null, currency = '$'): string {
   return `${sign}${currency}${Math.round(a)}`;
 }
 
-/** "$1.2M ARR · 340 people" — whichever measures of impact are present. */
+/** "$1.2M ARR · 340 people": whichever measures of impact are present. */
 export function impactText(arr: number, people: number): string {
   const parts: string[] = [];
   if (people > 0) parts.push(`${people.toLocaleString('en-US')} ${people === 1 ? 'person' : 'people'}`);

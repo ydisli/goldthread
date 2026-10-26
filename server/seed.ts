@@ -29,28 +29,28 @@ export function seedWorkspace(store: Store, now: Date, people: SeedPeople) {
 
     // ---------------- People ----------------
     const S = (id: string, data: Record<string, unknown>) => put(`stk_${id}`, 'stakeholder', { kind: 'internal', ...data }, 200);
-    S('me', { name: people.me.name, email: people.me.email, title: people.me.title ?? 'Product Owner, Employee IT Services', orgUnit: 'IT — Digital Workplace', power: 3, interest: 5, legitimacy: true, currentEngagement: 'leading', desiredEngagement: 'leading', preferredChannel: 'teams', userId: people.me.id });
+    S('me', { name: people.me.name, email: people.me.email, title: people.me.title ?? 'Product Owner, Employee IT Services', orgUnit: 'IT: Digital Workplace', power: 3, interest: 5, legitimacy: true, currentEngagement: 'leading', desiredEngagement: 'leading', preferredChannel: 'teams', userId: people.me.id });
     S('morgan', { name: 'Morgan Blake', title: 'Chief Information Officer', orgUnit: 'IT leadership', power: 5, interest: 3, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Cut IT cost per employee by 10%\nA clean SOX ITGC audit\nIT seen as an enabler, not a blocker', concerns: 'Onboarding complaints reaching the exec team', preferredChannel: 'meeting', influencedBy: ['stk_dana'] });
     S('dana', { name: 'Dana Whitfield', title: 'Chief Information Security Officer', orgUnit: 'Security', email: 'dana.whitfield@ashgrove.example', power: 5, interest: 5, legitimacy: true, urgency: true, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Least-privilege access everywhere\nMFA on every account\nNo orphaned accounts', concerns: 'Managers approving access they don\'t understand\nSMS codes are phishable', preferredChannel: 'async-doc', influencedBy: ['stk_kim'], userId: uid('dana') });
-    S('priya', { name: 'Priya Nair', title: 'Engineering Lead, Identity & Access', orgUnit: 'IT — Identity & Access', email: 'priya.nair@ashgrove.example', power: 4, interest: 5, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Retire the legacy LDAP scripts\nSustainable on-call', concerns: 'Workday data quality\nScope creep after commitment', preferredChannel: 'teams', influencedBy: ['stk_marcus'], userId: uid('priya') });
-    S('tomas', { name: 'Tomás Herrera', title: 'Service Desk Manager', orgUnit: 'IT — Service Desk', email: 'tomas.herrera@ashgrove.example', power: 3, interest: 5, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'supportive', goals: 'Fewer password tickets\nAgents working on real problems', concerns: 'Hearing about releases from users first', preferredChannel: 'teams', userId: uid('tomas') });
-    S('grace', { name: 'Grace Okoye', title: 'Infrastructure & Endpoint Manager', orgUnit: 'IT — Infrastructure', power: 4, interest: 4, legitimacy: true, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Zero-touch laptop provisioning', concerns: 'Autopilot profiles are owned by a different team', preferredChannel: 'meeting' });
+    S('priya', { name: 'Priya Nair', title: 'Engineering Lead, Identity & Access', orgUnit: 'IT: Identity & Access', email: 'priya.nair@ashgrove.example', power: 4, interest: 5, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Retire the legacy LDAP scripts\nSustainable on-call', concerns: 'Workday data quality\nScope creep after commitment', preferredChannel: 'teams', influencedBy: ['stk_marcus'], userId: uid('priya') });
+    S('tomas', { name: 'Tomás Herrera', title: 'Service Desk Manager', orgUnit: 'IT: Service Desk', email: 'tomas.herrera@ashgrove.example', power: 3, interest: 5, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'supportive', goals: 'Fewer password tickets\nAgents working on real problems', concerns: 'Hearing about releases from users first', preferredChannel: 'teams', userId: uid('tomas') });
+    S('grace', { name: 'Grace Okoye', title: 'Infrastructure & Endpoint Manager', orgUnit: 'IT: Infrastructure', power: 4, interest: 4, legitimacy: true, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Zero-touch laptop provisioning', concerns: 'Autopilot profiles are owned by a different team', preferredChannel: 'meeting' });
     S('hannah', { name: 'Hannah Lee', title: 'HR Operations Director', orgUnit: 'HR', power: 4, interest: 4, legitimacy: true, urgency: true, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Great first week for every hire\nStop re-keying data into IT forms', concerns: 'HR gets blamed for wrong access caused by bad job codes', preferredChannel: 'meeting', influencedBy: ['stk_morgan'] });
     S('daniel', { name: 'Daniel Brooks', title: 'VP Sales', orgUnit: 'Sales', power: 5, interest: 4, legitimacy: true, urgency: true, currentEngagement: 'resistant', desiredEngagement: 'supportive', goals: '120 new reps selling from week one in January', concerns: 'New reps lose three days waiting for laptops and logins\nIT dates keep slipping', preferredChannel: 'phone', influencedBy: ['stk_morgan'] });
     S('elena', { name: 'Elena Petrova', title: 'Data Protection Officer', orgUnit: 'Legal & Compliance', power: 4, interest: 2, legitimacy: true, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Data minimisation for leavers', concerns: 'Leaver mailboxes kept longer than needed (GDPR)', preferredChannel: 'email' });
     S('kim', { name: 'Kim Lee', title: 'Internal Audit Manager', orgUnit: 'Internal Audit', email: 'kim.lee@ashgrove.example', power: 4, interest: 3, legitimacy: true, urgency: true, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'SOX ITGC evidence on time', concerns: '37 orphaned accounts found last quarter\nAccess reviews done in spreadsheets', preferredChannel: 'email', userId: uid('kim') });
-    S('marcus', { name: 'Marcus Feld', title: 'Enterprise Architect', orgUnit: 'IT — Architecture', power: 3, interest: 4, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'One identity platform, no point-to-point scripts', preferredChannel: 'async-doc' });
+    S('marcus', { name: 'Marcus Feld', title: 'Enterprise Architect', orgUnit: 'IT: Architecture', power: 3, interest: 4, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'One identity platform, no point-to-point scripts', preferredChannel: 'async-doc' });
     S('sofia', { name: 'Sofia Rossi', title: 'Finance Controller', orgUnit: 'Finance', power: 3, interest: 3, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Fewer unused SaaS licences', preferredChannel: 'email' });
-    S('lucas', { name: 'Lucas Fernández', title: 'Data & Analytics Lead', orgUnit: 'IT — Data', power: 2, interest: 4, currentEngagement: 'supportive', desiredEngagement: 'supportive', goals: 'Every bet has a tracking plan', preferredChannel: 'teams' });
-    S('aisha', { name: 'Aisha Rahman', title: 'UX Designer', orgUnit: 'IT — Digital Workplace', power: 2, interest: 5, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Research with frontline staff, not just office workers', preferredChannel: 'meeting' });
+    S('lucas', { name: 'Lucas Fernández', title: 'Data & Analytics Lead', orgUnit: 'IT: Data', power: 2, interest: 4, currentEngagement: 'supportive', desiredEngagement: 'supportive', goals: 'Every bet has a tracking plan', preferredChannel: 'teams' });
+    S('aisha', { name: 'Aisha Rahman', title: 'UX Designer', orgUnit: 'IT: Digital Workplace', power: 2, interest: 5, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Research with frontline staff, not just office workers', preferredChannel: 'meeting' });
     S('raj', { name: 'Raj Patel', title: 'Account Manager', orgUnit: 'Keyline Identity (vendor)', account: 'Keyline Identity', kind: 'vendor', power: 3, interest: 3, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'Renew the IAM licence in March', preferredChannel: 'email' });
-    S('olivia', { name: 'Olivia Hart', title: 'Warehouse Operations Manager', orgUnit: 'Warehouse Ops', power: 2, interest: 5, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Shift starts on time — nobody locked out of a scanner', concerns: '680 frontline staff share devices and have no company phone', preferredChannel: 'meeting' });
-    S('noah', { name: 'Noah Williams', title: 'IT Change Manager (CAB chair)', orgUnit: 'IT — Service Management', power: 3, interest: 4, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'No unplanned outages from changes', concerns: 'Automated provisioning changes bypassing CAB', preferredChannel: 'email' });
+    S('olivia', { name: 'Olivia Hart', title: 'Warehouse Operations Manager', orgUnit: 'Warehouse Ops', power: 2, interest: 5, legitimacy: true, currentEngagement: 'supportive', desiredEngagement: 'leading', goals: 'Shift starts on time: nobody locked out of a scanner', concerns: '680 frontline staff share devices and have no company phone', preferredChannel: 'meeting' });
+    S('noah', { name: 'Noah Williams', title: 'IT Change Manager (CAB chair)', orgUnit: 'IT: Service Management', power: 3, interest: 4, currentEngagement: 'neutral', desiredEngagement: 'supportive', goals: 'No unplanned outages from changes', concerns: 'Automated provisioning changes bypassing CAB', preferredChannel: 'email' });
 
     // ---------------- Strategy ----------------
     put('vis_main', 'vision', {
       title: 'ServiceHub', horizon: '2027',
-      vision: 'Every employee is productive from minute one — and never has to wait on IT.',
+      vision: 'Every employee is productive from minute one, and never has to wait on IT.',
       targetGroup: 'All 1,900 Ashgrove employees and contractors; first new hires, frontline warehouse staff and managers.',
       needs: 'Accounts, laptop and access ready on day one\nFix common problems without a ticket\nKnow what is happening with a request',
       product: 'Employee IT portal: identity lifecycle, password self-service, access requests, knowledge and tickets.',
@@ -79,7 +79,7 @@ export function seedWorkspace(store: Store, now: Date, people: SeedPeople) {
     put('kr_reviews', 'keyResult', { title: '100% of quarterly access reviews completed', objectiveId: 'obj_audit', baseline: 60, target: 100, current: 72, unit: '%', dueDate: d(67), confidence: 52 }, 90);
     put('kr_orphans', 'keyResult', { title: 'Zero orphaned accounts at quarter end', objectiveId: 'obj_audit', metricId: 'met_orphans', baseline: 37, target: 0, current: 21, unit: 'accounts', dueDate: d(67), confidence: 35 }, 90);
 
-    put('cmp_snow', 'competitor', { name: 'Stratus ITSM (buy)', positioning: 'Enterprise ITSM + IGA suite — the "buy" option', strengths: 'Mature workflows, CMDB\nIdentity governance add-on', weaknesses: '$1.2M/yr licence quote\n9-month implementation\nHeavy customisation needed for Workday', pricing: 'Per agent + per fulfiller', threat: 4, capabilities: { 'Self-service portal': 3, 'Access requests & approvals': 3, 'Workflow automation': 3, 'Knowledge deflection': 2, 'Asset management (CMDB)': 3, 'Identity governance': 2 } }, 200);
+    put('cmp_snow', 'competitor', { name: 'Stratus ITSM (buy)', positioning: 'Enterprise ITSM + IGA suite: the "buy" option', strengths: 'Mature workflows, CMDB\nIdentity governance add-on', weaknesses: '$1.2M/yr licence quote\n9-month implementation\nHeavy customisation needed for Workday', pricing: 'Per agent + per fulfiller', threat: 4, capabilities: { 'Self-service portal': 3, 'Access requests & approvals': 3, 'Workflow automation': 3, 'Knowledge deflection': 2, 'Asset management (CMDB)': 3, 'Identity governance': 2 } }, 200);
     put('cmp_jsm', 'competitor', { name: 'Trackwell Service Desk', positioning: 'ITSM the engineering org already uses', strengths: 'Cheap, already licensed for Engineering', weaknesses: 'No identity lifecycle\nWeak for frontline staff', pricing: 'Per agent', threat: 3, capabilities: { 'Self-service portal': 2, 'Access requests & approvals': 1, 'Workflow automation': 2, 'Knowledge deflection': 2, 'Asset management (CMDB)': 2, 'Identity governance': 0 } }, 200);
     put('cmp_fresh', 'competitor', { name: 'Breezedesk', positioning: 'Mid-market ITSM, quick to set up', strengths: 'Good portal UX', weaknesses: 'Limited Entra ID / Workday integration', pricing: 'Per agent', threat: 2, capabilities: { 'Self-service portal': 3, 'Access requests & approvals': 2, 'Workflow automation': 2, 'Knowledge deflection': 2, 'Asset management (CMDB)': 2, 'Identity governance': 0 } }, 200);
 
@@ -109,7 +109,7 @@ export function seedWorkspace(store: Store, now: Date, people: SeedPeople) {
       const reach = (extra.reach as number | undefined) ?? (dept ? Math.round((HEADCOUNT[dept] ?? 50) * 0.4) : undefined);
       put(`ev_${evN}`, 'evidence', { title, source, account: dept, segment: dept === 'Warehouse Ops' ? 'frontline' : dept ? 'office' : undefined, reach, date: d(-daysAgo), kind: ['analytics', 'monitoring', 'audit'].includes(source) ? 'did' : 'said', opportunityIds: opps, sentiment: -1, ...extra }, daysAgo);
     };
-    // Onboarding & access — rising.
+    // Onboarding & access: rising.
     EV('My first three days were spent waiting for logins', 'survey', 'Sales', 3, ['opp_onboard'], { personaId: 'per_sam', sentiment: -2, reach: 120 });
     EV('Laptop arrived on day four; I shadowed a colleague until then', 'interview', 'Sales', 4, ['opp_onboard', 'opp_laptop'], { personaId: 'per_sam', relayedById: 'stk_daniel' });
     EV('Median time to productive for September hires was 72 hours', 'analytics', undefined, 5, ['opp_onboard'], { reach: 58, sentiment: 0, detail: 'Provisioning log joined with Workday start dates, 58 hires.' });
@@ -125,7 +125,7 @@ export function seedWorkspace(store: Store, now: Date, people: SeedPeople) {
     EV('Contractors are set up with personal email addresses', 'audit', 'IT', 45, ['opp_onboard', 'opp_audit'], { relayedById: 'stk_kim' });
     // Passwords & lockouts.
     EV('Password resets are 31% of all service desk tickets', 'analytics', undefined, 6, ['opp_password'], { reach: 1450, sentiment: -1, detail: '1,450 of 4,680 tickets in September.' });
-    EV('Locked out after holiday — couldn\'t clock in for 40 minutes', 'interview', 'Warehouse Ops', 8, ['opp_password'], { personaId: 'per_kai', relayedById: 'stk_olivia', sentiment: -2, reach: 680 });
+    EV('Locked out after holiday: couldn\'t clock in for 40 minutes', 'interview', 'Warehouse Ops', 8, ['opp_password'], { personaId: 'per_kai', relayedById: 'stk_olivia', sentiment: -2, reach: 680 });
     EV('Frontline staff have no company phone for MFA', 'interview', 'Warehouse Ops', 14, ['opp_password'], { relayedById: 'stk_olivia', reach: 680 });
     EV('Average wait for a password reset is 4 hours', 'monitoring', undefined, 20, ['opp_password'], { reach: 1450 });
     EV('Monday mornings: 300 lockout calls before 9am', 'support', 'IT', 26, ['opp_password'], { relayedById: 'stk_tomas' });
@@ -191,7 +191,7 @@ export function seedWorkspace(store: Store, now: Date, people: SeedPeople) {
     put('bet_ldap', 'bet', { title: 'Retire the legacy LDAP sync scripts', hypothesis: 'Moving the last nightly scripts to the identity platform removes silent failures and unblocks reliable JML.', status: 'committed', horizon: 'next', category: 'tech-debt', teamId: 'team_plat', confidence: 80, effort: 8, reach: 1900, impact: 0.5, businessValue: 3, timeCriticality: 8, riskReduction: 13, jobSize: 8 }, 45);
     put('bet_sso', 'bet', { title: 'SSO wave 3 (40 SaaS apps)', hypothesis: 'We believe single sign-on for the remaining SaaS apps will cut "forgot password" tickets for SaaS tools by 30%.', predictedChange: '−30% SaaS password tickets', confidence: 65, checkDate: d(3), status: 'shipped', horizon: 'now', category: 'feature', teamId: 'team_iam', startDate: d(-90), targetDate: d(-22) }, 100);
     put('bet_catalog', 'bet', { title: 'Service catalog redesign', hypothesis: 'We believe a task-based catalog will cut misrouted tickets by 25%.', predictedChange: '−25% misrouted tickets', confidence: 70, checkDate: d(-30), status: 'measured', category: 'feature', teamId: 'team_sd', startDate: d(-180), targetDate: d(-120), result: 'success', actualResult: 'Misrouted tickets −31%.', learning: 'Labels in employees\' words ("my laptop is slow") beat IT categories ("Endpoint – performance").' }, 190);
-    put('bet_chatbot', 'bet', { title: 'IT chatbot v1', hypothesis: 'We believe a chatbot on the portal will deflect 30% of tickets.', predictedChange: '−30% tickets', confidence: 85, checkDate: d(-100), status: 'measured', category: 'experiment', startDate: d(-280), targetDate: d(-200), result: 'failed', actualResult: 'Deflection 4%; satisfaction dropped.', learning: 'We were overconfident after a polished vendor demo. Answers need fresh content first — fix knowledge, then automate.' }, 290);
+    put('bet_chatbot', 'bet', { title: 'IT chatbot v1', hypothesis: 'We believe a chatbot on the portal will deflect 30% of tickets.', predictedChange: '−30% tickets', confidence: 85, checkDate: d(-100), status: 'measured', category: 'experiment', startDate: d(-280), targetDate: d(-200), result: 'failed', actualResult: 'Deflection 4%; satisfaction dropped.', learning: 'We were overconfident after a polished vendor demo. Answers need fresh content first: fix knowledge, then automate.' }, 290);
     put('bet_vpn', 'bet', { title: 'Always-on VPN rollout', hypothesis: 'We believe always-on VPN will eliminate VPN connection tickets.', predictedChange: 'Zero VPN connection tickets', confidence: 80, checkDate: d(-60), status: 'measured', category: 'feature', teamId: 'team_plat', startDate: d(-220), targetDate: d(-150), result: 'partial', actualResult: 'VPN tickets −65%; remaining are home-router issues.', learning: 'Measure the long tail before promising "zero".' }, 230);
 
     put('asm_jobcodes', 'assumption', { title: 'Workday job codes reliably predict the access a person needs', betId: 'bet_jml', category: 'feasibility', importance: 5, evidenceLevel: 2, status: 'untested', testPlan: 'Compare access packages generated from job codes with actual access of 100 current employees.' }, 30);
@@ -208,7 +208,7 @@ export function seedWorkspace(store: Store, now: Date, people: SeedPeople) {
     put('jrn_first', 'journey', {
       title: 'First week of a new sales rep (today)', personaId: 'per_sam',
       stages: [
-        { name: 'Offer signed', actions: 'Receives welcome email from HR', thoughts: 'Excited — what do I need?', emotion: 1, pains: 'No IT information before day one', opportunityIds: ['opp_onboard'] },
+        { name: 'Offer signed', actions: 'Receives welcome email from HR', thoughts: 'Excited: what do I need?', emotion: 1, pains: 'No IT information before day one', opportunityIds: ['opp_onboard'] },
         { name: 'Day one', actions: 'Arrives, no laptop, borrows a desk', thoughts: 'Did they forget me?', emotion: -2, pains: 'Laptop imaged late', opportunityIds: ['opp_laptop'] },
         { name: 'Getting access', actions: 'Manager emails IT with a list', thoughts: 'Which systems do I even need?', emotion: -1, pains: 'Missing CRM and Zendesk access', opportunityIds: ['opp_access'] },
         { name: 'First login', actions: 'Locked out after password expiry', thoughts: 'Again?', emotion: -2, pains: 'Needs a ticket to reset', opportunityIds: ['opp_password'] },
@@ -219,7 +219,7 @@ export function seedWorkspace(store: Store, now: Date, people: SeedPeople) {
       title: 'New-hire onboarding interviews (Q3)', objective: 'Understand where new hires and managers lose time in the first week.', method: 'interviews', status: 'done', startDate: d(-70),
       participants: '10 hires from Sales, Finance, Support and Warehouse; 6 hiring managers. Screener: started in the last 60 days.',
       guide: '## Warm-up\n- Tell me about your first day.\n\n## Deep dive\n- What did you need that wasn\'t there?\n- Who did you ask for help?\n- Show me how you requested access.\n\n## Wrap-up\n- What would have made week one great?',
-      findings: '## Key findings\n1. **Access is the bottleneck** — 9 of 10 hires waited for at least one system.\n2. **Managers don\'t know what to request** — 5 of 6 copied a colleague\'s list.\n3. **Frontline staff are invisible to IT** — no phone, no email, shared devices.\n\n## Surprise\n- Two managers paid for personal SaaS accounts to get hires started.',
+      findings: '## Key findings\n1. **Access is the bottleneck**: 9 of 10 hires waited for at least one system.\n2. **Managers don\'t know what to request**: 5 of 6 copied a colleague\'s list.\n3. **Frontline staff are invisible to IT**: no phone, no email, shared devices.\n\n## Surprise\n- Two managers paid for personal SaaS accounts to get hires started.',
       evidenceIds: ['ev_1', 'ev_2', 'ev_4', 'ev_15', 'ev_16'],
     }, 70);
 
@@ -233,13 +233,13 @@ export function seedWorkspace(store: Store, now: Date, people: SeedPeople) {
     put('gl_owner', 'glossaryTerm', { term: 'System owner', definition: 'The person accountable for who can access a system.', synonyms: ['app owner'], domain: 'Access' }, 200);
 
     put('spec_jml', 'spec', {
-      title: 'Automated JML access — PRD', betId: 'bet_jml', ownerId: 'stk_me', status: 'in-review',
+      title: 'Automated JML access: PRD', betId: 'bet_jml', ownerId: 'stk_me', status: 'in-review',
       body: `# Automated joiner–mover–leaver (JML) access
 
 ## Problem
-New hires wait an average of 72 hours for the accounts and access they need. Hiring managers email IT, the service desk creates accounts by hand, and access is often missing or wrong. Leavers keep access for days after they go — internal audit found 37 orphaned accounts last quarter.
+New hires wait an average of 72 hours for the accounts and access they need. Hiring managers email IT, the service desk creates accounts by hand, and access is often missing or wrong. Leavers keep access for days after they go: internal audit found 37 orphaned accounts last quarter.
 
-> "My first three days were spent waiting for logins." — new sales rep, September cohort
+> "My first three days were spent waiting for logins.": new sales rep, September cohort
 
 ## Goals
 - Time to productive from 72 hours to 24 hours (baseline: Q3 median).
@@ -279,7 +279,7 @@ Pilot with the January sales cohort (120 hires), then all departments. Feature f
 `,
     }, 40);
     put('spec_sspr', 'spec', {
-      title: 'Self-service password reset — spec', betId: 'bet_sspr', ownerId: 'stk_me', status: 'approved',
+      title: 'Self-service password reset: spec', betId: 'bet_sspr', ownerId: 'stk_me', status: 'approved',
       body: `# Self-service password reset (SSPR)
 
 ## Problem
@@ -315,7 +315,7 @@ Help-centre article and service desk macro ready a week before launch. Keyboard 
 `,
     }, 70);
     put('spec_portal', 'spec', {
-      title: 'Access request portal — draft', betId: 'bet_portal', ownerId: 'stk_me', status: 'draft',
+      title: 'Access request portal: draft', betId: 'bet_portal', ownerId: 'stk_me', status: 'draft',
       body: `# Access request portal
 
 ## Problem
@@ -349,7 +349,7 @@ Access requests bounce between managers and system owners for 46 hours on averag
     R('catalog', { title: 'Request access from a catalog', statement: 'Employees can request an access package from a searchable catalog.', kind: 'functional', priority: 'must', status: 'draft', specId: 'spec_portal', betId: 'bet_portal', sourceIds: ['ev_6'] }, 14);
 
     put('base_jml1', 'baseline', {
-      title: 'Automated JML — baseline v1', date: d(-12), specId: 'spec_jml', approvalId: 'appr_baseline',
+      title: 'Automated JML: baseline v1', date: d(-12), specId: 'spec_jml', approvalId: 'appr_baseline',
       notes: 'Baseline approved for build start. Changes after this point go through change requests.',
       snapshot: [
         { id: 'req_birthright', key: 'REQ-1', title: 'Birthright access before the start date', statement: 'Accounts and birthright groups are created 3 business days before the HR start date.', priority: 'must', version: 2 },
@@ -365,7 +365,7 @@ Access requests bounce between managers and system owners for 46 hours on averag
     put('cr_sla', 'changeRequest', { title: 'Provision Sales cohorts within 5 minutes', description: 'Sales wants new reps\' CRM access live within minutes of approval.', requirementIds: ['req_sla'], reason: 'January cohort onboarding sessions start at 9:00; access approved at 8:30 must work.', requestedById: 'stk_daniel', status: 'submitted' }, 8);
 
     const DEC = (id: string, data: Record<string, unknown>, daysAgo: number) => put(`dec_${id}`, 'decision', { status: 'decided', ...data }, daysAgo);
-    DEC('sot', { title: 'Workday is the source of truth for identity', context: 'Three systems held conflicting job data.', options: '- **Workday** — HR owns it, already authoritative for payroll\n- **Entra ID** — IT owns it, but job data is stale\n- **Both, reconciled nightly** — complex, error-prone', chosen: 'Workday', rationale: 'One owner for people data; IT consumes events instead of copying data.', deciderIds: ['stk_hannah', 'stk_morgan'], consultedIds: ['stk_me', 'stk_priya', 'stk_marcus'], date: d(-60), reversibility: 'one-way-door', relatedIds: ['bet_jml'] }, 60);
+    DEC('sot', { title: 'Workday is the source of truth for identity', context: 'Three systems held conflicting job data.', options: '- **Workday** (HR owns it, already authoritative for payroll\n- **Entra ID**) IT owns it, but job data is stale\n- **Both, reconciled nightly**: complex, error-prone', chosen: 'Workday', rationale: 'One owner for people data; IT consumes events instead of copying data.', deciderIds: ['stk_hannah', 'stk_morgan'], consultedIds: ['stk_me', 'stk_priya', 'stk_marcus'], date: d(-60), reversibility: 'one-way-door', relatedIds: ['bet_jml'] }, 60);
     DEC('packages', { title: 'Use identity-platform access packages, not custom role tables', options: '- Access packages in the identity platform\n- Custom role tables in ServiceHub', chosen: 'Access packages', rationale: 'Native lifecycle, reviews and audit come for free.', deciderIds: ['stk_priya', 'stk_marcus'], consultedIds: ['stk_me', 'stk_dana'], date: d(-30), reversibility: 'two-way-door', relatedIds: ['bet_jml'] }, 30);
     DEC('threedays', { title: 'Create accounts 3 business days before the start date', context: 'Endpoint needs accounts to pre-enrol laptops.', options: '- On the start date\n- 3 business days before\n- As soon as HR enters the hire', chosen: '3 business days before', rationale: 'Enough time to test; limits accounts for hires who withdraw.', deciderIds: ['stk_me'], consultedIds: ['stk_hannah', 'stk_dana', 'stk_grace'], date: d(-20), reversibility: 'two-way-door', revisitTrigger: 'More than 5% of hires change start date after accounts are created', revisitDate: d(60), relatedIds: ['bet_jml', 'spec_jml'] }, 20);
     DEC('nosms', { title: 'No SMS reset for office workers', context: 'SMS codes can be intercepted (SIM swap).', options: '- SMS for everyone\n- Authenticator app / FIDO2 only\n- SMS only for frontline staff', chosen: 'Authenticator app / FIDO2 for office workers', rationale: 'Phishing-resistant; frontline handled separately.', deciderIds: ['stk_dana'], consultedIds: ['stk_me', 'stk_tomas'], date: d(-25), reversibility: 'two-way-door', relatedIds: ['bet_sspr'] }, 25);
@@ -462,20 +462,20 @@ Access requests bounce between managers and system owners for 46 hours on averag
       attributes: [
         { name: 'request_id', type: 'uuid', required: true, pii: false, description: '' },
         { name: 'package_id', type: 'string', required: true, pii: false, description: '' },
-        { name: 'justification', type: 'text', required: true, pii: false, description: 'Free text — may contain personal data' },
+        { name: 'justification', type: 'text', required: true, pii: false, description: 'Free text: may contain personal data' },
         { name: 'status', type: 'enum', required: true, pii: false, description: 'See the state model' },
         { name: 'expires_at', type: 'date', required: false, pii: false, description: 'From the routing rules' },
       ],
     }, 30);
 
     put('eli_workshop', 'elicitation', {
-      title: 'Onboarding workshop — Sales & HR', technique: 'workshop', date: d(-40), stakeholderIds: ['stk_daniel', 'stk_hannah', 'stk_me', 'stk_aisha'], status: 'synthesized',
+      title: 'Onboarding workshop: Sales & HR', technique: 'workshop', date: d(-40), stakeholderIds: ['stk_daniel', 'stk_hannah', 'stk_me', 'stk_aisha'], status: 'synthesized',
       objectives: 'Map today\'s onboarding steps and find the three biggest delays.',
       questions: '1. Walk us through the last hire, step by step.\n2. Where do you wait on someone else?\n3. What do you request, and how do you know what to request?',
       notes: '- Decision: pilot automated onboarding with the January sales cohort\n- Action: @hannah to share the job code list by Friday\n- Risk: job codes are inconsistent across regions\n- New reps must have CRM access before their first training session\n- Who approves access for a manager who hasn\'t started yet?',
     }, 40);
     put('eli_warehouse', 'elicitation', {
-      title: 'Interview — warehouse shift lead', technique: 'observation', date: d(-14), stakeholderIds: ['stk_olivia'], status: 'done',
+      title: 'Interview: warehouse shift lead', technique: 'observation', date: d(-14), stakeholderIds: ['stk_olivia'], status: 'done',
       objectives: 'Understand sign-in at shared scanners.', notes: '- 40 associates start a shift within 10 minutes\n- Concern: nobody has a company phone for MFA\n- The system must let associates sign in with badge and PIN',
     }, 14);
 
@@ -499,13 +499,13 @@ Access requests bounce between managers and system owners for 46 hours on averag
     }, 30);
 
     put('map_jml', 'storyMap', {
-      title: 'Automated JML — story map', betId: 'bet_jml', personaId: 'per_maria',
+      title: 'Automated JML: story map', betId: 'bet_jml', personaId: 'per_maria',
       activities: [
         { id: 'act1', name: 'A hire is created', steps: [{ id: 'st1', name: 'Detect hire event' }, { id: 'st2', name: 'Create identity' }] },
         { id: 'act2', name: 'Access is granted', steps: [{ id: 'st3', name: 'Birthright access' }, { id: 'st4', name: 'Role package' }, { id: 'st5', name: 'Extra access & approvals' }] },
         { id: 'act3', name: 'People move and leave', steps: [{ id: 'st6', name: 'Mover clean-up' }, { id: 'st7', name: 'Leaver deprovisioning' }] },
       ],
-      slices: [{ id: 'sl1', name: 'Pilot — 2026.11' }, { id: 'sl2', name: 'Next' }, { id: 'sl3', name: 'Later' }],
+      slices: [{ id: 'sl1', name: 'Pilot: 2026.11' }, { id: 'sl2', name: 'Next' }, { id: 'sl3', name: 'Later' }],
     }, 35);
 
     // ---------------- Stories ----------------
@@ -573,7 +573,7 @@ Access requests bounce between managers and system owners for 46 hours on averag
 
     // ---------------- Deliver ----------------
     put('rel_nov', 'release', {
-      title: 'ServiceHub 2026.11 — Password self-service & JML pilot', version: '2026.11', targetDate: d(21), status: 'in-progress', tier: 'tier-1', betIds: ['bet_sspr', 'bet_jml'],
+      title: 'ServiceHub 2026.11: Password self-service & JML pilot', version: '2026.11', targetDate: d(21), status: 'in-progress', tier: 'tier-1', betIds: ['bet_sspr', 'bet_jml'],
       goals: 'Self-service reset for all office workers; automated JML for the January sales cohort.',
       rolloutPlan: 'SSPR: Finance (week 1) → all office workers (week 2) → registration campaign.\nJML: Sales department only (flag per department), January cohort of 120 hires.',
       rollbackCriteria: 'SSPR: reset failure rate > 5% for 2 hours → disable and revert to service desk.\nJML: any wrong access package on a privileged system → pause automation, manual provisioning.',
@@ -590,19 +590,19 @@ Access requests bounce between managers and system owners for 46 hours on averag
         { id: 'c10', area: 'Accessibility', item: 'Keyboard and screen reader check', ownerId: 'stk_aisha', done: true },
       ],
     }, 40);
-    put('rel_dec', 'release', { title: 'ServiceHub 2026.12 — Access request portal', version: '2026.12', targetDate: d(55), status: 'planning', tier: 'tier-2', betIds: ['bet_portal'], goals: 'Catalog-based access requests with policy routing.', checklist: [{ id: 'c1', area: 'Service desk', item: 'Help-centre article', ownerId: 'stk_tomas', done: false }] }, 20);
-    put('rel_oct', 'release', { title: 'ServiceHub 2026.10 — SSO wave 3', version: '2026.10', targetDate: d(-22), releasedAt: d(-20), status: 'released', tier: 'tier-3', betIds: ['bet_sso'], checklist: [{ id: 'c1', area: 'Service desk', item: 'Help-centre article', ownerId: 'stk_tomas', done: true }] }, 100);
+    put('rel_dec', 'release', { title: 'ServiceHub 2026.12: Access request portal', version: '2026.12', targetDate: d(55), status: 'planning', tier: 'tier-2', betIds: ['bet_portal'], goals: 'Catalog-based access requests with policy routing.', checklist: [{ id: 'c1', area: 'Service desk', item: 'Help-centre article', ownerId: 'stk_tomas', done: false }] }, 20);
+    put('rel_oct', 'release', { title: 'ServiceHub 2026.10: SSO wave 3', version: '2026.10', targetDate: d(-22), releasedAt: d(-20), status: 'released', tier: 'tier-3', betIds: ['bet_sso'], checklist: [{ id: 'c1', area: 'Service desk', item: 'Help-centre article', ownerId: 'stk_tomas', done: true }] }, 100);
 
     const RAID = (id: string, data: Record<string, unknown>, daysAgo = 20) => put(`raid_${id}`, 'raid', data, daysAgo);
     RAID('jobcodes', { kind: 'risk', title: 'Inconsistent Workday job codes assign the wrong access', description: '140 job codes, 30% used inconsistently across regions.', probability: 4, impact: 5, ownerId: 'stk_hannah', mitigation: 'Clean up job codes with HR before the pilot; manager review of the summary.', status: 'mitigating', dueDate: d(10), relatedIds: ['bet_jml'] });
-    RAID('mfafatigue', { kind: 'risk', title: 'MFA fatigue — users approve push prompts they didn\'t start', probability: 3, impact: 4, ownerId: 'stk_dana', mitigation: 'Number matching on all prompts.', status: 'mitigating', relatedIds: ['bet_sspr'] });
+    RAID('mfafatigue', { kind: 'risk', title: 'MFA fatigue: users approve push prompts they didn\'t start', probability: 3, impact: 4, ownerId: 'stk_dana', mitigation: 'Number matching on all prompts.', status: 'mitigating', relatedIds: ['bet_sspr'] });
     RAID('promise', { kind: 'risk', title: 'Sales promises day-one access before the pilot is proven', probability: 4, impact: 5, ownerId: 'stk_daniel', mitigation: '', status: 'open', relatedIds: ['bet_jml'] }, 15);
     RAID('ldap', { kind: 'issue', title: 'Legacy LDAP sync fails nightly for 3% of users', probability: 5, impact: 4, ownerId: 'stk_priya', mitigation: 'Daily report of failed users to the service desk until scripts are retired.', status: 'open', relatedIds: ['bet_jml', 'bet_ldap'] }, 12);
     RAID('connector', { kind: 'dependency', title: 'Keyline Identity: Workday connector v2', externalTeam: 'Keyline Identity (vendor)', probability: 3, impact: 4, ownerId: 'stk_raj', status: 'open', dueDate: d(5), relatedIds: ['bet_jml'] });
     RAID('autopilot', { kind: 'dependency', title: 'Endpoint team: Autopilot profiles per department', externalTeam: 'Infrastructure', probability: 3, impact: 3, ownerId: 'stk_grace', status: 'open', dueDate: d(4), relatedIds: ['bet_zerotouch', 'bet_jml'] });
     RAID('summary', { kind: 'assumption', title: 'Managers review access summaries within 2 days', probability: 2, impact: 3, ownerId: 'stk_me', status: 'open', relatedIds: ['bet_jml'] });
     RAID('keyperson', { kind: 'risk', title: 'Only one engineer understands the provisioning scripts', probability: 3, impact: 4, ownerId: 'stk_priya', mitigation: 'Pair on every provisioning change; runbook by end of month.', status: 'mitigating', relatedIds: ['bet_ldap'] });
-    RAID('flaky', { kind: 'issue', title: 'E2E suite flaky — releases delayed by a day', probability: 4, impact: 2, ownerId: 'stk_priya', status: 'closed', mitigation: 'Quarantined 11 flaky tests.' }, 60);
+    RAID('flaky', { kind: 'issue', title: 'E2E suite flaky: releases delayed by a day', probability: 4, impact: 2, ownerId: 'stk_priya', status: 'closed', mitigation: 'Quarantined 11 flaky tests.' }, 60);
 
     const TC = (id: string, data: Record<string, unknown>) => put(`tc_${id}`, 'testCase', data, 10);
     TC('1', { title: 'New hire has accounts 3 days before start', kind: 'uat', storyIds: ['st_j2'], requirementIds: ['req_birthright'], releaseId: 'rel_nov', steps: '1. Create test hire in Workday sandbox, start in 5 days\n2. Wait for job', expected: 'Identity and mailbox exist 3 business days before start', status: 'pass', testerId: 'stk_tomas', executedAt: d(-5) });
@@ -648,7 +648,7 @@ Access requests bounce between managers and system owners for 46 hours on averag
     I('d3', { title: 'Provisioning SLA discussion', date: d(-25), stakeholderIds: ['stk_daniel', 'stk_priya'], kind: 'meeting', sentiment: -1, summary: 'Sales wants 5 minutes; engineering says 15 at p95.', followUps: 'Change request with load data.' });
     I('d4', { title: 'Escalation: laptops for the December hires', date: d(-11), stakeholderIds: ['stk_daniel'], kind: 'call', sentiment: -1, summary: 'Two reps started without laptops.' });
     I('d5', { title: 'Weekly sync', date: d(-4), stakeholderIds: ['stk_daniel'], kind: '1:1', sentiment: -2, summary: '"I promised my reps day-one access. Can IT deliver?"', followUps: 'Show the forecast and the pilot plan.' });
-    I('m1', { title: 'IT steering — September', date: d(-50), stakeholderIds: ['stk_morgan', 'stk_dana'], kind: 'steering', sentiment: 1 });
+    I('m1', { title: 'IT steering: September', date: d(-50), stakeholderIds: ['stk_morgan', 'stk_dana'], kind: 'steering', sentiment: 1 });
     I('m2', { title: 'Board update prep', date: d(-10), stakeholderIds: ['stk_morgan'], kind: 'meeting', sentiment: 1 });
     I('dn1', { title: 'Security review of JML design', date: d(-15), stakeholderIds: ['stk_dana', 'stk_priya'], kind: 'meeting', sentiment: 0, summary: 'Wants managers\' approvals limited to standard access.' });
     I('h1', { title: 'Job code clean-up', date: d(-20), stakeholderIds: ['stk_hannah'], kind: 'meeting', sentiment: 0, summary: 'HR worried about being blamed for wrong access.' });
@@ -678,7 +678,7 @@ Access requests bounce between managers and system owners for 46 hours on averag
     RQ('raj', { title: 'Feedback on the connector beta', requesterId: 'stk_raj', priority: 'medium', status: 'new', respondBy: d(-5) }, 15);
     RQ('sofia', { title: 'Report unused SaaS licences', requesterId: 'stk_sofia', priority: 'medium', status: 'accepted', respondBy: d(10) }, 20);
     RQ('lucas', { title: 'Tracking events for portal search', requesterId: 'stk_lucas', priority: 'low', status: 'new', respondBy: d(2) }, 3);
-    RQ('chatbot', { title: 'Keep the chatbot — Support likes it', requesterId: 'stk_tomas', priority: 'low', status: 'declined', responseNote: '4% adoption; replaced by answer-first search.', loopClosed: true }, 60);
+    RQ('chatbot', { title: 'Keep the chatbot: Support likes it', requesterId: 'stk_tomas', priority: 'low', status: 'declined', responseNote: '4% adoption; replaced by answer-first search.', loopClosed: true }, 60);
 
     const CM = (id: string, data: Record<string, unknown>, daysAgo: number) => put(`com_${id}`, 'commitment', { status: 'open', ...data }, daysAgo);
     CM('cohort', { title: 'Day-one access for the January sales cohort (120 reps)', toId: 'stk_daniel', promisedById: 'stk_me', account: 'Sales', dueDate: d(14), betId: 'bet_jml', releaseId: 'rel_nov', notes: 'Promised in the sales kickoff planning.' }, 30);
@@ -689,7 +689,7 @@ Access requests bounce between managers and system owners for 46 hours on averag
     CM('ssocrm', { title: 'SSO for the CRM', toId: 'stk_daniel', promisedById: 'stk_me', account: 'Sales', dueDate: d(-25), betId: 'bet_sso', status: 'kept' }, 100);
 
     put('raci_jml', 'raci', {
-      title: 'Automated JML — RACI', scopeId: 'bet_jml',
+      title: 'Automated JML: RACI', scopeId: 'bet_jml',
       activities: ['Define access packages', 'Approve PRD', 'Security review', 'HR data quality', 'Build & test', 'Change approval (CAB)', 'Pilot with Sales', 'Communications'],
       memberIds: ['stk_me', 'stk_priya', 'stk_dana', 'stk_hannah', 'stk_daniel', 'stk_tomas', 'stk_noah', 'stk_elena', 'stk_marcus'],
       assignments: {
@@ -704,7 +704,7 @@ Access requests bounce between managers and system owners for 46 hours on averag
       },
     }, 30);
     put('raci_sspr', 'raci', {
-      title: 'Password self-service — RACI', scopeId: 'bet_sspr', activities: ['Requirements', 'Security design', 'Build', 'Rollout & registration'], memberIds: ['stk_me', 'stk_dana', 'stk_tomas', 'stk_priya'],
+      title: 'Password self-service: RACI', scopeId: 'bet_sspr', activities: ['Requirements', 'Security design', 'Build', 'Rollout & registration'], memberIds: ['stk_me', 'stk_dana', 'stk_tomas', 'stk_priya'],
       assignments: { Requirements: { stk_me: 'A', stk_tomas: 'C', stk_dana: 'C' }, 'Security design': { stk_dana: 'A', stk_priya: 'R', stk_me: 'I' }, Build: { stk_priya: 'A', stk_me: 'C' }, 'Rollout & registration': { stk_tomas: 'A', stk_me: 'R' } },
     }, 60);
 
@@ -723,7 +723,7 @@ Access requests bounce between managers and system owners for 46 hours on averag
     put('appr_cab', 'approval', { title: 'CAB: SSPR production change', subjectId: 'rel_nov', requestedById: 'stk_me', dueDate: d(-2), approvers: [{ stakeholderId: 'stk_noah', status: 'pending' }] }, 8);
     put('appr_sspr', 'approval', { title: 'Approve SSPR spec', subjectId: 'spec_sspr', requestedById: 'stk_me', dueDate: d(-40), approvers: [{ stakeholderId: 'stk_dana', status: 'approved', at: d(-41) }, { stakeholderId: 'stk_tomas', status: 'approved', at: d(-42) }] }, 45);
 
-    put('cf_mfa', 'conflict', { title: 'MFA on every sign-in vs fast shift starts', partyIds: ['stk_dana', 'stk_olivia'], description: 'Security wants MFA everywhere; Warehouse Ops has shared scanners and no phones.', positions: 'Security: MFA on every sign-in, no exceptions.\nWarehouse: no MFA on scanners — shifts can\'t wait.', interests: 'Security: prove who did what; stop credential theft.\nWarehouse: start on time; no lost pay.\nShared: nobody signs in as someone else.', status: 'negotiating', raisedAt: d(-12) }, 12);
+    put('cf_mfa', 'conflict', { title: 'MFA on every sign-in vs fast shift starts', partyIds: ['stk_dana', 'stk_olivia'], description: 'Security wants MFA everywhere; Warehouse Ops has shared scanners and no phones.', positions: 'Security: MFA on every sign-in, no exceptions.\nWarehouse: no MFA on scanners; shifts can\'t wait.', interests: 'Security: prove who did what; stop credential theft.\nWarehouse: start on time; no lost pay.\nShared: nobody signs in as someone else.', status: 'negotiating', raisedAt: d(-12) }, 12);
     put('cf_mailbox', 'conflict', { title: 'Leaver mailboxes: 30 days (DPO) vs 90 days (handover)', partyIds: ['stk_elena', 'stk_tomas'], positions: 'DPO: delete after 30 days (data minimisation).\nService desk & managers: keep 90 days for handovers.', interests: 'DPO: lawful basis and minimisation.\nManagers: don\'t lose customer history.', status: 'open', raisedAt: d(-2) }, 2);
     put('cf_chatbot', 'conflict', { title: 'Retire the chatbot', partyIds: ['stk_tomas', 'stk_me'], status: 'resolved', resolution: 'Retire after answer-first search ships; content moves to knowledge articles.', raisedAt: d(-70) }, 70);
 
@@ -734,7 +734,7 @@ Access requests bounce between managers and system owners for 46 hours on averag
     put('cm_desk', 'commsItem', { title: 'Service desk briefing', audienceIds: ['stk_tomas'], channel: 'meeting', frequency: 'per-release', ownerId: 'stk_me' }, 100);
 
     put('mtg_refine', 'meeting', {
-      title: 'Refinement — Automated JML', kind: 'refinement', date: d(-6), attendeeIds: ['stk_me', 'stk_priya', 'stk_aisha', 'stk_tomas'], relatedIds: ['bet_jml', 'spec_jml'],
+      title: 'Refinement: Automated JML', kind: 'refinement', date: d(-6), attendeeIds: ['stk_me', 'stk_priya', 'stk_aisha', 'stk_tomas'], relatedIds: ['bet_jml', 'spec_jml'],
       agenda: '1. Mover clean-up timing (REQ-6)\n2. Rehires\n3. Provisioning status for managers',
       notes: '- Decision: the 14-day mover period starts on the effective date of the job change\n- Action: @priya to add the rehire story by Friday\n- Action: @tomas to draft the agent briefing next week\n- Risk: job codes are inconsistent across regions\n- What happens to access when a hire withdraws before day one?',
       actions: [
@@ -744,14 +744,14 @@ Access requests bounce between managers and system owners for 46 hours on averag
       ],
     }, 6);
     put('mtg_steer', 'meeting', {
-      title: 'IT steering — October', kind: 'steering', date: d(-20), attendeeIds: ['stk_morgan', 'stk_dana', 'stk_hannah', 'stk_daniel', 'stk_me'], relatedIds: ['obj_dayone', 'obj_audit'],
+      title: 'IT steering: October', kind: 'steering', date: d(-20), attendeeIds: ['stk_morgan', 'stk_dana', 'stk_hannah', 'stk_daniel', 'stk_me'], relatedIds: ['obj_dayone', 'obj_audit'],
       notes: '- Agreed: January sales cohort is the JML pilot\n- Action: @hannah to own job code clean-up\n- Concern: onboarding complaints reaching the exec team',
       actions: [{ id: 'a1', text: 'Own job code clean-up', ownerId: 'stk_hannah', due: d(-6), done: false }],
     }, 20);
     put('mtg_review', 'meeting', { title: 'Sprint 42 review', kind: 'sprint-review', date: d(3), attendeeIds: ['stk_me', 'stk_priya', 'stk_tomas', 'stk_daniel'], agenda: 'Demo: leaver deprovisioning, manager summary, SSPR lockout.' }, 1);
 
     put('rf_1', 'reviewFinding', { specId: 'spec_jml', role: 'security', severity: 'critical', title: 'Who can approve extra access for privileged systems?', detail: 'Manager approval alone is not enough for admin roles.', status: 'resolved', resolution: 'Privileged access needs owner + security approval (approval routing table, R4).', source: 'engine' }, 20);
-    put('rf_2', 'reviewFinding', { specId: 'spec_jml', role: 'privacy', severity: 'major', title: 'How long are leaver mailboxes kept?', status: 'converted', resolution: 'Converted to REQ-9 / REQ-10 — now conflicting, see conflicts.', source: 'engine' }, 20);
+    put('rf_2', 'reviewFinding', { specId: 'spec_jml', role: 'privacy', severity: 'major', title: 'How long are leaver mailboxes kept?', status: 'converted', resolution: 'Converted to REQ-9 / REQ-10: now conflicting, see conflicts.', source: 'engine' }, 20);
     put('rf_3', 'reviewFinding', { specId: 'spec_jml', role: 'qa', severity: 'major', title: 'What happens to rehires?', status: 'open', source: 'human', detail: 'Tomás: rehires currently get a second identity.' }, 6);
 
     put('cmt_1', 'comment', { entityId: 'spec_jml', author: 'Priya Nair', authorId: uid('priya'), body: `@${people.me.name} can we pin the provisioning SLA before sprint 43? The load test is booked.`, mentions: [people.me.id] }, 4);

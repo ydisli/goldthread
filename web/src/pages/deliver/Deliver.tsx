@@ -50,7 +50,7 @@ export function BacklogPage() {
   );
   return (
     <div className="page">
-      <PageHead title="Backlog health" sub="Duplicates, stale items, orphans, missing acceptance criteria, oversized stories and dependency cycles — found automatically." actions={<>
+      <PageHead title="Backlog health" sub="Duplicates, stale items, orphans, missing acceptance criteria, oversized stories and dependency cycles: found automatically." actions={<>
         {can('editor') && linked.map((l) => <button key={l.kind} className="btn" onClick={() => void l.sync()} disabled={l.busy} title={l.last ? `Last sync ${fmtDate(l.last.at.slice(0, 10))}: ${syncSummary(l.last)}` : undefined}><Icon name="refresh-cw" size={14} />{l.busy ? 'Syncing…' : `Sync with ${l.label}`}</button>)}
         {can('editor') && <button className="btn" onClick={() => setImporting(true)}><Icon name="file-up" size={14} />{linked.length ? 'Import CSV' : 'Import from Jira / ADO'}</button>}
         <Dropdown align="right" width={250} trigger={(toggle) => <button className="btn" onClick={toggle}><Icon name="download" size={14} />Export</button>}>
@@ -76,7 +76,7 @@ export function BacklogPage() {
           </div>
         )} />
         <Section title="Stale" icon="clock" items={h.stale} hint="In the backlog, untouched for 90+ days." render={(s) => <Row key={s.id} s={s} extra={`last touched ${relDays(s.updatedAt?.slice(0, 10), today)}`} actions={<button className="btn btn-sm" onClick={() => archive(s)}>Archive</button>} />} />
-        <Section title="Orphans" icon="link" items={h.orphans} hint="Not linked to a bet or requirement — why does this exist?" render={(s) => <Row key={s.id} s={s} actions={<button className="btn btn-sm" onClick={() => openEditor({ type: 'story', id: s.id, only: ['betId', 'requirementIds'] })}>Link</button>} />} />
+        <Section title="Orphans" icon="link" items={h.orphans} hint="Not linked to a bet or requirement: why does this exist?" render={(s) => <Row key={s.id} s={s} actions={<button className="btn btn-sm" onClick={() => openEditor({ type: 'story', id: s.id, only: ['betId', 'requirementIds'] })}>Link</button>} />} />
         <Section title="No acceptance criteria" icon="list-checks" items={h.noAcceptance} hint="Add Given/When/Then before refinement." render={(s) => <Row key={s.id} s={s} extra={humanize(s.status)} actions={<button className="btn btn-sm" onClick={() => openEditor({ type: 'story', id: s.id, only: ['asA', 'iWant', 'soThat', 'acceptance'] })}>Write AC</button>} />} />
         <Section title="Oversized" icon="split" items={h.oversized} hint="More than 13 points." render={(s) => <Row key={s.id} s={s} extra={splitHints(s)[0] ?? `${s.estimate} points`} />} />
         <Section title="Blocked or cyclic" icon="git-branch" items={[...h.cycles.map((c) => ({ cycle: c })), ...h.blockedByLater]} hint="Ready stories that depend on backlog stories, and dependency loops." render={(x, i) => x.cycle ? (
@@ -105,10 +105,10 @@ export function PrioritizePage() {
   return (
     <div className="page">
       <PageHead guide={<ToolGuide id="prioritize" title="How the ranking works" steps={[
-        <>Pick <Term explain="Reach × Impact × Confidence ÷ Effort. Value per unit of work.">RICE</Term> or <Term explain="Weighted Shortest Job First: cost of delay (business value + time criticality + risk reduction) ÷ job size. Common in SAFe.">WSJF</Term> — whichever your organisation uses.</>,
+        <>Pick <Term explain="Reach × Impact × Confidence ÷ Effort. Value per unit of work.">RICE</Term> or <Term explain="Weighted Shortest Job First: cost of delay (business value + time criticality + risk reduction) ÷ job size. Common in SAFe.">WSJF</Term>: whichever your organisation uses.</>,
         <>Change an estimate right in the table and the ranking updates straight away.</>,
         <><b>What would change the order</b> shows how far an estimate must move before the ranking flips, so you know which estimates are worth arguing about.</>,
-      ]} />} title="Prioritize" sub="Scores are only as good as their inputs — so this shows how fragile the ranking is, and which single assumption would change it." actions={<Seg value={method} onChange={setMethod} options={[{ id: 'rice', label: 'RICE' }, { id: 'wsjf', label: 'WSJF' }]} />} />
+      ]} />} title="Prioritize" sub="Scores are only as good as their inputs, so this shows how fragile the ranking is, and which single assumption would change it." actions={<Seg value={method} onChange={setMethod} options={[{ id: 'rice', label: 'RICE' }, { id: 'wsjf', label: 'WSJF' }]} />} />
       <Card flush className="mb16">
         <div className="table-wrap">
           <table className="table">
@@ -140,7 +140,7 @@ export function PrioritizePage() {
         <Card title="How to read this" icon="lightbulb">
           <div className="small col" style={{ gap: 8 }}>
             <div><strong>RICE</strong> = reach × impact × confidence ÷ effort. <strong>WSJF</strong> = (business value + time criticality + risk reduction) ÷ job size.</div>
-            <div><strong>Fragile</strong> pairs swap with a &lt; 15% change in one input — don't argue about #{1} vs #{2}; get better evidence on that input instead.</div>
+            <div><strong>Fragile</strong> pairs swap with a &lt; 15% change in one input: don't argue about #{1} vs #{2}; get better evidence on that input instead.</div>
             <div><strong>Stability</strong> perturbs every input by its own uncertainty (lower confidence → wider) and counts how often each bet stays in the top 3.</div>
           </div>
         </Card>
@@ -195,7 +195,7 @@ export function RoadmapPage() {
       {view === 'lanes' ? (
         <div className="board" style={{ gridAutoColumns: 'minmax(280px, 1fr)' }}>
           <Lane h="now" label="Now" sub="In delivery or committed this quarter" />
-          <Lane h="next" label="Next" sub="Shaping — discovery underway" />
+          <Lane h="next" label="Next" sub="Shaping: discovery underway" />
           <Lane h="later" label="Later" sub="Opportunities we believe in, not yet shaped" />
         </div>
       ) : <Timeline bets={bets.filter((b) => b.startDate || b.targetDate)} fc={fc} today={today} external={audience === 'external'} />}
@@ -245,7 +245,7 @@ export function ReleasesPage() {
   const today = now();
   return (
     <div className="page">
-      <PageHead title="Releases & launches" sub="Shipping is not launching: scope, readiness across Support, Sales, Legal and Marketing, rollout and rollback — and release notes for every audience." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'release' })}><Icon name="plus" size={14} />New release</button>} />
+      <PageHead title="Releases & launches" sub="Shipping is not launching: scope, readiness across Support, Sales, Legal and Marketing, rollout and rollback, and release notes for every audience." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'release' })}><Icon name="plus" size={14} />New release</button>} />
       <div className="col" style={{ gap: 12 }}>
         {[...g.all('release')].sort((a, b) => String(b.targetDate).localeCompare(String(a.targetDate))).map((r) => {
           const list = (r.checklist ?? []) as { done: boolean }[];
@@ -257,7 +257,7 @@ export function ReleasesPage() {
               <div className="grid g3 mt12">
                 <div><div className="label">Target</div>{fmtDate(r.targetDate)} <span className="muted small">{relDays(r.targetDate, today)}</span></div>
                 <div><div className="label">Readiness</div><div className="row"><div style={{ flex: 1 }}><Meter value={list.length ? done / list.length : 0} color={done === list.length ? 'var(--good)' : 'var(--warning)'} /></div><span className="small">{done}/{list.length}</span></div></div>
-                <div><div className="label">Forecast (85%)</div>{f ? <span style={{ color: r.targetDate && f.dates.p85 > r.targetDate ? 'var(--red)' : undefined }}>{fmtDate(f.dates.p85)} · {Math.round((f.probabilityBy ?? 0) * 100)}% by target</span> : <span className="muted">{r.status === 'released' ? `Released ${fmtDate(r.releasedAt)}` : '—'}</span>}</div>
+                <div><div className="label">Forecast (85%)</div>{f ? <span style={{ color: r.targetDate && f.dates.p85 > r.targetDate ? 'var(--red)' : undefined }}>{fmtDate(f.dates.p85)} · {Math.round((f.probabilityBy ?? 0) * 100)}% by target</span> : <span className="muted">{r.status === 'released' ? `Released ${fmtDate(r.releasedAt)}` : '–'}</span>}</div>
               </div>
             </Link>
           );
@@ -290,7 +290,7 @@ export function ReleasePage({ id }: { id: string }) {
         <Stat label="Tests" value={`${tests.filter((t) => t.status === 'pass').length}/${tests.length}`} sub={`${tests.filter((t) => t.status === 'fail').length} failing`} tone={tests.some((t) => t.status === 'fail') ? 'red' : undefined} />
         <Stat label="Open defects" value={defects.length} sub={`${defects.filter((d) => ['s1-critical', 's2-major'].includes(d.severity)).length} major+`} tone={defects.some((d) => d.severity === 's1-critical') ? 'red' : undefined} />
       </div>
-      {f && <Card><div className="row-wrap"><Icon name="activity" /><span>Forecast: 50% by <strong>{fmtDate(f.dates.p50)}</strong>, 85% by <strong>{fmtDate(f.dates.p85)}</strong> — <strong style={{ color: (f.probabilityBy ?? 0) < 0.7 ? 'var(--red)' : 'var(--green)' }}>{Math.round((f.probabilityBy ?? 0) * 100)}%</strong> chance of hitting {fmtDate(r.targetDate)} ({f.remaining} stories left).</span></div></Card>}
+      {f && <Card><div className="row-wrap"><Icon name="activity" /><span>Forecast: 50% by <strong>{fmtDate(f.dates.p50)}</strong>, 85% by <strong>{fmtDate(f.dates.p85)}</strong>: <strong style={{ color: (f.probabilityBy ?? 0) < 0.7 ? 'var(--red)' : 'var(--green)' }}>{Math.round((f.probabilityBy ?? 0) * 100)}%</strong> chance of hitting {fmtDate(r.targetDate)} ({f.remaining} stories left).</span></div></Card>}
       <Card title="Launch readiness" icon="list-checks" flush>
         {areas.map((a) => (
           <div key={a}>
@@ -315,7 +315,7 @@ export function ReleasePage({ id }: { id: string }) {
       </Card>
       <div className="grid g2">
         <Card title="Rollout plan" icon="route"><div className="pre small">{r.rolloutPlan ?? <span className="muted">Not defined.</span>}</div></Card>
-        <Card title="Rollback criteria" icon="triangle-alert"><div className="pre small">{r.rollbackCriteria ?? <span className="muted">Not defined — decide before launch, not during an incident.</span>}</div></Card>
+        <Card title="Rollback criteria" icon="triangle-alert"><div className="pre small">{r.rollbackCriteria ?? <span className="muted">Not defined: decide before launch, not during an incident.</span>}</div></Card>
       </div>
       <Card title="Release notes & updates" icon="megaphone" actions={<><select aria-label="Audience" className="select input-sm" style={{ width: 'auto' }} value={aud} onChange={(e) => setAud(e.target.value as Audience)}>{(Object.keys(AUDIENCES) as Audience[]).map((a) => <option key={a} value={a}>{AUDIENCES[a]}</option>)}</select><button className="btn btn-sm" onClick={() => copyText(notes, 'Update copied')}><Icon name="copy" size={13} />Copy</button></>}>
         <Markdown text={notes} />
@@ -345,7 +345,7 @@ export function PulsePage() {
         <>Promise the <b>85% date</b>: in 85 of 100 simulated futures the work is done by then. The 50% date is a coin flip.</>,
         <>Scope added after the start is tracked separately, so you can show why a date moved.</>,
       ]} />} title="Delivery pulse" sub="Probabilistic forecasts from real throughput (no story-point theatre), scope creep, dependencies and promises vs forecast." />
-      <Card title="Throughput — stories finished per week" icon="activity" className="mb16">
+      <Card title="Throughput: stories finished per week" icon="activity" className="mb16">
         <LineChart series={series} xLabels={xLabels} />
         <div className="mt8"><Legend items={series.map((s) => ({ label: s.label, color: s.color, shape: 'line' }))} /></div>
       </Card>
@@ -358,10 +358,10 @@ export function PulsePage() {
             const p = f?.probabilityBy;
             return (
               <tr key={b.id} className="clickable" {...activate(() => navigate(hrefOf(b)), null)}>
-                <td className="strong">{b.title}</td><td>{nameOf(g.get(b.teamId))}</td><td className="num">{f?.remaining ?? '—'}</td>
-                <td>{f ? fmtDate(f.dates.p50) : '—'}</td><td className="strong">{f ? fmtDate(f.dates.p85) : '—'}</td><td>{fmtDate(b.targetDate)}</td>
-                <td>{p !== undefined ? <Badge tone={p >= 0.8 ? 'green' : p >= 0.5 ? 'amber' : 'red'}>{Math.round(p * 100)}%</Badge> : '—'}</td>
-                <td>{sc && sc.added ? <Badge tone={sc.ratio > 0.3 ? 'red' : 'amber'}>+{sc.added} ({Math.round(sc.ratio * 100)}%)</Badge> : <span className="muted">—</span>}</td>
+                <td className="strong">{b.title}</td><td>{nameOf(g.get(b.teamId))}</td><td className="num">{f?.remaining ?? '–'}</td>
+                <td>{f ? fmtDate(f.dates.p50) : '–'}</td><td className="strong">{f ? fmtDate(f.dates.p85) : '–'}</td><td>{fmtDate(b.targetDate)}</td>
+                <td>{p !== undefined ? <Badge tone={p >= 0.8 ? 'green' : p >= 0.5 ? 'amber' : 'red'}>{Math.round(p * 100)}%</Badge> : '–'}</td>
+                <td>{sc && sc.added ? <Badge tone={sc.ratio > 0.3 ? 'red' : 'amber'}>+{sc.added} ({Math.round(sc.ratio * 100)}%)</Badge> : <span className="muted">–</span>}</td>
               </tr>
             );
           })}</tbody>
@@ -396,7 +396,7 @@ export function RaidPage() {
     .sort((a, b) => b.probability * b.impact - a.probability * a.impact);
   return (
     <div className="page">
-      <PageHead title="RAID log" sub="Risks, assumptions, issues and dependencies — with owners, exposure and mitigations." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'raid' })}><Icon name="plus" size={14} />New item</button>} />
+      <PageHead title="RAID log" sub="Risks, assumptions, issues and dependencies, with owners, exposure and mitigations." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'raid' })}><Icon name="plus" size={14} />New item</button>} />
       <div className="grid raid-grid mb16">
         <Card title="Risk exposure" icon="grid-3x3" sub="Click a cell to filter.">
           <RiskMatrix items={risks.map((r) => ({ id: r.id, p: Number(r.probability), i: Number(r.impact), label: r.title }))} selected={cell} onCell={(p, i) => setCell(cell && cell[0] === p && cell[1] === i ? null : [p, i])} />
@@ -434,7 +434,7 @@ export function UatPage() {
   for (const d of defects) byCause.set(d.rootCause ?? 'unknown', (byCause.get(d.rootCause ?? 'unknown') ?? 0) + 1);
   return (
     <div className="page">
-      <PageHead title="UAT & quality" sub="Acceptance and UAT tests traced to requirements, business sign-off, and defects classified by root cause — requirement defects are the expensive ones." actions={<><select aria-label="Release" className="select input-sm" style={{ width: 'auto' }} value={release} onChange={(e) => setRelease(e.target.value)}><option value="">All releases</option>{g.all('release').map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}</select><button className="btn btn-primary" onClick={() => openEditor({ type: tab === 'tests' ? 'testCase' : 'defect', defaults: release ? { releaseId: release } : {} })}><Icon name="plus" size={14} />{tab === 'tests' ? 'Test case' : 'Defect'}</button></>} />
+      <PageHead title="UAT & quality" sub="Acceptance and UAT tests traced to requirements, business sign-off, and defects classified by root cause: requirement defects are the expensive ones." actions={<><select aria-label="Release" className="select input-sm" style={{ width: 'auto' }} value={release} onChange={(e) => setRelease(e.target.value)}><option value="">All releases</option>{g.all('release').map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}</select><button className="btn btn-primary" onClick={() => openEditor({ type: tab === 'tests' ? 'testCase' : 'defect', defaults: release ? { releaseId: release } : {} })}><Icon name="plus" size={14} />{tab === 'tests' ? 'Test case' : 'Defect'}</button></>} />
       <div className="grid g4 mb16">
         <Stat label="Pass rate" value={`${tests.length ? Math.round((tests.filter((t) => t.status === 'pass').length / tests.length) * 100) : 0}%`} sub={`${tests.filter((t) => t.status === 'pass').length} of ${tests.length} tests`} />
         <Stat label="Failing" value={tests.filter((t) => t.status === 'fail').length} tone={tests.some((t) => t.status === 'fail') ? 'red' : undefined} sub={`${tests.filter((t) => t.status === 'blocked').length} blocked`} />
@@ -483,9 +483,9 @@ export function TracePage() {
     <div className="page page-wide">
       <PageHead guide={<ToolGuide id="trace" title="Traceability" steps={[
         <>Every requirement should trace back to a source and forward to a story, a test and a release.</>,
-        <>Gaps are listed per requirement — this is the view auditors and change boards ask for.</>,
+        <>Gaps are listed per requirement: this is the view auditors and change boards ask for.</>,
         <>Use <b>Impact</b> on any item to see what a change would touch and who to tell.</>,
-      ]} />} title="Traceability & impact" sub="The requirements traceability matrix is generated from the graph — never maintained by hand. Pick anything to see what a change would ripple into." actions={<button className="btn" onClick={exportCsv}><Icon name="download" size={14} />Export RTM (CSV)</button>} />
+      ]} />} title="Traceability & impact" sub="The requirements traceability matrix is generated from the graph, never maintained by hand. Pick anything to see what a change would ripple into." actions={<button className="btn" onClick={exportCsv}><Icon name="download" size={14} />Export RTM (CSV)</button>} />
       <Card title="Impact analysis" icon="network" className="mb16">
         <div className="mb12" style={{ maxWidth: 520 }}><EntityPicker targets="*" value={impactId ? [impactId] : []} onChange={(ids) => setQuery({ impact: ids[0] })} single placeholder="What would change? Pick a requirement, decision, bet, story…" /></div>
         {impact ? (
@@ -516,9 +516,9 @@ export function TracePage() {
           <tbody>{rows.map((r) => (
             <tr key={r.requirement.id}>
               <td style={{ minWidth: 220 }}><Link to={hrefOf(r.requirement)} style={{ color: 'inherit' }}><span className="key">{r.requirement.key}</span> {r.requirement.title}</Link><div className="small"><StatusBadge value={r.requirement.priority} /> <StatusBadge value={r.requirement.status} /></div></td>
-              <td>{r.bet ? <RefChip e={r.bet} /> : '—'}</td>
+              <td>{r.bet ? <RefChip e={r.bet} /> : '–'}</td>
               <td><RefChips ids={r.stories.map((s) => s.id)} max={3} /></td>
-              <td>{r.tests.length ? <div className="row-wrap" style={{ gap: 3 }}>{r.tests.map((t) => <Link key={t.id} to={hrefOf(t)} title={t.title}><span className="dot" style={{ width: 10, height: 10, background: t.status === 'pass' ? 'var(--good)' : t.status === 'fail' ? 'var(--critical)' : t.status === 'blocked' ? 'var(--serious)' : 'var(--axis)' }} /></Link>)}</div> : <span className="muted">—</span>}</td>
+              <td>{r.tests.length ? <div className="row-wrap" style={{ gap: 3 }}>{r.tests.map((t) => <Link key={t.id} to={hrefOf(t)} title={t.title}><span className="dot" style={{ width: 10, height: 10, background: t.status === 'pass' ? 'var(--good)' : t.status === 'fail' ? 'var(--critical)' : t.status === 'blocked' ? 'var(--serious)' : 'var(--axis)' }} /></Link>)}</div> : <span className="muted">–</span>}</td>
               <td><RefChips ids={r.releases.map((x) => x.id)} max={2} /></td>
               <td><RefChips ids={r.defects.map((x) => x.id)} max={2} /></td>
               <td><div className="chips">{r.gaps.map((x) => <Badge key={x} tone={x === 'failing-test' || x === 'requirement-defects' ? 'red' : 'amber'}>{humanize(x)}</Badge>)}</div></td>

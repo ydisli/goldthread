@@ -77,7 +77,7 @@ export function GuidePage() {
         </div>
         <div className="guide-search">
           <Icon name="search" size={15} className="muted" />
-          <input aria-label="Search the book" className="input" placeholder="Search the book — try “acceptance criteria”, “RACI”, “Monte Carlo”…" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input aria-label="Search the book" className="input" placeholder="Search the book: try “acceptance criteria”, “RACI”, “Monte Carlo”…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
       </header>
 

@@ -3,7 +3,7 @@ import { createCipheriv, createDecipheriv, createHash, randomBytes, scryptSync, 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-// System database: everything that is not workspace content — people's
+// System database: everything that is not workspace content, such as people's
 // accounts, sessions, workspaces and who can access them, invites, API tokens
 // and per-workspace AI settings.
 

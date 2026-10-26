@@ -63,7 +63,7 @@ export function EntityTable({ type, recordType, rows, columns, onRowClick, empty
     if (c.render) return c.render(e);
     if (c.key === 'key') return <span className="key">{e.key}</span>;
     const f = def.fields.find((x) => x.key === c.key);
-    if (!f) return String(e[c.key] ?? '—');
+    if (!f) return String(e[c.key] ?? '–');
     if (f.key === def.titleField) return <Link to={hrefOf(e)} className="strong" onClick={(ev) => ev.stopPropagation()} style={{ color: 'var(--text)' }}>{nameOf(e)}</Link>;
     return <FieldValue f={f} value={e[c.key]} compact />;
   };
@@ -175,7 +175,7 @@ export function listHref(type: string, recordType?: string): string {
   return special[type] ?? `/e/${type}`;
 }
 
-/** Field grid for an entity — skips the title and empty values. */
+/** Field grid for an entity: skips the title and empty values. */
 export function FieldGrid({ e, skip = [], include }: { e: Entity; skip?: string[]; include?: string[] }) {
   const def = useEntityDef(e);
   const fields = def.fields.filter((f) => !f.hidden && f.kind !== 'json' && f.key !== def.titleField && !skip.includes(f.key) && (!include || include.includes(f.key)));
@@ -192,7 +192,7 @@ export function FieldGrid({ e, skip = [], include }: { e: Entity; skip?: string[
           <FieldValue f={f} value={e[f.key]} />
         </div>
       ))}
-      {!filled.length && <span className="muted small">No details yet — click Edit to add them.</span>}
+      {!filled.length && <span className="muted small">No details yet: click Edit to add them.</span>}
     </div>
   );
 }
@@ -277,7 +277,7 @@ function fmtChange(v: unknown): string {
   return s.length > 40 ? `${s.slice(0, 39)}…` : s;
 }
 
-/** Generic detail page: /e/:type/:id — also used as the base for specialised pages. */
+/** Generic detail page: /e/:type/:id, also used as the base for specialised pages. */
 export function EntityPage({ id, children, side, headerActions, sub, hideFields, wide }: { id: string; children?: ReactNode; side?: ReactNode; headerActions?: ReactNode; sub?: ReactNode; hideFields?: boolean; wide?: ReactNode }) {
   const e = useEntity(id);
   const icon = useDef(e?.type && ENTITY_MAP[e.type] ? e.type : 'story', e?.recordType).icon;

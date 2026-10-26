@@ -90,7 +90,7 @@ function ProfileTab() {
         </Row>
       </Card>
       <Card title="Password">
-        {me.demo ? <div className="small muted">Demo accounts share a password and are reset with the demo — create your own account to keep your work.</div> : (
+        {me.demo ? <div className="small muted">Demo accounts share a password and are reset with the demo: create your own account to keep your work.</div> : (
           <>
             <Row label="Current password"><input aria-label="Current password" className="input" type="password" autoComplete="current-password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} /></Row>
             <Row label="New password" help="At least 10 characters. Signs out your other devices."><input aria-label="New password" className="input" type="password" autoComplete="new-password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} /></Row>
@@ -121,7 +121,7 @@ function Notifications() {
   const n = (me.prefs.notify ?? {}) as { mentions?: boolean; approvals?: boolean; digest?: boolean };
   const set = (k: 'mentions' | 'approvals' | 'digest', v: boolean) => updateMe({ prefs: { notify: { ...n, [k]: v } } }).catch(errorToast);
   const toggle = (k: 'mentions' | 'approvals' | 'digest', on: boolean, label: string, help: string) => (
-    <label className="check-row"><input type="checkbox" checked={on} disabled={!mail || me.demo} onChange={(e) => set(k, e.target.checked)} /><span><span className="strong">{label}</span><span className="small muted"> — {help}</span></span></label>
+    <label className="check-row"><input type="checkbox" checked={on} disabled={!mail || me.demo} onChange={(e) => set(k, e.target.checked)} /><span><span className="strong">{label}</span><span className="small muted">: {help}</span></span></label>
   );
   return (
     <Card title="Notifications" sub={mail ? `Emails go to ${me.email}.` : 'This server has no email set up, so everything shows in your Inbox instead.'}>
@@ -297,11 +297,11 @@ function MembersTab() {
   };
   const roleOptions = (current: Role) => ROLE_INFO.filter((r) => isOwner || (r.role !== 'owner' && r.role !== 'admin') || r.role === current);
   const pending = invites.filter((i) => !i.acceptedAt && !i.revoked && i.expiresAt > new Date().toISOString());
-  const teamName = (id: string) => g.get(id)?.name ?? '—';
+  const teamName = (id: string) => g.get(id)?.name ?? '–';
 
   return (
     <div className="stack">
-      <Card title="Invite someone" sub={mail ? 'They get an email with a link. It works once, for that address, for 14 days.' : 'This server has no email set up. Create a link and share it in Slack, Teams or email — it works once, for that address, for 14 days.'}>
+      <Card title="Invite someone" sub={mail ? 'They get an email with a link. It works once, for that address, for 14 days.' : 'This server has no email set up. Create a link and share it in Slack, Teams or email: it works once, for that address, for 14 days.'}>
         <form className="invite-form" onSubmit={(e) => { e.preventDefault(); void invite(); }}>
           <input className="input" type="email" placeholder="name@company.com" value={email} onChange={(e) => setEmail(e.target.value)} aria-label="Email to invite" />
           <select className="select" value={role} onChange={(e) => setRole(e.target.value as Role)} aria-label="Role">
@@ -321,7 +321,7 @@ function MembersTab() {
         )}
         {link && (
           <div className="invite-link mt12">
-            <div className="small"><b>Invite for {link.email}</b>{link.emailed ? ' — emailed to them. The link is here too, in case it lands in spam.' : ' — copy it now; for security it isn\'t shown again.'}</div>
+            <div className="small"><b>Invite for {link.email}</b>{link.emailed ? ': emailed to them. The link is here too, in case it lands in spam.' : ': copy it now; for security it isn\'t shown again.'}</div>
             <div className="row mt8"><input aria-label="Invite link" className="input mono" readOnly value={link.url} onFocus={(e) => e.target.select()} /><button className="btn" onClick={() => copyText(link.url, 'Invite link copied')}><Icon name="copy" size={14} />Copy</button></div>
           </div>
         )}
@@ -344,7 +344,7 @@ function MembersTab() {
                 return (
                   <tr key={m.userId}>
                     <td><div className="row"><Avatar name={m.name} size="sm" /><div style={{ minWidth: 0 }}><div className="strong">{m.name}{self && <span className="muted"> (you)</span>}</div><div className="small muted ellipsis">{m.email}{m.title ? ` · ${m.title}` : ''}</div></div></div></td>
-                    <td><div className="chips">{m.teamIds.map((t) => <span key={t} className="chip">{teamName(t)}</span>)}{!m.teamIds.length && <span className="muted small">—</span>}</div></td>
+                    <td><div className="chips">{m.teamIds.map((t) => <span key={t} className="chip">{teamName(t)}</span>)}{!m.teamIds.length && <span className="muted small">–</span>}</div></td>
                     <td className="tight">
                       <select className="select" style={{ minWidth: 110 }} value={m.role} disabled={locked || self} onChange={(e) => changeRole(m, e.target.value as Role)} aria-label={`Role for ${m.name}`}>
                         {roleOptions(m.role).map((r) => <option key={r.role} value={r.role}>{r.label}</option>)}
@@ -387,7 +387,7 @@ function MembersTab() {
                 <div key={t.id} className="list-item" style={{ alignItems: 'center' }}>
                   <div className="grow">
                     <div className="strong">{t.name}</div>
-                    <div className="small muted">{t.leadId ? `Lead: ${g.get(t.leadId)?.name ?? '—'} · ` : ''}{people.length ? people.map((p) => p.name).join(', ') : 'No members with accounts yet'}</div>
+                    <div className="small muted">{t.leadId ? `Lead: ${g.get(t.leadId)?.name ?? '–'} · ` : ''}{people.length ? people.map((p) => p.name).join(', ') : 'No members with accounts yet'}</div>
                   </div>
                   <TeamMembersPicker team={t} members={members} onChange={load} />
                   <button className="btn btn-ghost btn-sm" onClick={() => openEditor({ type: 'team', id: t.id })}>Edit</button>
@@ -483,7 +483,7 @@ function ConnectTab() {
         </form>
         {fresh && (
           <div className="invite-link mt12">
-            <div className="small"><b>Copy your token now</b> — it's shown once. The snippets below already include it.</div>
+            <div className="small"><b>Copy your token now</b>: it's shown once. The snippets below already include it.</div>
             <div className="row mt8"><input aria-label="New token" className="input mono" readOnly value={fresh} onFocus={(e) => e.target.select()} /><button className="btn" onClick={() => copyText(fresh, 'Token copied')}><Icon name="copy" size={14} />Copy</button></div>
           </div>
         )}
@@ -500,9 +500,9 @@ function ConnectTab() {
         )}
       </Card>
 
-      <Card title="AI assistants (MCP)" sub="Give Claude Desktop, Claude Code, Cursor, VS Code or any MCP client access to this workspace. It can search, read, prepare meetings, forecast, check specs — and, with a write token, capture and update items.">
+      <Card title="AI assistants (MCP)" sub="Give Claude Desktop, Claude Code, Cursor, VS Code or any MCP client access to this workspace. It can search, read, prepare meetings, forecast, check specs, and, with a write token, capture and update items.">
         <div className="stack" style={{ gap: 14 }}>
-          <Snippet title="Claude Desktop — claude_desktop_config.json" code={desktop} hint="Settings → Developer → Edit config. Restart Claude Desktop afterwards. Needs Node 23.6 or newer on this machine." />
+          <Snippet title="Claude Desktop: claude_desktop_config.json" code={desktop} hint="Settings → Developer → Edit config. Restart Claude Desktop afterwards. Needs Node 23.6 or newer on this machine." />
           <Snippet title="Claude Code" code={`claude mcp add --transport http goldthread ${origin}/mcp --header "Authorization: Bearer ${tok}"`} />
           <Snippet title="Any client that speaks Streamable HTTP" code={`URL:    ${origin}/mcp\nHeader: Authorization: Bearer ${tok}`} />
           {info && <div className="small muted">Tools offered: {info.mcpTools.map((t) => <code key={t} style={{ marginRight: 6 }}>{t}</code>)}</div>}
@@ -541,11 +541,11 @@ function AiTab() {
   const [test, setTest] = useState<string | null>(null);
   useEffect(() => { if (isAdmin) api<AiConfig>('/api/admin/ai').then(setCfg).catch(errorToast); }, [isAdmin]);
 
-  const status = s.ai.enabled ? `On — ${s.ai.provider === 'anthropic' ? 'Claude' : 'OpenAI-compatible'}${s.ai.model ? ` (${s.ai.model})` : ''}` : 'Off — built-in engines only';
+  const status = s.ai.enabled ? `On: ${s.ai.provider === 'anthropic' ? 'Claude' : 'OpenAI-compatible'}${s.ai.model ? ` (${s.ai.model})` : ''}` : 'Off: built-in engines only';
   const intro = (
     <div className="small muted">
       Every analysis in Goldthread works without AI: the spec checks, forecasts, gap detection and briefs are deterministic and explainable.
-      Connecting a model adds deeper spec reviews, plain-language answers in Ask, and extraction from meeting notes. Emails, phone numbers and IBANs are masked before anything is sent, and AI only proposes — nothing is saved without your click.
+      Connecting a model adds deeper spec reviews, plain-language answers in Ask, and extraction from meeting notes. Emails, phone numbers and IBANs are masked before anything is sent, and AI only proposes: nothing is saved without your click.
     </div>
   );
   if (!isAdmin) return <Card title="AI">{intro}<div className="mt12"><b>Status:</b> {status}. An admin can change this.</div></Card>;
@@ -566,7 +566,7 @@ function AiTab() {
     setBusy(true); setTest(null);
     try {
       const r = await api<{ provider: string; model: string; reported?: string }>('/api/ai/test', { method: 'POST' });
-      setTest(`Connected — ${r.provider} answered as “${r.reported || r.model}”.`);
+      setTest(`Connected: ${r.provider} answered as “${r.reported || r.model}”.`);
     } catch (err) { setTest(`Didn't work: ${(err as Error).message}`); } finally { setBusy(false); }
   };
 
@@ -629,7 +629,7 @@ function DataTab() {
   };
   const reset = async () => {
     const what = sample === 'empty' ? 'an empty workspace' : sample === 'it' ? 'the IT sample (ServiceHub)' : 'the SaaS sample (Ledgerly)';
-    if (!confirm(`Replace everything in “${getState().auth?.current?.name}” with ${what}? This can't be undone — export first if unsure.`)) return;
+    if (!confirm(`Replace everything in “${getState().auth?.current?.name}” with ${what}? This can't be undone: export first if unsure.`)) return;
     try { await api('/api/reset', { method: 'POST', json: { sample } }); toast('Workspace reset'); } catch (err) { errorToast(err); }
   };
   const counts = ENTITIES.map((d) => ({ d, n: g.all(d.type).length })).filter((x) => x.n > 0).sort((a, b) => b.n - a.n);

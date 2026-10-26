@@ -1,4 +1,4 @@
-# Goldthread — production image. Untested here (no Docker on the build machine);
+# Goldthread: production image. Untested here (no Docker on the build machine);
 # the same production start is exercised by `npm run build && npm start`.
 #   docker build -t goldthread .
 #   docker run -p 4300:4300 -v goldthread-data:/data -e GT_PUBLIC_URL=https://goldthread.example.com goldthread

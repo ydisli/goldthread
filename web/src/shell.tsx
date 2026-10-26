@@ -111,7 +111,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
         <UserMenu onNavigate={onNavigate} />
         <div className="row small muted" style={{ padding: '2px 10px 2px', gap: 6 }}>
           <span className={`live-dot ${s.live ? 'on' : ''}`} />
-          <span className="ellipsis">{s.status === 'offline' ? 'Offline — read only' : s.live ? 'Synced' : 'Connecting…'}{s.ai.enabled ? ` · AI: ${s.ai.provider === 'anthropic' ? 'Claude' : s.ai.model ?? 'on'}` : ''}</span>
+          <span className="ellipsis">{s.status === 'offline' ? 'Offline: read only' : s.live ? 'Synced' : 'Connecting…'}{s.ai.enabled ? ` · AI: ${s.ai.provider === 'anthropic' ? 'Claude' : s.ai.model ?? 'on'}` : ''}</span>
         </div>
       </div>
     </nav>
@@ -341,7 +341,7 @@ type CaptureKind = 'evidence' | 'request' | 'interaction' | 'decision' | 'raid' 
 const CAPTURE_KINDS: { id: CaptureKind; label: string; icon: string; hint: string }[] = [
   { id: 'evidence', label: 'Signal', icon: 'quote', hint: 'A customer quote, ticket, call note or data point' },
   { id: 'request', label: 'Request', icon: 'inbox', hint: 'Something a stakeholder asked for' },
-  { id: 'interaction', label: 'Interaction', icon: 'message-square', hint: 'You just talked to someone — log it with sentiment' },
+  { id: 'interaction', label: 'Interaction', icon: 'message-square', hint: 'You just talked to someone: log it with sentiment' },
   { id: 'decision', label: 'Decision', icon: 'git-branch', hint: 'A decision that was just made' },
   { id: 'raid', label: 'Risk / issue', icon: 'triangle-alert', hint: 'Something that could go (or went) wrong' },
   { id: 'bet', label: 'Idea', icon: 'rocket', hint: 'A solution idea to explore later' },

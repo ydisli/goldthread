@@ -84,7 +84,7 @@ export const ENTITIES: EntityDef[] = [
     titleField: 'title', columns: ['title', 'horizon'],
     fields: [
       text('title', 'Product', { required: true }),
-      long('vision', 'Vision statement', { help: 'The change you want to see in the world — not the product.' }),
+      long('vision', 'Vision statement', { help: 'The change you want to see in the world, not the product.' }),
       long('targetGroup', 'Target group'),
       long('needs', 'Needs'),
       long('product', 'Product'),
@@ -94,7 +94,7 @@ export const ENTITIES: EntityDef[] = [
   },
   {
     type: 'objective', label: 'Objective', plural: 'Objectives', area: 'strategy', icon: 'goal',
-    description: 'OKR objectives — qualitative, ambitious, time-bound.',
+    description: 'OKR objectives: qualitative, ambitious, time-bound.',
     titleField: 'title', statusField: 'status', columns: ['title', 'period', 'ownerId', 'status'],
     fields: [
       text('title', 'Objective', { required: true }),
@@ -298,7 +298,7 @@ export const ENTITIES: EntityDef[] = [
   },
   {
     type: 'raci', label: 'RACI matrix', plural: 'RACI matrices', area: 'stakeholders', icon: 'grid-3x3',
-    description: 'Who is Responsible, Accountable, Consulted, Informed — validated.',
+    description: 'Who is Responsible, Accountable, Consulted, Informed: validated.',
     titleField: 'title', columns: ['title', 'scopeId'],
     fields: [
       text('title', 'Title', { required: true }),
@@ -310,7 +310,7 @@ export const ENTITIES: EntityDef[] = [
   },
   {
     type: 'approval', label: 'Approval', plural: 'Approvals', area: 'stakeholders', icon: 'clipboard-check',
-    description: 'Sign-offs on specs, baselines, decisions, releases and UAT — audit-grade.',
+    description: 'Sign-offs on specs, baselines, decisions, releases and UAT: audit-grade.',
     titleField: 'title', statusField: 'status', columns: ['title', 'subjectId', 'dueDate', 'status'],
     fields: [
       text('title', 'What needs approval', { required: true }),
@@ -330,7 +330,7 @@ export const ENTITIES: EntityDef[] = [
       refs('partyIds', 'Parties', 'stakeholder'),
       long('description', 'Description'),
       long('positions', 'Positions', { help: 'What each party says they want.' }),
-      long('interests', 'Underlying interests', { help: 'Why they want it — where agreement is possible.' }),
+      long('interests', 'Underlying interests', { help: 'Why they want it: where agreement is possible.' }),
       en('status', 'Status', ['open', 'negotiating', 'escalated', 'resolved']),
       ref('escalatedToId', 'Escalated to', 'stakeholder'),
       date('raisedAt', 'Raised'),
@@ -425,7 +425,7 @@ export const ENTITIES: EntityDef[] = [
   },
   {
     type: 'assumption', label: 'Assumption', plural: 'Assumptions', area: 'discover', icon: 'brain',
-    description: 'What must be true for a bet to work — mapped by importance and evidence.',
+    description: 'What must be true for a bet to work: mapped by importance and evidence.',
     titleField: 'title', statusField: 'status', columns: ['title', 'betId', 'category', 'importance', 'evidenceLevel', 'status'],
     fields: [
       text('title', 'Assumption', { required: true }),
@@ -507,7 +507,7 @@ export const ENTITIES: EntityDef[] = [
   // ===== Define =====
   {
     type: 'spec', label: 'Spec', plural: 'Specs', area: 'define', icon: 'file-text',
-    description: 'PRDs written in Spec Studio — linted, reviewed, traced.',
+    description: 'PRDs written in Spec Studio: linted, reviewed, traced.',
     titleField: 'title', statusField: 'status', columns: ['title', 'betId', 'status', 'ownerId'],
     fields: [
       text('title', 'Title', { required: true }),
@@ -603,7 +603,7 @@ export const ENTITIES: EntityDef[] = [
   },
   {
     type: 'decisionTable', label: 'Decision table', plural: 'Decision tables', area: 'define', icon: 'table-2',
-    description: 'Business rules as decision tables — checked for gaps and conflicts, with generated tests.',
+    description: 'Business rules as decision tables: checked for gaps and conflicts, with generated tests.',
     titleField: 'title', columns: ['title', 'requirementId', 'hitPolicy'],
     fields: [
       text('title', 'Title', { required: true }),
@@ -646,7 +646,7 @@ export const ENTITIES: EntityDef[] = [
   },
   {
     type: 'stateModel', label: 'State model', plural: 'State models', area: 'define', icon: 'circle-dot',
-    description: 'Entity lifecycles — checked for unreachable and dead-end states.',
+    description: 'Entity lifecycles: checked for unreachable and dead-end states.',
     titleField: 'title', columns: ['title'],
     fields: [
       text('title', 'Entity / lifecycle', { required: true }),
@@ -852,7 +852,7 @@ export const ENTITIES: EntityDef[] = [
   },
   {
     type: 'defect', label: 'Defect', plural: 'Defects', area: 'deliver', icon: 'shield-alert',
-    description: 'Defects with root-cause classification — requirement defects are tracked.',
+    description: 'Defects with root-cause classification: requirement defects are tracked.',
     titleField: 'title', statusField: 'status', keyPrefix: 'BUG', columns: ['key', 'title', 'severity', 'foundIn', 'rootCause', 'status'],
     fields: [
       text('title', 'Defect', { required: true }),
@@ -962,7 +962,7 @@ export function fieldOf(type: string, key: string): FieldDef | undefined {
 }
 
 export function titleOf(e: Entity | undefined | null): string {
-  if (!e) return '—';
+  if (!e) return '–';
   const d = ENTITY_MAP[e.type];
   const t = d ? e[d.titleField] : e.title;
   const s = typeof t === 'string' && t.trim() ? t : '(untitled)';
@@ -971,7 +971,7 @@ export function titleOf(e: Entity | undefined | null): string {
 
 /** Plain title without the human key. */
 export function nameOf(e: Entity | undefined | null): string {
-  if (!e) return '—';
+  if (!e) return '–';
   const d = ENTITY_MAP[e.type];
   const t = d ? e[d.titleField] : e.title;
   return typeof t === 'string' && t.trim() ? t : '(untitled)';

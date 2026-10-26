@@ -26,6 +26,6 @@ export interface ReadingPath { id: string; title: string; blurb: string; chapter
 export const PATHS: ReadingPath[] = [
   { id: 'new', title: 'New to the role', blurb: 'The whole craft, in order. Two or three chapters a week is plenty.', chapters: chaptersIn('craft').map((c) => c.id) },
   { id: 'po', title: 'Experienced Product Owner', blurb: 'Sharpen the parts POs most often skip: evidence, honest forecasts and outcomes.', chapters: ['problems-first', 'stakeholders', 'discovery', 'strategy', 'prioritisation', 'forecasting', 'outcomes', 'tour', 'stakeholders-in-goldthread', 'delivery-in-goldthread'] },
-  { id: 'ba', title: 'Experienced Business Analyst', blurb: 'From good requirements to traceable, testable, audit-ready ones — and the people side.', chapters: ['elicitation', 'requirements', 'modelling', 'specs-and-reviews', 'governance', 'relationships', 'tour', 'specs-in-goldthread', 'delivery-in-goldthread'] },
+  { id: 'ba', title: 'Experienced Business Analyst', blurb: 'From good requirements to traceable, testable, audit-ready ones, and the people side.', chapters: ['elicitation', 'requirements', 'modelling', 'specs-and-reviews', 'governance', 'relationships', 'tour', 'specs-in-goldthread', 'delivery-in-goldthread'] },
   { id: 'tool', title: 'Just show me the tool', blurb: 'Part II on its own: set up, then one chapter per area, then real-week recipes.', chapters: chaptersIn('tool').map((c) => c.id) },
 ].map((p) => ({ ...p, chapters: p.chapters.filter((id) => CHAPTER_MAP.has(id)) }));

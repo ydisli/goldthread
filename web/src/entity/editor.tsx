@@ -142,8 +142,8 @@ function EntityForm({ req, onClose }: { req: EditorRequest; onClose: () => void 
               <div key={cf.key} className="conflict-field">
                 <div className="label">{cf.label}</div>
                 <div className="conflict-options">
-                  <label className={choice[cf.key] === 'theirs' ? 'on' : ''}><input type="radio" name={`c-${cf.key}`} checked={choice[cf.key] === 'theirs'} onChange={() => setChoice({ ...choice, [cf.key]: 'theirs' })} /><span className="tiny muted">Theirs</span>{fd ? <FieldValue f={fd} value={cf.theirs} compact /> : String(cf.theirs ?? '—')}</label>
-                  <label className={choice[cf.key] === 'mine' ? 'on' : ''}><input type="radio" name={`c-${cf.key}`} checked={choice[cf.key] === 'mine'} onChange={() => setChoice({ ...choice, [cf.key]: 'mine' })} /><span className="tiny muted">Yours</span>{fd ? <FieldValue f={fd} value={cf.yours} compact /> : String(cf.yours ?? '—')}</label>
+                  <label className={choice[cf.key] === 'theirs' ? 'on' : ''}><input type="radio" name={`c-${cf.key}`} checked={choice[cf.key] === 'theirs'} onChange={() => setChoice({ ...choice, [cf.key]: 'theirs' })} /><span className="tiny muted">Theirs</span>{fd ? <FieldValue f={fd} value={cf.theirs} compact /> : String(cf.theirs ?? '–')}</label>
+                  <label className={choice[cf.key] === 'mine' ? 'on' : ''}><input type="radio" name={`c-${cf.key}`} checked={choice[cf.key] === 'mine'} onChange={() => setChoice({ ...choice, [cf.key]: 'mine' })} /><span className="tiny muted">Yours</span>{fd ? <FieldValue f={fd} value={cf.yours} compact /> : String(cf.yours ?? '–')}</label>
                 </div>
               </div>
             );

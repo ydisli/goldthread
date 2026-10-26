@@ -1,7 +1,7 @@
 import { daysBetween, fmtMoney } from '../../../core/util.ts';
 
 export function humanize(s: unknown): string {
-  if (s === undefined || s === null || s === '') return '—';
+  if (s === undefined || s === null || s === '') return '–';
   const t = String(s).replace(/[-_]/g, ' ');
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
@@ -9,7 +9,7 @@ export function humanize(s: unknown): string {
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export function fmtDate(s: string | undefined | null, opts: { year?: boolean } = {}): string {
-  if (!s) return '—';
+  if (!s) return '–';
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
   if (!m) return s;
   const thisYear = new Date().getFullYear();
@@ -35,7 +35,7 @@ export function fmtDateTime(iso: string): string {
 }
 
 export function fmtNum(n: unknown, digits = 0): string {
-  if (n === undefined || n === null || n === '' || Number.isNaN(Number(n))) return '—';
+  if (n === undefined || n === null || n === '' || Number.isNaN(Number(n))) return '–';
   const v = Number(n);
   if (Math.abs(v) >= 10000) return `${(v / 1000).toFixed(v >= 100000 ? 0 : 1)}K`;
   return v.toLocaleString(undefined, { maximumFractionDigits: digits });
@@ -44,7 +44,7 @@ export function fmtNum(n: unknown, digits = 0): string {
 export const money = fmtMoney;
 
 export function pct(n: number | undefined | null, digits = 0): string {
-  if (n === undefined || n === null || Number.isNaN(n)) return '—';
+  if (n === undefined || n === null || Number.isNaN(n)) return '–';
   return `${(n * 100).toFixed(digits)}%`;
 }
 

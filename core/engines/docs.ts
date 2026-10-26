@@ -18,7 +18,7 @@ export const DOC_KINDS: Record<DocKind, { label: string; description: string; su
 };
 
 const table = (head: string[], rows: (string | number | undefined)[][]) =>
-  rows.length ? [`| ${head.join(' | ')} |`, `| ${head.map(() => '---').join(' | ')} |`, ...rows.map((r) => `| ${r.map((c) => String(c ?? '—').replace(/\|/g, '\\|').replace(/\n/g, ' ')).join(' | ')} |`)].join('\n') : '_None._';
+  rows.length ? [`| ${head.join(' | ')} |`, `| ${head.map(() => '---').join(' | ')} |`, ...rows.map((r) => `| ${r.map((c) => String(c ?? '–').replace(/\|/g, '\\|').replace(/\n/g, ' ')).join(' | ')} |`)].join('\n') : '_None._';
 
 function evidenceFor(g: Graph, bet: Entity | undefined): Entity[] {
   if (!bet) return [];
@@ -51,17 +51,17 @@ function prd(g: Graph, spec: Entity, now: Date): string {
     `_Status: ${spec.status} · Owner: ${nameOf(g.get(spec.ownerId))} · Generated ${isoDate(now)} by Goldthread_`, '',
   ];
   if (bet) {
-    L.push('## Bet', `**${bet.title}** — ${bet.hypothesis ?? ''}`, '');
+    L.push('## Bet', `**${bet.title}**: ${bet.hypothesis ?? ''}`, '');
     L.push(`- Success metric: ${nameOf(g.get(bet.metricId))}${bet.predictedChange ? ` (predicted ${bet.predictedChange})` : ''}`);
-    L.push(`- Confidence: ${bet.confidence ?? '—'}% · Measure on ${bet.checkDate ?? '—'}`, '');
+    L.push(`- Confidence: ${bet.confidence ?? '–'}% · Measure on ${bet.checkDate ?? '–'}`, '');
   }
-  L.push('## Evidence', `${strength.count} signals from ${strength.accounts} sources (${impactText(strength.arr, strength.people)}) — evidence strength **${strength.score}/100 (${strength.verdict})**.`, '');
-  for (const e of ev.slice(0, 5)) L.push(`> "${e.title}" — ${e.account ?? e.source}${e.segment ? `, ${e.segment}` : ''}`, '');
+  L.push('## Evidence', `${strength.count} signals from ${strength.accounts} sources (${impactText(strength.arr, strength.people)}): evidence strength **${strength.score}/100 (${strength.verdict})**.`, '');
+  for (const e of ev.slice(0, 5)) L.push(`> "${e.title}": ${e.account ?? e.source}${e.segment ? `, ${e.segment}` : ''}`, '');
   L.push(spec.body ?? '', '');
   L.push('## Managed requirements', table(['Key', 'Requirement', 'Priority', 'Status'], reqs.map((r) => [r.key, r.statement ?? r.title, r.priority, r.status])), '');
   L.push('## Decisions', table(['Key', 'Decision', 'Chosen', 'Reversibility', 'Date'], decisions.map((d) => [d.key, d.title, d.chosen, d.reversibility, d.date])), '');
   const open = findings.filter((f) => f.status === 'open');
-  L.push('## Open review questions', open.length ? open.map((f) => `- **[${f.role}]** ${f.title}`).join('\n') : '_None — all review questions resolved._', '');
+  L.push('## Open review questions', open.length ? open.map((f) => `- **[${f.role}]** ${f.title}`).join('\n') : '_None: all review questions resolved._', '');
   L.push('## Approvals', table(['Approval', 'Approver', 'Status', 'Comment'], approvals.flatMap((a) => (a.approvers ?? []).map((x: any) => [a.title, nameOf(g.get(x.stakeholderId)), x.status, x.comment]))));
   return L.join('\n');
 }
@@ -80,7 +80,7 @@ function brd(g: Graph, bet: Entity, now: Date): string {
   const assumptions = g.referencing(bet.id, 'assumption', 'betId');
   const raid = g.all('raid').filter((r) => (r.relatedIds ?? []).includes(bet.id));
   const bc = g.referencing(bet.id, 'businessCase', 'betId')[0];
-  const L = [`# Business Requirements Document — ${bet.title}`, `_Generated ${isoDate(now)} by Goldthread_`, ''];
+  const L = [`# Business Requirements Document: ${bet.title}`, `_Generated ${isoDate(now)} by Goldthread_`, ''];
   L.push('## 1. Executive summary', bet.hypothesis ?? '', '');
   L.push('## 2. Business objectives');
   if (objective) L.push(`**${objective.title}** (${objective.period ?? ''})`, ...krs.map((k) => `- ${k.title}: ${k.current ?? '?'} → ${k.target ?? '?'} ${k.unit ?? ''}`));
@@ -105,9 +105,9 @@ function prfaq(g: Graph, bet: Entity): string {
   const nonGoals = specs.flatMap((s) => sectionOf(s.body, /non-goal|out of scope/i));
   const findings = specs.flatMap((s) => g.referencing(s.id, 'reviewFinding', 'specId'));
   const decisions = g.all('decision').filter((d) => (d.relatedIds ?? []).includes(bet.id));
-  const L = [`# ${bet.title}`, '_Press release (working backwards — written as if launched)_', ''];
+  const L = [`# ${bet.title}`, '_Press release (working backwards: written as if launched)_', ''];
   L.push(`**Today we launched ${bet.title}.** ${bet.hypothesis ?? ''}`, '');
-  if (quote) L.push(`> "${quote.title}" — a customer at ${quote.account ?? 'one of our accounts'}`, '');
+  if (quote) L.push(`> "${quote.title}": a customer at ${quote.account ?? 'one of our accounts'}`, '');
   L.push(`Customers can start using it today. ${bet.predictedChange ? `We expect ${bet.predictedChange}.` : ''}`, '');
   L.push('## External FAQ');
   for (const f of findings.filter((f) => ['support', 'qa', 'privacy', 'security'].includes(f.role)).slice(0, 5)) L.push(`**${f.title}**`, f.resolution ?? '_To be answered._', '');
@@ -119,11 +119,11 @@ function prfaq(g: Graph, bet: Entity): string {
 }
 
 function steering(g: Graph, now: Date): string {
-  const L = [`# Steering pack — ${isoDate(now)}`, ''];
+  const L = [`# Steering pack: ${isoDate(now)}`, ''];
   L.push('## OKRs');
   for (const o of g.all('objective')) {
-    L.push(`**${o.title}** — ${o.status}`);
-    for (const k of g.referencing(o.id, 'keyResult', 'objectiveId')) L.push(`- ${k.title}: ${k.current ?? '?'} / ${k.target ?? '?'} ${k.unit ?? ''} (confidence ${k.confidence ?? '—'}%)`);
+    L.push(`**${o.title}**: ${o.status}`);
+    for (const k of g.referencing(o.id, 'keyResult', 'objectiveId')) L.push(`- ${k.title}: ${k.current ?? '?'} / ${k.target ?? '?'} ${k.unit ?? ''} (confidence ${k.confidence ?? '–'}%)`);
   }
   L.push('', '## Roadmap');
   for (const h of ['now', 'next', 'later'] as const) {
@@ -132,7 +132,7 @@ function steering(g: Graph, now: Date): string {
       const fc = b.status === 'in-delivery' ? forecastScope(g.all('story'), b, now, { concurrent: concurrency(g.all('bet'), b) }) : null;
       return `- ${b.title} (${b.status}${fc ? `, 85%: ${fc.dates.p85}` : ''})`;
     };
-    L.push(`**${h[0].toUpperCase() + h.slice(1)}**`, ...(bets.length ? bets.map(fmt) : ['- —']));
+    L.push(`**${h[0].toUpperCase() + h.slice(1)}**`, ...(bets.length ? bets.map(fmt) : ['- None']));
   }
   const risky = g.all('commitment').filter((c) => c.status === 'open').map((c) => ({ c, r: commitmentRisk(c, g, now) })).filter((x) => x.r.level === 'high' || x.r.level === 'medium');
   L.push('', '## Promises at risk', table(['Promise', 'To', 'Due', 'Risk'], risky.map(({ c, r }) => [c.title, nameOf(g.get(c.toId)), c.dueDate, r.reason])));
@@ -141,6 +141,6 @@ function steering(g: Graph, now: Date): string {
   const approvals = g.all('approval').filter((a) => a.status === 'pending');
   L.push('', '## Decisions & approvals needed', table(['Item', 'Due'], approvals.map((a) => [a.title, a.dueDate])));
   const clusters = clusterEvidence(g.all('evidence'), now).slice(0, 3);
-  L.push('', '## What customers are telling us', ...clusters.map((c) => `- **${c.label}** — ${c.items.length} signals, ${c.accounts.length} sources, ${impactText(c.arr, c.people)} (${c.trend})`));
+  L.push('', '## What customers are telling us', ...clusters.map((c) => `- **${c.label}**: ${c.items.length} signals, ${c.accounts.length} sources, ${impactText(c.arr, c.people)} (${c.trend})`));
   return L.join('\n');
 }

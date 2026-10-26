@@ -1,8 +1,8 @@
 # Goldthread
 
-**The working notebook for Product Owners and Business Analysts — on your own, or with your team.**
+**The working notebook for Product Owners and Business Analysts: on your own, or with your team.**
 
-Goldthread keeps the chain *strategy → evidence → bet → requirement → story → release → outcome → learning* as one live graph, and wraps the people side of the job — stakeholders, approvals, promises, conflicts, communication — around it. It sits next to Jira, Azure DevOps or ServiceNow (the system of record for *work*) as the system of record for *intent* and *alignment*.
+Goldthread keeps the chain *strategy → evidence → bet → requirement → story → release → outcome → learning* as one live graph, and wraps the people side of the job (stakeholders, approvals, promises, conflicts, communication) around it. It sits next to Jira, Azure DevOps or ServiceNow (the system of record for *work*) as the system of record for *intent* and *alignment*.
 
 Every analysis runs locally on deterministic, explainable engines. Connect Claude or any OpenAI-compatible model for deeper reviews, or point your own AI assistant at it over MCP.
 
@@ -32,7 +32,7 @@ Everything described here is built and covered by tests: 113 unit and integratio
 
 ## Quick start
 
-Requires **Node.js 24 or newer** (Goldthread uses Node's native TypeScript support and built-in SQLite — no build step for the server).
+Requires **Node.js 24 or newer** (Goldthread uses Node's native TypeScript support and built-in SQLite: no build step for the server).
 
 ```bash
 npm install
@@ -41,8 +41,8 @@ npm run dev
 
 Open http://127.0.0.1:4300 and either:
 
-- **Look around as someone on the demo team** — one click on the sign-in page. The demo is **ServiceHub**, an internal IT platform (SSO, access requests, joiner–mover–leaver automation, an ITSM migration) at a fictional company, with stakeholders from the CISO to the service desk, ~360 linked items, deliberate contradictions and gaps for the checks to find, and 12 weeks of delivery history. Five accounts show the roles: Alex (product owner, owner), Jordan (business analyst, editor), Priya (engineering lead, editor), Dana (CISO, viewer) and Kim (internal audit, viewer). The shared demo password is in `server/demo.ts`.
-- **Create your own account** — pick whether you work mostly as a PO, a BA or both (this only sets your starting sidebar pins) and start from the IT sample, a SaaS sample (Ledgerly, a B2B payments product) or a blank workspace.
+- **Look around as someone on the demo team**: one click on the sign-in page. The demo is **ServiceHub**, an internal IT platform (SSO, access requests, joiner–mover–leaver automation, an ITSM migration) at a fictional company, with stakeholders from the CISO to the service desk, ~360 linked items, deliberate contradictions and gaps for the checks to find, and 12 weeks of delivery history. Five accounts show the roles: Alex (product owner, owner), Jordan (business analyst, editor), Priya (engineering lead, editor), Dana (CISO, viewer) and Kim (internal audit, viewer). The shared demo password is in `server/demo.ts`.
+- **Create your own account**: pick whether you work mostly as a PO, a BA or both (this only sets your starting sidebar pins) and start from the IT sample, a SaaS sample (Ledgerly, a B2B payments product) or a blank workspace.
 
 All sample dates are relative to today, so Home always has something to say.
 
@@ -101,23 +101,23 @@ Every chapter uses the same running example as the IT sample workspace (Ashgrove
 
 The sidebar is short on purpose: **Home**, **Inbox**, **Ask**, **Field guide**, the tools you pinned, and seven sections. Each tool opens with tabs for the rest of its section, and a one-time "how this works" panel; jargon (RACI, WSJF, salience, baselines…) is explained on hover or focus. **All tools** lists everything in plain words, with pins.
 
-**Home** — "My day": one sentence on what is waiting on you, the six most urgent things the workspace noticed (approvals waiting on you, promises at risk vs forecast, overdue touchpoints, cooling relationships, rising signal themes, untested leaps of faith, revisit-due decisions, high-exposure risks, failing UAT, measurements due — the full brief is one click away), people to reach with meeting prep, what is coming up, and a getting-started checklist for new workspaces. Inbox, Ask.
+**Home**: "My day": one sentence on what is waiting on you, the six most urgent things the workspace noticed (approvals waiting on you, promises at risk vs forecast, overdue touchpoints, cooling relationships, rising signal themes, untested leaps of faith, revisit-due decisions, high-exposure risks, failing UAT, measurements due; the full brief is one click away), people to reach with meeting prep, what is coming up, and a getting-started checklist for new workspaces. Inbox, Ask.
 
-**Strategy** — Vision board & OKRs with progress and confidence · Metric tree & tracking plan · Business cases (NPV, ROI, payback, IRR, cost of delay, CD3) · Market (capability matrix vs competitors, win/loss) · Capacity (target vs actual allocation from real throughput, tech-debt register).
+**Strategy**: Vision board & OKRs with progress and confidence · Metric tree & tracking plan · Business cases (NPV, ROI, payback, IRR, cost of delay, CD3) · Market (capability matrix vs competitors, win/loss) · Capacity (target vs actual allocation from real throughput, tech-debt register).
 
-**Stakeholders** — Registry & 360° profiles · **Meeting prep** with generated talking points · Power/interest grid · Salience model · Engagement assessment matrix (current → desired, with suggested moves) · Influence network & "path to influence" · Cadence-based touchpoints and sentiment trends · Comms plan with overdue detection · Requests board with SLA and close-the-loop · **Promise ledger checked against the Monte Carlo forecast** · RACI with validation · Audit-grade approvals · Conflicts (positions vs interests) · Alignment check on decisions, bets and releases.
+**Stakeholders**: Registry & 360° profiles · **Meeting prep** with generated talking points · Power/interest grid · Salience model · Engagement assessment matrix (current → desired, with suggested moves) · Influence network & "path to influence" · Cadence-based touchpoints and sentiment trends · Comms plan with overdue detection · Requests board with SLA and close-the-loop · **Promise ledger checked against the Monte Carlo forecast** · RACI with validation · Audit-grade approvals · Conflicts (positions vs interests) · Alignment check on decisions, bets and releases.
 
-**Discover** — Signal Hub (TF-IDF theme clustering, trends, ARR, link suggestions, CSV import) · Opportunity tree with evidence strength & loud-customer detection · Bets · Assumption map · Experiment Lab (sample size, two-proportion z-test, CI) · Personas & journey maps · Research.
+**Discover**: Signal Hub (TF-IDF theme clustering, trends, ARR, link suggestions, CSV import) · Opportunity tree with evidence strength & loud-customer detection · Bets · Assumption map · Experiment Lab (sample size, two-proportion z-test, CI) · Personas & journey maps · Research.
 
-**Define** — **Spec Studio**: live ambiguity linter with inline highlights, completeness checker, a 10-role **Review Board**, requirement extraction, contradiction detection · Requirements with versions, baselines, word-level diffs and change requests with impact · Decision log (reversibility, revisit triggers) · Decision tables (gaps, overlaps, pairwise test generation) · **Visual process modeller** — drag shapes onto horizontal or vertical swimlanes, drag steps between lanes, drag to connect, inline rename, undo/redo, tidy-up, zoom, SVG export, keyboard control, live modelling checks (no start, dead ends, unreachable steps, unlabelled decision outcomes) and as-is/to-be comparison · State models (reachability, dead ends) · Story map with drag-and-drop slicing · BA toolkit (elicitation → extraction, use cases, data dictionary with PII, gap analysis, capability map, SWOT, 5 whys/fishbone) · Glossary enforcement.
+**Define**: **Spec Studio**: live ambiguity linter with inline highlights, completeness checker, a 10-role **Review Board**, requirement extraction, contradiction detection · Requirements with versions, baselines, word-level diffs and change requests with impact · Decision log (reversibility, revisit triggers) · Decision tables (gaps, overlaps, pairwise test generation) · **Visual process modeller**: drag shapes onto horizontal or vertical swimlanes, drag steps between lanes, drag to connect, inline rename, undo/redo, tidy-up, zoom, SVG export, keyboard control, live modelling checks (no start, dead ends, unreachable steps, unlabelled decision outcomes) and as-is/to-be comparison · State models (reachability, dead ends) · Story map with drag-and-drop slicing · BA toolkit (elicitation → extraction, use cases, data dictionary with PII, gap analysis, capability map, SWOT, 5 whys/fishbone) · Glossary enforcement.
 
-**Deliver** — Backlog health (duplicates, stale, orphans, missing AC, cycles) with **live Jira Cloud / Azure DevOps sync** on a schedule (and optionally creating issues for stories written here), plus CSV import (stories, defects, resolved dates for the forecast; re-imports update by key) and export · Prioritization (RICE/WSJF + sensitivity analysis + ranking stability) · Roadmap (Now/Next/Later + timeline with forecast bands, internal/external views) · Releases (launch readiness, rollout & rollback, notes per audience) · Delivery pulse · RAID with risk heatmap · UAT & defects by root cause · Generated traceability matrix (CSV export) and impact analysis.
+**Deliver**: Backlog health (duplicates, stale, orphans, missing AC, cycles) with **live Jira Cloud / Azure DevOps sync** on a schedule (and optionally creating issues for stories written here), plus CSV import (stories, defects, resolved dates for the forecast; re-imports update by key) and export · Prioritization (RICE/WSJF + sensitivity analysis + ranking stability) · Roadmap (Now/Next/Later + timeline with forecast bands, internal/external views) · Releases (launch readiness, rollout & rollback, notes per audience) · Delivery pulse · RAID with risk heatmap · UAT & defects by root cause · Generated traceability matrix (CSV export) and impact analysis.
 
-**Learn** — Bet ledger with calibration chart and Brier score · Feature catalog with removal candidates.
+**Learn**: Bet ledger with calibration chart and Brier score · Feature catalog with removal candidates.
 
-**Meetings & docs** — Meetings (notes or imported Teams/Zoom transcripts → decisions, actions, risks) · Document generator (PRD, BRD, PR/FAQ, steering pack, release notes, audience-specific updates) as Markdown, Word or print-ready PDF · Activity trail.
+**Meetings & docs**: Meetings (notes or imported Teams/Zoom transcripts → decisions, actions, risks) · Document generator (PRD, BRD, PR/FAQ, steering pack, release notes, audience-specific updates) as Markdown, Word or print-ready PDF · Activity trail.
 
-**Settings** — Profile, persona, notifications and your data · Workspace, custom fields and item types · People & access (invites, roles, teams, reset links) · Tokens & integrations (personal access tokens, copy-paste MCP/CLI/REST setup) · Jira, ADO & more (sync, Slack, Teams, email-in) · AI provider · Data (export, import, recently deleted).
+**Settings**: Profile, persona, notifications and your data · Workspace, custom fields and item types · People & access (invites, roles, teams, reset links) · Tokens & integrations (personal access tokens, copy-paste MCP/CLI/REST setup) · Jira, ADO & more (sync, Slack, Teams, email-in) · AI provider · Data (export, import, recently deleted).
 
 Every one of the 53 item types (and any you add) also has generic create/edit/list/detail views with backlinks, comments and history, and a ⌘K palette searches everything. Press `c` anywhere for quick capture, `?` for shortcuts, and `g` then a letter to jump (`g h` Home, `g i` Inbox, `g f` Field guide…).
 
@@ -130,7 +130,7 @@ Every one of the 53 item types (and any you add) also has generic create/edit/li
 | **Web** | `npm run dev` / `npm start` |
 | **Desktop & mobile** | Installable PWA (Chrome/Edge "Install app", Safari "Add to Dock" / "Add to Home Screen"). Responsive down to 375 px with a mobile tab bar; read-only offline from the last cached workspace. |
 | **AI assistants (MCP)** | Claude Desktop, Claude Code, Cursor, VS Code or any MCP client: Streamable HTTP at `/mcp` with `Authorization: Bearer <token>`, or the stdio bridge `node mcp/stdio.ts` with `GT_URL` and `GT_TOKEN`. 17 tools: search, get/list items, daily brief, meeting prep, forecast, impact analysis, traceability gaps, spec checks, process-model checks, document generation, schema, the Field Guide (contents and chapters with quiz answers), and (with a write token) capture, create and update. **Settings → Tokens & integrations** shows ready-to-paste configs. |
-| **CLI** | `node cli/goldthread.ts help` — `capture`, `brief`, `search`, `prep "<name>"`, `import <jira-or-ado.csv>` (schedule it to keep the backlog fresh), `export`, and `lint <spec.md>` which runs fully offline and exits 1 on errors (use it in CI). Set `GT_URL` and `GT_TOKEN`. |
+| **CLI** | `node cli/goldthread.ts help`: `capture`, `brief`, `search`, `prep "<name>"`, `import <jira-or-ado.csv>` (schedule it to keep the backlog fresh), `export`, and `lint <spec.md>` which runs fully offline and exits 1 on errors (use it in CI). Set `GT_URL` and `GT_TOKEN`. |
 | **Browser extension** | Load `extension/` unpacked in Chrome/Edge; right-click selected text → *Send to Goldthread as signal / request*. Guesses the source from the site (service desk, review site, CRM…). |
 | **Slack & Teams** | Post new requests, sign-off requests, decisions and releases to a channel; capture with `/goldthread request: …` in Slack or by @mentioning an outgoing webhook in Teams. Requests are verified with Slack's signing secret or the Teams HMAC. |
 | **Email in** | Forward an email to a private inbound address (Postmark, Mailgun or similar) and it becomes a signal, request, decision or risk, matched to the sender. |
@@ -144,13 +144,13 @@ Tokens are personal: create one per tool under **Settings → Tokens & integrati
 
 Each workspace chooses its own model under **Settings → AI** (admins):
 
-- **Claude (Anthropic)** — `claude-opus-5-5` by default, structured JSON-schema outputs, server-side refusal fallbacks. Uses the key saved for the workspace, or `ANTHROPIC_API_KEY` from the server environment.
-- **OpenAI-compatible** — any `/chat/completions` endpoint: OpenAI, Azure OpenAI, OpenRouter, Mistral, Groq, or a local Ollama / LM Studio / vLLM (one-click presets). Uses JSON-schema output where supported, JSON mode otherwise.
-- **None** — every feature still works on the built-in engines.
+- **Claude (Anthropic)**: `claude-opus-5-5` by default, structured JSON-schema outputs, server-side refusal fallbacks. Uses the key saved for the workspace, or `ANTHROPIC_API_KEY` from the server environment.
+- **OpenAI-compatible**: any `/chat/completions` endpoint: OpenAI, Azure OpenAI, OpenRouter, Mistral, Groq, or a local Ollama / LM Studio / vLLM (one-click presets). Uses JSON-schema output where supported, JSON mode otherwise.
+- **None**: every feature still works on the built-in engines.
 
-This enables **deep review** in Spec Studio (the ten reviewer roles raise only questions the deterministic board didn't) and **Ask** answers with citations. Keys are encrypted at rest and never sent back to the browser; a *Test connection* button checks the setup. Emails, phone numbers and bank accounts are redacted before anything leaves the machine, and AI only proposes — nothing is written until you click.
+This enables **deep review** in Spec Studio (the ten reviewer roles raise only questions the deterministic board didn't) and **Ask** answers with citations. Keys are encrypted at rest and never sent back to the browser; a *Test connection* button checks the setup. Emails, phone numbers and bank accounts are redacted before anything leaves the machine, and AI only proposes: nothing is written until you click.
 
-Prefer your own assistant? Connect it over MCP instead (see Platforms) — it then uses your assistant's model and subscription.
+Prefer your own assistant? Connect it over MCP instead (see Platforms): it then uses your assistant's model and subscription.
 
 ---
 
@@ -164,7 +164,7 @@ server/      Node HTTP server: accounts, sessions, roles, invites, tokens (syste
 mcp/         stdio bridge for MCP clients that launch local commands
 web/         React PWA (hand-rolled design system, light/dark, charts per the data-viz palette)
 book/        The Field Guide: Markdown chapters with front matter and quiz blocks
-cli/         `goldthread` command — shares the core
+cli/         `goldthread` command: shares the core
 extension/   Chrome/Edge MV3 capture extension
 docs/        concept, build plan, self-hosting, accessibility, screenshots
 e2e/         Playwright browser tests and accessibility scans

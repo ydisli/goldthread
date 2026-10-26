@@ -23,7 +23,7 @@ const VAGUE: Record<string, string> = {
   easy: 'Define "easy": task success rate, time on task, steps.',
   easily: 'Define how ease will be verified (e.g. 90% task success in usability test).',
   simple: 'Define what makes it simple, or remove.',
-  simply: 'Usually filler — remove or make specific.',
+  simply: 'Usually filler: remove or make specific.',
   'user-friendly': 'Not testable. Specify usability criteria (task success, time, errors).',
   'user friendly': 'Not testable. Specify usability criteria (task success, time, errors).',
   intuitive: 'Not testable. Specify usability criteria.',
@@ -34,7 +34,7 @@ const VAGUE: Record<string, string> = {
   efficient: 'Quantify (time, cost, steps).',
   efficiently: 'Quantify (time, cost, steps).',
   scalable: 'State the load: users, rows, requests per second.',
-  modern: 'Not testable — describe the attribute you mean.',
+  modern: 'Not testable: describe the attribute you mean.',
   optimal: 'Define the optimisation criterion.',
   appropriate: 'Define what is appropriate in this context.',
   appropriately: 'Define what is appropriate in this context.',
@@ -47,9 +47,9 @@ const VAGUE: Record<string, string> = {
   'as appropriate': 'Define the conditions explicitly.',
   'as soon as possible': 'Give a time bound.',
   asap: 'Give a time bound.',
-  'state-of-the-art': 'Not testable — remove or specify.',
-  'best-in-class': 'Not testable — remove or specify.',
-  'world-class': 'Not testable — remove or specify.',
+  'state-of-the-art': 'Not testable: remove or specify.',
+  'best-in-class': 'Not testable: remove or specify.',
+  'world-class': 'Not testable: remove or specify.',
   'high quality': 'Specify the quality attribute and threshold.',
   lightweight: 'Quantify (bundle size, memory, steps).',
   'real-time': 'Give a latency bound (e.g. updates within 5 s).',
@@ -77,24 +77,24 @@ const UNBOUNDED: Record<string, string> = {
 };
 
 const OPEN_ENDED: Record<string, string> = {
-  etc: 'Open-ended list — enumerate all items or define the rule.',
-  'and so on': 'Open-ended list — enumerate all items.',
+  etc: 'Open-ended list: enumerate all items or define the rule.',
+  'and so on': 'Open-ended list: enumerate all items.',
   'such as': 'Is the list exhaustive? If not, define the rule.',
-  'including but not limited to': 'Open-ended — define the rule or the complete list.',
-  'and/or': 'Ambiguous — is it "and", "or", or both?',
-  'among others': 'Open-ended list — enumerate.',
+  'including but not limited to': 'Open-ended: define the rule or the complete list.',
+  'and/or': 'Ambiguous: is it "and", "or", or both?',
+  'among others': 'Open-ended list: enumerate.',
 };
 
 const WEAK_MODALS: Record<string, string> = {
   should: 'Is this mandatory? Use "must" (required) or mark MoSCoW priority explicitly.',
   may: 'Ambiguous: permission or possibility? Use "can" / "must" / "could".',
-  might: 'Speculative — decide, or move to open questions.',
+  might: 'Speculative: decide, or move to open questions.',
   could: 'Optional? Mark as a "could" with MoSCoW, or make it a must.',
 };
 
 const ABSOLUTES: Record<string, string> = {
-  always: 'Absolutes are hard to verify — confirm there are no exceptions.',
-  never: 'Absolutes are hard to verify — confirm there are no exceptions.',
+  always: 'Absolutes are hard to verify: confirm there are no exceptions.',
+  never: 'Absolutes are hard to verify: confirm there are no exceptions.',
   'all users': 'Really all? Including suspended, guests, API clients?',
   every: 'Really every? List exceptions if any.',
 };
@@ -167,11 +167,11 @@ export function lint(text: string, opts: LintOptions = {}): LintIssue[] {
     const modals = line.match(/\b(shall|must|will|should)\b/gi);
     if (modals && modals.length >= 2 && /\band\b/i.test(line)) {
       const idx = line.search(/\b(shall|must|will|should)\b/i);
-      add('compound', 'info', idx, modals[0].length, 'Compound requirement — several obligations in one statement.', 'Split into one requirement per obligation so each can be tested and traced.');
+      add('compound', 'info', idx, modals[0].length, 'Compound requirement: several obligations in one statement.', 'Split into one requirement per obligation so each can be tested and traced.');
     }
     for (const r of synonymRules) {
       for (const m of line.matchAll(r.re)) {
-        add('glossary', 'warning', m.index!, m[0].length, `"${m[0]}" — the glossary term is "${r.term}".`, `Use "${r.term}" consistently.`);
+        add('glossary', 'warning', m.index!, m[0].length, `"${m[0]}": the glossary term is "${r.term}".`, `Use "${r.term}" consistently.`);
       }
     }
   });

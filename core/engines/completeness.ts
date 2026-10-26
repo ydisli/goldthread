@@ -24,7 +24,7 @@ const CHECKS: Check[] = [
   { id: 'empty', label: 'Empty states', question: 'What does the user see when there is no data?', coverage: ['empty state', 'no results', 'nothing to', 'zero ', 'no data', 'empty'] },
   { id: 'errors', label: 'Error handling', question: 'What can fail, and what does the user see and do when it does?', coverage: ['error', 'fail', 'retry', 'timeout', 'unavailable'] },
   { id: 'loading', label: 'Loading & progress', question: 'How is progress shown for slow operations?', coverage: ['loading', 'progress', 'spinner', 'skeleton', 'background', 'async'] },
-  { id: 'a11y', label: 'Accessibility', question: 'Keyboard, screen reader, contrast, focus — which WCAG level?', coverage: ['accessib', 'screen reader', 'keyboard', 'wcag', 'contrast', 'aria'] },
+  { id: 'a11y', label: 'Accessibility', question: 'Keyboard, screen reader, contrast, focus: which WCAG level?', coverage: ['accessib', 'screen reader', 'keyboard', 'wcag', 'contrast', 'aria'] },
   { id: 'analytics', label: 'Analytics events', question: 'Which events/properties do we track to measure the success metric?', coverage: ['track', 'event', 'analytics', 'instrument', 'telemetry'] },
   { id: 'rollout', label: 'Rollout & rollback', question: 'Feature flag? Who gets it first? When do we roll back?', coverage: ['feature flag', 'flag', 'rollout', 'roll out', 'rollback', 'roll back', 'beta', 'phased', 'cohort'] },
   { id: 'open-questions', label: 'Open questions', question: 'Are open questions listed with an owner?', coverage: ['open question', 'questions'] },

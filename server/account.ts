@@ -43,7 +43,7 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
     };
   });
 
-  /** "Forgot password?" — only when email is set up. The answer never reveals whether an account exists. */
+  /** "Forgot password?": only when email is set up. The answer never reveals whether an account exists. */
   r.add('POST', '/api/auth/forgot', 'none', async (ctx) => {
     if (!mailEnabled()) throw new HttpError(404, 'Email isn\'t set up on this server. Ask an admin for a password reset link.');
     const email = normalizeEmail((await ctx.body())?.email);

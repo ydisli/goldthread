@@ -49,9 +49,9 @@ test('Zoom WebVTT and SubRip become speaker lines that extraction understands', 
 
 test('Teams .docx transcripts: header lines name the speaker', () => {
   const p = (t: string) => `<w:p><w:r><w:t xml:space="preserve">${t}</w:t></w:r></w:p>`;
-  const xml = `<w:document><w:body>${p('Steering — transcript')}${p('Alex Rivera   0:03')}${p('We agreed to defer contractors.')}${p('Dana Whitfield   1:12')}${p('Fine, if audit is told.')}${p('Dana Whitfield   1:20')}${p('Action: I&apos;ll tell Kim.')}</w:body></w:document>`;
-  assert.deepEqual(docxParagraphs(xml).slice(0, 2), ['Steering — transcript', 'Alex Rivera   0:03']);
-  assert.equal(parseDocxTranscript(xml), "Steering — transcript\nAlex Rivera: We agreed to defer contractors.\nDana Whitfield: Fine, if audit is told. Action: I'll tell Kim.");
+  const xml = `<w:document><w:body>${p('Steering: transcript')}${p('Alex Rivera   0:03')}${p('We agreed to defer contractors.')}${p('Dana Whitfield   1:12')}${p('Fine, if audit is told.')}${p('Dana Whitfield   1:20')}${p('Action: I&apos;ll tell Kim.')}</w:body></w:document>`;
+  assert.deepEqual(docxParagraphs(xml).slice(0, 2), ['Steering: transcript', 'Alex Rivera   0:03']);
+  assert.equal(parseDocxTranscript(xml), "Steering: transcript\nAlex Rivera: We agreed to defer contractors.\nDana Whitfield: Fine, if audit is told. Action: I'll tell Kim.");
 });
 
 test('reading word/document.xml out of a compressed .docx', async () => {

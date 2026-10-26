@@ -1,6 +1,6 @@
 node_modules/
 web/dist/
-# Accounts, workspaces and the key that encrypts stored AI keys — never commit.
+# Accounts, workspaces and the key that encrypts stored AI keys, never commit.
 data/
 .DS_Store
 *.log

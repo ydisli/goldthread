@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Goldthread CLI — capture, brief, search, prep and spec linting from the terminal.
+// Goldthread CLI: capture, brief, search, prep and spec linting from the terminal.
 // Uses the same platform-agnostic core as the web app; `goldthread lint` runs fully offline.
 
 import { readFileSync } from 'node:fs';
@@ -48,7 +48,7 @@ async function call<T>(path: string, init: { method?: string; body?: unknown } =
   return json as T;
 }
 
-const HELP = `${bold('goldthread')} — Goldthread from the terminal
+const HELP = `${bold('goldthread')}: Goldthread from the terminal
 
 ${bold('Usage')}
   goldthread capture "<text>" [--kind evidence|request|interaction|decision] [--account Halcyon Foods]
@@ -91,7 +91,7 @@ async function main() {
     case 'brief': {
       const items = await call<{ severity: string; title: string; detail?: string; area: string }[]>('/api/brief');
       const shown = flags.all ? items : items.filter((i) => i.severity === 'critical' || i.severity === 'high');
-      console.log(bold(`Today — ${shown.length} of ${items.length} items${flags.all ? '' : ' (critical & high; --all for everything)'}`));
+      console.log(bold(`Today: ${shown.length} of ${items.length} items${flags.all ? '' : ' (critical & high; --all for everything)'}`));
       for (const i of shown) {
         const tag = i.severity === 'critical' ? red('CRIT') : i.severity === 'high' ? yellow('HIGH') : i.severity === 'medium' ? cyan(' MED') : dim(' LOW');
         console.log(`${tag}  ${i.title}`);
@@ -119,7 +119,7 @@ async function main() {
       if (b.concerns.length) console.log(`\n${bold('Concerns')}\n${b.concerns.map((x) => `  · ${x}`).join('\n')}`);
       console.log(`\n${bold('Talking points')}`);
       for (const t of b.talkingPoints) console.log(`  [ ] ${t.text}`);
-      if (!b.talkingPoints.length) console.log(dim('  Nothing pending — use the time to build the relationship.'));
+      if (!b.talkingPoints.length) console.log(dim('  Nothing pending: use the time to build the relationship.'));
       return;
     }
     case 'lint': {
@@ -137,12 +137,12 @@ async function main() {
         console.log(bold(`${file}: clarity ${summary.score}/100 · completeness ${comp}% · ${summary.errors} errors, ${summary.warnings} warnings`));
         for (const i of issues.filter((x) => x.severity !== 'info')) {
           const tag = i.severity === 'error' ? red('error  ') : yellow('warning');
-          console.log(`  ${dim(`${file}:${i.line}`)} ${tag} ${RULE_LABELS[i.rule] ?? i.rule}: ${i.message}${i.suggestion ? dim(` — ${i.suggestion}`) : ''}`);
+          console.log(`  ${dim(`${file}:${i.line}`)} ${tag} ${RULE_LABELS[i.rule] ?? i.rule}: ${i.message}${i.suggestion ? dim(`: ${i.suggestion}`) : ''}`);
         }
         const missing = items.filter((i) => i.relevant && !i.covered);
         if (missing.length) {
           console.log(bold('\n  Missing topics'));
-          for (const m of missing) console.log(`  · ${m.label} — ${dim(m.question)}`);
+          for (const m of missing) console.log(`  · ${m.label}: ${dim(m.question)}`);
         }
         if (review.length) {
           console.log(bold('\n  Review board'));
@@ -163,7 +163,7 @@ async function main() {
       console.log(`${bold(source)} export: ${green(`${plan.creates.length} new`)}, ${plan.updates.length} updates${plan.defects.length && !flags['no-bugs'] ? `, ${yellow(`${plan.defects.length} defects`)}` : ''}`);
       for (const s of plan.skipped) console.log(dim(`  skipped ${s.count}: ${s.reason}`));
       for (const w of plan.warnings) console.log(yellow(`  ! ${w}`));
-      if (flags['dry-run']) { console.log(dim('Dry run — nothing written.')); return; }
+      if (flags['dry-run']) { console.log(dim('Dry run: nothing written.')); return; }
       const ops = [
         ...plan.creates.map((data) => ({ op: 'create', type: 'story', data })),
         ...plan.updates.map((u) => ({ op: 'update', id: u.id, data: u.data })),

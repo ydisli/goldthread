@@ -60,7 +60,7 @@ export function App() {
           <span className="ws-name" style={{ flex: 1 }}>{s.auth?.current?.name ?? 'Goldthread'}</span>
         </header>
         <main id="main" tabIndex={-1}>
-          {s.status === 'offline' && <div className="banner">You're offline. Showing the last copy of this workspace — changes are paused until the server is back.</div>}
+          {s.status === 'offline' && <div className="banner">You're offline. Showing the last copy of this workspace: changes are paused until the server is back.</div>}
           {s.status === 'loading' && <div className="page"><Empty icon="clock">Opening workspace…</Empty></div>}
           {s.status === 'error' && <div className="page"><Empty icon="circle-alert">Could not reach the Goldthread server: {s.error}. Is <code>npm run dev</code> running?</Empty></div>}
           {noWorkspace && <NoWorkspace />}

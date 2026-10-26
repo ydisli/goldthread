@@ -57,7 +57,7 @@ export function extractFromNotes(notes: string, people: Entity[] = [], now = new
   const out: Extracted = { decisions: [], actions: [], risks: [], requirements: [], questions: [] };
   for (const raw of notes.split('\n')) {
     let line = raw.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, '').replace(/^\[\d{1,2}:\d{2}(?::\d{2})?\]\s*/, '').trim();
-    // Transcript lines look like "Speaker Name: text" — drop the speaker label.
+    // Transcript lines look like "Speaker Name: text": drop the speaker label.
     const speaker = /^([A-Z][\w .'-]{1,30}):\s+(.+)$/.exec(line);
     if (speaker && !KEYWORD_PREFIX.test(speaker[1].trim())) line = speaker[2].trim();
     if (!line) continue;
