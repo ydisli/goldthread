@@ -76,11 +76,24 @@ const set = (patch: Partial<State>) => { state = { ...state, ...patch, version: 
 export class ApiError extends Error {
   readonly status: number;
   readonly errors?: string[];
-  constructor(status: number, message: string, errors?: string[]) {
+  readonly data?: any;
+  constructor(status: number, message: string, errors?: string[], data?: any) {
     super(message);
     this.status = status;
     this.errors = errors;
+    this.data = data;
   }
+}
+
+/** Someone else changed fields you were editing; nothing was saved. */
+export interface Conflict {
+  by: string;
+  current: Entity;
+  fields: { key: string; label: string; theirs: unknown; yours: unknown }[];
+}
+
+export function conflictOf(err: unknown): Conflict | null {
+  return err instanceof ApiError && err.status === 409 && err.data?.conflict ? (err.data.conflict as Conflict) : null;
 }
 
 const WS_KEY = 'tl.workspace';
@@ -100,7 +113,7 @@ export async function api<T = any>(path: string, init: RequestInit & { json?: un
   if (res.status === 401 && !path.startsWith('/api/auth/') && !path.startsWith('/api/invites/')) {
     void boot();
   }
-  if (!res.ok) throw new ApiError(res.status, body?.error ?? res.statusText, body?.errors);
+  if (!res.ok) throw new ApiError(res.status, body?.error ?? res.statusText, body?.errors, body);
   return body as T;
 }
 
@@ -264,8 +277,13 @@ export async function createEntity(type: string, data: Record<string, unknown>):
   return e;
 }
 
-export async function updateEntity(id: string, patch: Record<string, unknown>): Promise<Entity> {
-  const e = await api<Entity>(`/api/entities/${encodeURIComponent(id)}`, { method: 'PATCH', json: patch });
+/**
+ * Save changes. Pass `prev` (the values you started from, for the fields you changed) to be
+ * told about a conflicting edit instead of overwriting it: the call then fails with a Conflict.
+ */
+export async function updateEntity(id: string, patch: Record<string, unknown>, opts: { prev?: Record<string, unknown> } = {}): Promise<Entity> {
+  const json = opts.prev ? { ...patch, $prev: opts.prev } : patch;
+  const e = await api<Entity>(`/api/entities/${encodeURIComponent(id)}`, { method: 'PATCH', json });
   upsert([e]);
   return e;
 }

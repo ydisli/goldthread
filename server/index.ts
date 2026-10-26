@@ -112,7 +112,7 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, url: URL) {
   } catch (err) {
     if (res.headersSent) return;
     if (err instanceof ValidationError) return send(res, 422, { error: err.message, errors: err.errors }, cors);
-    if (err instanceof HttpError) return send(res, err.status, { error: err.message }, cors);
+    if (err instanceof HttpError) return send(res, err.status, { error: err.message, ...(err.data ?? {}) }, cors);
     const msg = (err as Error).message ?? 'Server error';
     // Store-level problems with user input (e.g. duplicate email) surface as 422.
     if (/already exists|valid email|Unknown type|Not found:/.test(msg)) return send(res, 422, { error: msg }, cors);

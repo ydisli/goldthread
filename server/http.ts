@@ -5,9 +5,12 @@ import type { Role, User, Workspace } from './system.ts';
 /** An error that the router turns into an HTTP status + JSON message. */
 export class HttpError extends Error {
   readonly status: number;
-  constructor(status: number, message: string) {
+  /** Extra fields for the JSON body (e.g. the details of an edit conflict). */
+  readonly data?: Record<string, unknown>;
+  constructor(status: number, message: string, data?: Record<string, unknown>) {
     super(message);
     this.status = status;
+    this.data = data;
   }
 }
 

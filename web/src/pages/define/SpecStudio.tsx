@@ -15,6 +15,7 @@ import { EntityTable, EntityHeader } from '../../entity/views.tsx';
 import { RefChip } from '../../entity/fields.tsx';
 import { openEditor } from '../../entity/editor.tsx';
 import { hrefOf } from '../../entity/links.ts';
+import { mergedMessage, saveText } from '../../entity/autosave.ts';
 
 export function SpecsPage() {
   const g = useGraph();
@@ -74,6 +75,8 @@ export function SpecPage({ id }: { id: string }) {
   const [focus, setFocus] = useState<LintIssue | null>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
   const lastRemote = useRef(spec?.body ?? '');
+  const bodyRef = useRef(body);
+  bodyRef.current = body;
 
   // Pick up remote edits (another tab/device) when we have no local changes.
   useEffect(() => {
@@ -85,7 +88,15 @@ export function SpecPage({ id }: { id: string }) {
     setSaved('dirty');
     const t = setTimeout(async () => {
       setSaved('saving');
-      try { lastRemote.current = body; await updateEntity(spec.id, { body }); setSaved('saved'); } catch (err) { errorToast(err); setSaved('dirty'); }
+      try {
+        const r = await saveText(spec.id, 'body', lastRemote.current, body);
+        lastRemote.current = r.saved;
+        if (r.merged) {
+          if (bodyRef.current === body) setBody(r.saved);
+          toast(mergedMessage(r.merged, 'spec'), r.merged.conflicts ? 'error' : 'info');
+        }
+        setSaved(bodyRef.current === body || bodyRef.current === r.saved ? 'saved' : 'dirty');
+      } catch (err) { errorToast(err); setSaved('dirty'); }
     }, 900);
     return () => clearTimeout(t);
   }, [body]); // eslint-disable-line react-hooks/exhaustive-deps

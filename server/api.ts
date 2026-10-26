@@ -60,8 +60,26 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
     return e;
   });
 
+  /**
+   * `$prev` (optional) holds the values the client last saw for the fields it is changing.
+   * If someone else changed one of those fields since, nothing is saved and the conflict is returned.
+   */
   r.add('PATCH', '/api/entities/:id', 'editor', async (ctx) => {
-    const e = ctx.ws.store.update(ctx.params.id, await ctx.body(), actorOf(ctx));
+    const { $prev, ...patch } = (await ctx.body()) ?? {};
+    if ($prev && typeof $prev === 'object') {
+      const cur = ctx.ws.store.get(ctx.params.id);
+      if (!cur) throw new HttpError(404, 'Not found');
+      const same = (a: unknown, b: unknown) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+      const clashing = Object.keys($prev).filter((k) => k in patch && !same(cur[k], $prev[k]) && !same(cur[k], patch[k]));
+      if (clashing.length) {
+        const by = ctx.ws.store.activity({ entityId: cur.id, limit: 1 })[0]?.actor ?? 'Someone';
+        const def = ENTITY_MAP[cur.type];
+        throw new HttpError(409, `${by} changed ${clashing.length === 1 ? 'a field' : 'some fields'} you were editing.`, {
+          conflict: { by, current: cur, fields: clashing.map((k) => ({ key: k, label: def?.fields.find((f) => f.key === k)?.label ?? k, theirs: cur[k] ?? null, yours: patch[k] ?? null })) },
+        });
+      }
+    }
+    const e = ctx.ws.store.update(ctx.params.id, patch, actorOf(ctx));
     broadcast(wsId(ctx), [{ op: 'upsert', entity: e }]);
     return e;
   });

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import type { Entity } from '../../../../core/schema.ts';
 import { checkProcess, freeSlot, placeSteps, processMetrics, tidy, type Step, type StepKind } from '../../../../core/engines/process.ts';
-import { updateEntity, useCan, useEntity, useGraph } from '../../store.ts';
+import { conflictOf, updateEntity, useCan, useEntity, useGraph } from '../../store.ts';
+import { mergeById, mergeList } from '../../../../core/engines/merge.ts';
 import { Link } from '../../router.tsx';
-import { Card, PageHead, Seg, downloadFile, errorToast } from '../../ui/kit.tsx';
+import { Card, PageHead, Seg, downloadFile, errorToast, toast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { ToolGuide } from '../../ui/guide.tsx';
 import { EntityPage, EntityTable } from '../../entity/views.tsx';
@@ -198,22 +199,47 @@ function ProcessCanvas({ pm }: { pm: Entity }) {
   const modelRef = useRef(model);
   modelRef.current = model;
 
+  // The model as the server last had it: the base for merging with someone else's edits.
+  const remote = useRef<Model>({ lanes: pm.lanes ?? [], steps: pm.steps ?? [] });
+
   // Follow changes made elsewhere (another person, the list editor) unless we have unsaved edits.
   useEffect(() => {
-    if (!dirty.current) setModel({ lanes: pm.lanes ?? [], steps: pm.steps ?? [] });
+    if (!dirty.current) { setModel({ lanes: pm.lanes ?? [], steps: pm.steps ?? [] }); remote.current = { lanes: pm.lanes ?? [], steps: pm.steps ?? [] }; }
   }, [pm.lanes, pm.steps]);
-  useEffect(() => () => {
-    if (timer.current) { clearTimeout(timer.current); if (dirty.current) void updateEntity(pm.id, modelRef.current as unknown as Record<string, unknown>); }
+
+  /** Save; if someone else changed the model meanwhile, merge step by step instead of overwriting. */
+  const persist = useCallback(async (next: Model) => {
+    const base = remote.current;
+    try {
+      await updateEntity(pm.id, { lanes: next.lanes, steps: next.steps }, { prev: { lanes: base.lanes, steps: base.steps } });
+      remote.current = next;
+    } catch (err) {
+      const c = conflictOf(err);
+      if (!c) throw err;
+      const theirs: Model = { lanes: c.current.lanes ?? [], steps: c.current.steps ?? [] };
+      const steps = mergeById(base.steps, next.steps, theirs.steps);
+      const merged: Model = { lanes: mergeList(base.lanes, next.lanes, theirs.lanes), steps: steps.items };
+      await updateEntity(pm.id, { lanes: merged.lanes, steps: merged.steps }, { prev: { lanes: theirs.lanes, steps: theirs.steps } });
+      remote.current = merged;
+      if (modelRef.current === next) setModel(merged);
+      toast(steps.conflicts
+        ? `Merged with ${c.by}'s changes. You both changed ${steps.conflicts === 1 ? 'one step' : `${steps.conflicts} steps`}; your version was kept.`
+        : `Merged with ${c.by}'s changes to this model.`);
+    }
   }, [pm.id]);
+
+  useEffect(() => () => {
+    if (timer.current) { clearTimeout(timer.current); if (dirty.current) void persist(modelRef.current).catch(() => {}); }
+  }, [pm.id, persist]);
 
   const save = useCallback((next: Model) => {
     dirty.current = true;
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => {
       timer.current = null;
-      updateEntity(pm.id, { lanes: next.lanes, steps: next.steps }).then(() => { if (!timer.current) dirty.current = false; }).catch(errorToast);
+      persist(next).then(() => { if (!timer.current) dirty.current = false; }).catch(errorToast);
     }, 450);
-  }, [pm.id]);
+  }, [persist]);
 
   const commit = useCallback((next: Model) => {
     if (!editable) return;

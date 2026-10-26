@@ -14,6 +14,7 @@ import { EntityPicker, RefChip } from '../../entity/fields.tsx';
 import { openEditor } from '../../entity/editor.tsx';
 import { hrefOf } from '../../entity/links.ts';
 import { ExtractPanel } from '../define/Toolkit.tsx';
+import { mergedMessage, saveText } from '../../entity/autosave.ts';
 
 // ---------------- Meetings ----------------
 
@@ -53,14 +54,31 @@ export function MeetingPage({ id }: { id: string }) {
   const [notes, setNotes] = useState(m?.notes ?? '');
   const [newAction, setNewAction] = useState('');
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => { setNotes(m?.notes ?? ''); }, [m?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The notes as last saved or received, so two people taking notes merge instead of overwriting.
+  const saved = useRef(m?.notes ?? '');
+  const latest = useRef(notes);
+  latest.current = notes;
+  useEffect(() => { setNotes(m?.notes ?? ''); saved.current = m?.notes ?? ''; }, [m?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Follow someone else's notes when we have nothing unsaved.
+  useEffect(() => {
+    if (m && (m.notes ?? '') !== saved.current && latest.current === saved.current) { setNotes(m.notes ?? ''); saved.current = m.notes ?? ''; }
+  }, [m?.notes]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!m) return <div className="page"><Empty>Meeting not found.</Empty></div>;
   const actions = (m.actions ?? []) as { id: string; text: string; ownerId?: string; due?: string; done: boolean }[];
   const saveActions = (next: typeof actions) => updateEntity(m.id, { actions: next }).catch(errorToast);
   const onNotes = (v: string) => {
     setNotes(v);
     clearTimeout(timer.current);
-    timer.current = setTimeout(() => updateEntity(m.id, { notes: v }).catch(errorToast), 800);
+    timer.current = setTimeout(async () => {
+      try {
+        const r = await saveText(m.id, 'notes', saved.current, v);
+        saved.current = r.saved;
+        if (r.merged) {
+          if (latest.current === v) setNotes(r.saved);
+          toast(mergedMessage(r.merged, 'notes'), r.merged.conflicts ? 'error' : 'info');
+        }
+      } catch (err) { errorToast(err); }
+    }, 800);
   };
   return (
     <div className="page">
