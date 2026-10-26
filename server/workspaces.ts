@@ -47,6 +47,8 @@ export class Workspaces {
   /** Replace a workspace's content with the sample or nothing. */
   fill(store: Store, sample: Sample, name: string, people: SeedPeople) {
     store.clear();
+    // Custom fields and types describe the old content, so they go with it.
+    store.setSettings({ custom: {} });
     if (sample === 'it') seedWorkspace(store, new Date(), people);
     else if (sample === 'saas') seedPaymentsWorkspace(store, new Date(), people);
     else store.setSettings({ workspaceName: name, productName: name, currency: '$' });

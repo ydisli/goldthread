@@ -647,7 +647,7 @@ function DataTab() {
           <Row label="Replace contents with">
             <Seg options={[{ id: 'it', label: 'IT sample' }, { id: 'saas', label: 'SaaS sample' }, { id: 'empty', label: 'Empty' }]} value={sample} onChange={setSample} />
           </Row>
-          <div className="row mt12"><span className="small muted grow">Members and their access stay as they are.</span><button className="btn btn-danger" onClick={reset}>Replace…</button></div>
+          <div className="row mt12"><span className="small muted grow">Members, their access and integrations stay as they are. Custom fields and item types are removed with the content.</span><button className="btn btn-danger" onClick={reset}>Replace…</button></div>
         </Card>
       )}
       {canExport && <RecentlyDeleted />}

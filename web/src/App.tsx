@@ -23,13 +23,15 @@ export function App() {
   const firstPage = useRef(true);
   useEffect(() => {
     if (s.status !== 'ready' && s.status !== 'offline') return;
-    const id = requestAnimationFrame(() => {
+    // A timer rather than requestAnimationFrame, so tabs opened in the background get their titles too.
+    const id = setTimeout(() => {
       const h1 = document.querySelector<HTMLElement>('main h1');
-      document.title = h1?.textContent ? `${h1.textContent} · Throughline` : 'Throughline';
+      const name = path === '/' || path === '/today' ? 'Home' : h1?.textContent;
+      document.title = name ? `${name} · Throughline` : 'Throughline';
       if (firstPage.current) { firstPage.current = false; return; }
       if (h1 && !document.querySelector('.drawer, [role="dialog"]')) { h1.tabIndex = -1; h1.focus({ preventScroll: true }); }
-    });
-    return () => cancelAnimationFrame(id);
+    }, 30);
+    return () => clearTimeout(id);
   }, [path, s.status]);
 
   // Invite links work whether or not you are signed in.

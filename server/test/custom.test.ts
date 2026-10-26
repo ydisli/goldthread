@@ -56,5 +56,10 @@ test('custom fields and item types: settings, validation on every write path', a
     // Removing a field hides it but keeps the value on the item.
     await h.call('PATCH', '/api/settings', { ...as, body: { custom: { fields: {}, types: set.body.custom.types } } });
     assert.equal(h.ws.store(w.id).get(ok.body.id)?.cf_vendor, 'Okta');
+
+    // Starting over removes the customisation along with the content it described.
+    const reset = await h.call('POST', '/api/reset', { ...as, body: { sample: 'empty' } });
+    assert.equal(reset.status, 200);
+    assert.deepEqual(h.ws.store(w.id).settings().custom, {});
   } finally { h.done(); }
 });
