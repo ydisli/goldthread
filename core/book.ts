@@ -122,3 +122,26 @@ export function checkBook(chapters: Chapter[], knownTools: string[]): BookCheck[
   }
   return out;
 }
+
+const CALLOUT_LABEL: Record<string, string> = { tip: 'Tip', trap: 'Common trap', example: 'Example', try: 'Try it in Throughline', note: 'Note', exercise: 'Exercise' };
+
+/**
+ * A chapter as self-contained Markdown for exporting (Word, print): title and summary on top,
+ * callouts labelled, links to tools and chapters as plain text, quizzes with their answers.
+ */
+export function chapterMarkdown(c: Chapter, label?: string): string {
+  let n = 0;
+  const body = c.body
+    .replace(/```quiz\n([\s\S]*?)```/g, (_, q: string) => {
+      const quiz = parseQuiz(q);
+      if (!quiz) return '';
+      n++;
+      const right = quiz.options.find((o) => o.correct)?.text ?? '';
+      return `**${n}. ${quiz.question}**\n\n${quiz.options.map((o, i) => `- ${String.fromCharCode(65 + i)}. ${o.text}`).join('\n')}\n\n*Answer: ${right}. ${quiz.why}*\n`;
+    })
+    .replace(/^>\s?\[!(\w+)\]\s*(.*)$/gm, (_, kind: string, title: string) => `> **${title.trim() || CALLOUT_LABEL[kind.toLowerCase()] || 'Note'}**`)
+    .replace(/\]\((?:tool|guide):[\w-]+\)/g, ']');
+  // "[Process models]" left over from a tool link reads fine as plain words.
+  const cleaned = body.replace(/\[([^\]]+)\](?!\()/g, '$1');
+  return `# ${label ? `${label}: ` : ''}${c.title}\n\n${c.summary ? `*${c.summary}*\n\n` : ''}${cleaned.trim()}\n`;
+}

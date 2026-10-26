@@ -20,6 +20,11 @@ export class Workspaces {
     mkdirSync(this.dir, { recursive: true });
   }
 
+  /** Where a workspace's uploaded files live (one file per attachment, named by its file id). */
+  filesDir(workspaceId: string): string {
+    return join(this.dir, '..', 'files', workspaceId);
+  }
+
   store(workspaceId: string): Store {
     let s = this.stores.get(workspaceId);
     if (!s) {
@@ -73,6 +78,7 @@ export class Workspaces {
     this.stores.delete(ws.id);
     const file = join(this.dir, `${ws.id}.db`);
     for (const suffix of ['', '-wal', '-shm']) rmSync(file + suffix, { force: true });
+    rmSync(this.filesDir(ws.id), { recursive: true, force: true });
   }
 
   /** Archive: the workspace disappears for everyone; the data file is kept. */

@@ -9,12 +9,13 @@ import { Link, setQuery, useRoute } from '../../router.tsx';
 import { Avatar, Badge, Card, Empty, Markdown, PageHead, Seg, copyText, downloadFile, errorToast, toast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { fmtDate, humanize, relDays } from '../../ui/format.ts';
-import { ActivityFeed, EntityHeader, Backlinks, Comments } from '../../entity/views.tsx';
+import { ActivityFeed, Attachments, EntityHeader, Backlinks, Comments } from '../../entity/views.tsx';
 import { EntityPicker, RefChip } from '../../entity/fields.tsx';
 import { openEditor } from '../../entity/editor.tsx';
 import { hrefOf } from '../../entity/links.ts';
 import { ExtractPanel } from '../define/Toolkit.tsx';
 import { mergedMessage, saveText } from '../../entity/autosave.ts';
+import { downloadDocx, printMarkdown } from '../../ui/export.ts';
 
 // ---------------- Meetings ----------------
 
@@ -113,6 +114,7 @@ export function MeetingPage({ id }: { id: string }) {
             })}</div>
           </Card>
           <Backlinks id={m.id} />
+          <Attachments entityId={m.id} />
           <Comments entityId={m.id} />
         </div>
       </div>
@@ -130,6 +132,7 @@ export function DocsPage() {
   const audience = (query.get('audience') ?? 'exec') as Audience;
   const info = DOC_KINDS[kind];
   const doc = useMemo(() => generateDoc(kind, g, subjectId || undefined, now(), { audience }), [g, kind, subjectId, audience]);
+  const docTitle = `${DOC_KINDS[kind].label}${g.get(subjectId) ? ` — ${nameOf(g.get(subjectId))}` : ''}`;
   const fileName = `${kind}-${(nameOf(g.get(subjectId)) || 'workspace').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.md`;
   return (
     <div className="page">
@@ -156,6 +159,8 @@ export function DocsPage() {
         <Card title={info.label} icon="file-text" actions={<>
           <button className="btn btn-sm" onClick={() => copyText(doc, 'Markdown copied')}><Icon name="copy" size={13} />Copy</button>
           <button className="btn btn-sm" onClick={() => downloadFile(fileName, doc)}><Icon name="download" size={13} />.md</button>
+          <button className="btn btn-sm" onClick={() => downloadDocx(docTitle, doc)}><Icon name="download" size={13} />Word</button>
+          <button className="btn btn-sm" onClick={() => printMarkdown(docTitle, doc)}><Icon name="file-text" size={13} />Print / PDF</button>
           <button className="btn btn-sm" onClick={() => window.print()}><Icon name="file-text" size={13} />Print / PDF</button>
         </>}>
           <Markdown text={doc} />

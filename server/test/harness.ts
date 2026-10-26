@@ -8,6 +8,7 @@ import { apiRoutes } from '../api.ts';
 import { aiRoutes } from '../ai.ts';
 import { oidcRoutes } from '../oidc.ts';
 import { integrationRoutes } from '../integrations.ts';
+import { fileRoutes } from '../files.ts';
 import { authenticate } from '../auth.ts';
 import { HttpError, Router, type Ctx } from '../http.ts';
 
@@ -22,6 +23,7 @@ export function harness() {
   aiRoutes(router, sys);
   oidcRoutes(router, sys, ws);
   integrationRoutes(router, sys, ws);
+  fileRoutes(router, ws);
   const call = async (method: string, path: string, opts: { session?: string; workspace?: string; body?: unknown } = {}) => {
     const url = new URL(`http://localhost${path}`);
     const hit = router.match(method, url.pathname);

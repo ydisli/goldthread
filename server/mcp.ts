@@ -24,7 +24,7 @@ import { loadBook } from './book.ts';
 // can connect with a personal API token and work with the workspace.
 
 const SUPPORTED = ['2025-06-18', '2025-03-26', '2024-11-05'];
-const TYPES = ENTITIES.map((d) => d.type).filter((t) => t !== 'comment');
+const TYPES = ENTITIES.map((d) => d.type).filter((t) => t !== 'comment' && t !== 'attachment');
 
 interface Tool {
   name: string;
@@ -67,7 +67,7 @@ const TOOLS: Tool[] = [
         if (v === undefined || v === null || v === '' || (Array.isArray(v) && !v.length)) continue;
         fields[f.label] = f.kind === 'ref' ? titleOf(g.get(v)) : f.kind === 'refs' ? (v as string[]).map((id) => titleOf(g.get(id))) : v;
       }
-      return { ...brief(e), kind: def.label, fields, linkedFrom: g.linksTo(e.id).filter((l) => l.from.type !== 'comment').slice(0, 40).map((l) => ({ ...brief(l.from), via: l.field.label })) };
+      return { ...brief(e), kind: def.label, fields, linkedFrom: g.linksTo(e.id).filter((l) => l.from.type !== 'comment' && l.from.type !== 'attachment').slice(0, 40).map((l) => ({ ...brief(l.from), via: l.field.label })) };
     },
   },
   {

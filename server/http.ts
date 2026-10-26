@@ -35,6 +35,18 @@ export async function readBody(req: IncomingMessage, limit = 20 * 1024 * 1024): 
   }
 }
 
+/** The raw request body (uploads), refusing anything over `limit` bytes. */
+export async function readRaw(req: IncomingMessage, limit: number): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  let size = 0;
+  for await (const chunk of req) {
+    size += (chunk as Buffer).length;
+    if (size > limit) throw new HttpError(413, `Files can be up to ${Math.round(limit / 1_048_576)} MB.`);
+    chunks.push(chunk as Buffer);
+  }
+  return Buffer.concat(chunks);
+}
+
 /** What a route requires: nothing, a signed-in user, or a minimum workspace role. */
 export type Need = 'none' | 'user' | Role;
 

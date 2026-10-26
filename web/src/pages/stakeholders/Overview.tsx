@@ -12,7 +12,7 @@ import { ToolGuide } from '../../ui/guide.tsx';
 import { Sparkline } from '../../ui/charts.tsx';
 import { fmtDate, humanize, relDays } from '../../ui/format.ts';
 import { EntityTable } from '../../entity/views.tsx';
-import { ActivityFeed, Comments, FieldGrid } from '../../entity/views.tsx';
+import { ActivityFeed, Attachments, Comments, FieldGrid } from '../../entity/views.tsx';
 import { RefChip, SentimentValue } from '../../entity/fields.tsx';
 import { openEditor } from '../../entity/editor.tsx';
 import { hrefOf } from '../../entity/links.ts';
@@ -119,7 +119,7 @@ export function StakeholderProfilePage({ id }: { id: string }) {
       {tab === 'details' && (
         <div className="grid g-side">
           <Card title="Profile"><FieldGrid e={s} /></Card>
-          <div className="stack"><Comments entityId={s.id} /><Card title="History" icon="history" flush><ActivityFeed entityId={s.id} limit={15} /></Card></div>
+          <div className="stack"><Attachments entityId={s.id} /><Comments entityId={s.id} /><Card title="History" icon="history" flush><ActivityFeed entityId={s.id} limit={15} /></Card></div>
         </div>
       )}
     </div>

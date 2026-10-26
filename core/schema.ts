@@ -909,6 +909,19 @@ export const ENTITIES: EntityDef[] = [
     ],
   },
   {
+    type: 'attachment', label: 'Attachment', plural: 'Attachments', area: 'workspace', icon: 'paperclip',
+    description: 'A file attached to any item: a screenshot, a document, evidence for an audit.',
+    titleField: 'name', columns: ['name', 'entityId', 'size', 'uploadedBy'],
+    fields: [
+      ref('entityId', 'On', ANY, { required: true }),
+      text('name', 'File name', { required: true }),
+      num('size', 'Size (bytes)'),
+      text('mime', 'Type'),
+      text('fileId', 'Stored as', { hidden: true }),
+      text('uploadedBy', 'Uploaded by'),
+    ],
+  },
+  {
     type: 'comment', label: 'Comment', plural: 'Comments', area: 'workspace', icon: 'message-square',
     description: 'Comments on any entity.',
     titleField: 'body', columns: ['body', 'author', 'entityId'],

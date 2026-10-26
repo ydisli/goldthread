@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { PARTS, chapterText, quizzesOf, type Chapter } from '../../../../core/book.ts';
+import { PARTS, chapterMarkdown, chapterText, quizzesOf, type Chapter } from '../../../../core/book.ts';
 import { isoDate } from '../../../../core/util.ts';
 import { ALL_TOOLS } from '../../nav.ts';
 import { now, updateMe, useMe } from '../../store.ts';
@@ -8,6 +8,7 @@ import { Empty, errorToast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { fmtDate } from '../../ui/format.ts';
 import { Article, parseBlocks } from './Article.tsx';
+import { downloadDocx, printMarkdown } from '../../ui/export.ts';
 import { CHAPTERS, CHAPTER_MAP, PATHS, chapterLabel, chaptersIn, partOf } from './book.ts';
 
 function useProgress(): [Record<string, string>, (id: string, done: boolean) => void] {
@@ -67,6 +68,12 @@ export function GuidePage() {
           <span className="small muted">{doneCount} of {main.length} chapters finished</span>
           <span className="spacer" />
           <Link to={`/guide/${continueId}`} className="btn btn-primary"><Icon name="book-open" size={14} />{started ? 'Continue reading' : 'Start reading'}</Link>
+        </div>
+        <div className="row-wrap small" style={{ marginTop: 14, gap: 6 }}>
+          <span className="muted">The whole book:</span>
+          <button className="btn btn-sm" onClick={() => downloadDocx('The Field Guide', bookMarkdown(), { breakBeforeH1: true })}><Icon name="download" size={13} />Word</button>
+          <button className="btn btn-sm" onClick={() => printMarkdown('The Field Guide', bookMarkdown())}><Icon name="file-text" size={13} />Print or save as PDF</button>
+          <span className="muted">· CC BY 4.0</span>
         </div>
         <div className="guide-search">
           <Icon name="search" size={15} className="muted" />
@@ -176,6 +183,9 @@ export function ChapterPage({ id, pathId }: { id: string; pathId?: string }) {
               <span>{c.minutes} min read</span>
               {quizzes > 0 && <span>· {quizzes} check-yourself questions</span>}
               {done && <span className="badge green">Finished {fmtDate(read[c.id])}</span>}
+              <span className="spacer" />
+              <button className="btn btn-ghost btn-sm" onClick={() => downloadDocx(c.title, chapterMarkdown(c, chapterLabel(c)))} title="Download this chapter as a Word document"><Icon name="download" size={13} />Word</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => printMarkdown(c.title, chapterMarkdown(c, chapterLabel(c)))} title="Print this chapter or save it as PDF"><Icon name="file-text" size={13} />Print</button>
             </div>
             {tools.length > 0 && (
               <div className="chips" style={{ marginTop: 10 }}>
@@ -211,6 +221,12 @@ export function ChapterPage({ id, pathId }: { id: string; pathId?: string }) {
       </div>
     </div>
   );
+}
+
+/** Every chapter in order, as one Markdown document for Word or print. */
+function bookMarkdown(): string {
+  const intro = `# The Field Guide\n\n*A practical book for Product Owners and Business Analysts. Part I teaches the craft; Part II shows how to do it in Throughline.*\n\nLicensed under Creative Commons Attribution 4.0 (CC BY 4.0). All people, companies and products in the running example are fictional.\n`;
+  return [intro, ...CHAPTERS.map((c) => chapterMarkdown(c, chapterLabel(c)))].join('\n\n');
 }
 
 /** Compact "continue reading" card for Home. */

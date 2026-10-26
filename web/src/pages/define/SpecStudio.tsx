@@ -8,7 +8,8 @@ import { findContradictions } from '../../../../core/engines/contradictions.ts';
 import { similar } from '../../../../core/engines/clustering.ts';
 import { api, batch, createEntity, updateEntity, useEntity, useGraph, useStore } from '../../store.ts';
 import { Link, setQuery, useRoute } from '../../router.tsx';
-import { Badge, Card, Empty, Markdown, PageHead, StatusBadge, Tabs, errorToast, toast } from '../../ui/kit.tsx';
+import { Badge, Card, Dropdown, Empty, Markdown, PageHead, StatusBadge, Tabs, downloadFile, errorToast, toast } from '../../ui/kit.tsx';
+import { downloadDocx, printMarkdown } from '../../ui/export.ts';
 import { Icon } from '../../ui/icons.tsx';
 import { ToolGuide } from '../../ui/guide.tsx';
 import { EntityTable, EntityHeader } from '../../entity/views.tsx';
@@ -132,6 +133,13 @@ export function SpecPage({ id }: { id: string }) {
       <EntityHeader e={spec} sub={<span className="row-wrap">{spec.betId && <>Bet <RefChip id={spec.betId} /></>}<span className="muted small">{saved === 'saved' ? 'All changes saved' : saved === 'saving' ? 'Saving…' : 'Unsaved changes'}</span></span>}
         actions={<>
           <Link className="btn" to={`/workspace/docs?kind=prd&subject=${spec.id}`}><Icon name="file-text" size={14} />PRD</Link>
+          <Dropdown align="right" width={220} trigger={(toggle) => <button className="btn" onClick={toggle}><Icon name="download" size={14} />Export</button>}>
+            {(close) => <>
+              <button className="menu-item" onClick={() => { downloadDocx(spec.title, body); close(); }}><Icon name="file-text" size={14} />Word document</button>
+              <button className="menu-item" onClick={() => { printMarkdown(spec.title, body); close(); }}><Icon name="file-text" size={14} />Print or save as PDF</button>
+              <button className="menu-item" onClick={() => { downloadFile(`${spec.title}.md`, body); close(); }}><Icon name="download" size={14} />Markdown</button>
+            </>}
+          </Dropdown>
           <button className="btn" onClick={() => openEditor({ type: 'approval', defaults: { title: `Approve ${spec.title}`, subjectId: spec.id, requestedById: g.me?.id, approvers: [] } })}><Icon name="clipboard-check" size={14} />Request approval</button>
         </>}
       />

@@ -9,8 +9,9 @@ import { FieldValue, RefChip } from './fields.tsx';
 import { openEditor } from './editor.tsx';
 import { hrefOf } from './links.ts';
 import { Comments } from './comments.tsx';
+import { Attachments } from './attachments.tsx';
 
-export { Comments };
+export { Comments, Attachments };
 
 // ---------------- Entity table ----------------
 
@@ -195,7 +196,7 @@ export const isFilled = (v: unknown) => !(v === undefined || v === null || v ===
 /** Everything that references this entity, grouped by type. */
 export function Backlinks({ id, exclude = [] }: { id: string; exclude?: string[] }) {
   const g = useGraph();
-  const links = g.linksTo(id).filter((l) => !exclude.includes(l.from.type) && l.from.type !== 'comment');
+  const links = g.linksTo(id).filter((l) => !exclude.includes(l.from.type) && l.from.type !== 'comment' && l.from.type !== 'attachment');
   const groups = new Map<string, { label: string; items: Entity[] }>();
   for (const l of links) {
     const key = `${l.from.type}`;
@@ -277,6 +278,7 @@ export function EntityPage({ id, children, side, headerActions, sub, hideFields,
         <div className="stack">
           {side}
           <Backlinks id={e.id} />
+          <Attachments entityId={e.id} />
           <Comments entityId={e.id} />
           <Card title="History" icon="history" flush><ActivityFeed entityId={e.id} limit={20} /></Card>
         </div>

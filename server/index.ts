@@ -11,6 +11,7 @@ import { ensureDemo, resetDemo } from './demo.ts';
 import { accountRoutes } from './account.ts';
 import { oidcRoutes } from './oidc.ts';
 import { integrationRoutes, scheduledSyncs } from './integrations.ts';
+import { fileRoutes } from './files.ts';
 import { apiRoutes } from './api.ts';
 import { aiRoutes } from './ai.ts';
 import { mcpHandler } from './mcp.ts';
@@ -57,6 +58,7 @@ const router = new Router();
 accountRoutes(router, sys, workspaces);
 oidcRoutes(router, sys, workspaces);
 integrationRoutes(router, sys, workspaces);
+fileRoutes(router, workspaces);
 apiRoutes(router, sys, workspaces);
 aiRoutes(router, sys);
 router.add('GET', '/api/health', 'none', () => ({ ok: true, name: 'throughline', version: '0.2.0' }), { cors: true });
@@ -118,6 +120,8 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, url: URL) {
   } catch (err) {
     if (res.headersSent) return;
     if (err instanceof ValidationError) return send(res, 422, { error: err.message, errors: err.errors }, cors);
+    // An upload that was too big was not read to the end: close the connection rather than reuse it.
+    if (err instanceof HttpError && err.status === 413) { res.setHeader('Connection', 'close'); res.once('finish', () => req.destroy()); }
     if (err instanceof HttpError) return send(res, err.status, { error: err.message, ...(err.data ?? {}) }, cors);
     const msg = (err as Error).message ?? 'Server error';
     // Store-level problems with user input (e.g. duplicate email) surface as 422.
