@@ -228,7 +228,7 @@ export function Dropdown({ trigger, children, align = 'left', up = false, width 
  * A short "how this works" panel at the top of a tool. Dismissed per person;
  * the state lives in their account preferences.
  */
-export function Guide({ id, title, steps, dismissed, onDismiss }: { id: string; title: string; steps: ReactNode[]; dismissed: boolean; onDismiss: (id: string) => void }) {
+export function Guide({ id, title, steps, dismissed, onDismiss, more }: { id: string; title: string; steps: ReactNode[]; dismissed: boolean; onDismiss: (id: string) => void; more?: ReactNode }) {
   if (dismissed) return null;
   return (
     <div className="guide" role="note">
@@ -236,6 +236,7 @@ export function Guide({ id, title, steps, dismissed, onDismiss }: { id: string; 
       <div style={{ flex: 1 }}>
         <div className="t">{title}</div>
         <ol>{steps.map((s, i) => <li key={i}>{s}</li>)}</ol>
+        {more && <div className="guide-more">{more}</div>}
       </div>
       <button className="btn btn-ghost btn-sm" onClick={() => onDismiss(id)}>Got it</button>
     </div>

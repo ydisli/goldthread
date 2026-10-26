@@ -5,7 +5,7 @@ import { similar } from '../../core/engines/clustering.ts';
 import { isoDate } from '../../core/util.ts';
 import { api, can, createEntity, logout, now, switchWorkspace, updateMe, useGraph, useMe, useStore, type Role } from './store.ts';
 import { Link, navigate, useRoute } from './router.tsx';
-import { ALL_TOOLS, ASK, DEFAULT_PINS, HOME, INBOX, SECTIONS, sectionOf, type Tool } from './nav.ts';
+import { ALL_TOOLS, ASK, DEFAULT_PINS, GUIDE, HOME, INBOX, SECTIONS, sectionOf, type Tool } from './nav.ts';
 import { Icon } from './ui/icons.tsx';
 import { Avatar, Dropdown, Modal, Seg, errorToast, toast } from './ui/kit.tsx';
 import { EntityPicker } from './entity/fields.tsx';
@@ -79,6 +79,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
         <NavLink tool={HOME} active={path === HOME.to} count={counts.get(HOME.id)} onNavigate={onNavigate} />
         <NavLink tool={INBOX} active={path === INBOX.to} count={counts.get(INBOX.id)} onNavigate={onNavigate} />
         <NavLink tool={ASK} active={path === ASK.to} onNavigate={onNavigate} />
+        <NavLink tool={GUIDE} active={path === GUIDE.to || path.startsWith('/guide/')} onNavigate={onNavigate} />
 
         <div className="nav-group">
           <div className="nav-title">Pinned<Link to="/tools" onClick={onNavigate}>Edit</Link></div>
@@ -446,7 +447,7 @@ const GO: Record<string, { to: string; label: string }> = {
   i: { to: '/inbox', label: 'Inbox' },
   a: { to: '/ask', label: 'Ask' },
   t: { to: '/tools', label: 'All tools' },
-  l: { to: '/learn', label: 'Learning book' },
+  f: { to: '/guide', label: 'Field guide' },
   s: { to: '/workspace/settings', label: 'Settings' },
 };
 

@@ -25,6 +25,7 @@ export const INBOX: Tool = { id: 'inbox', label: 'Inbox', to: '/inbox', icon: 'i
     return n ? { n, alert: mentions > 0 } : null;
   } };
 export const ASK: Tool = { id: 'ask', label: 'Ask', to: '/ask', icon: 'search', blurb: 'Search everything, or ask a question in plain words.', keywords: 'search question ai' };
+export const GUIDE: Tool = { id: 'guide', label: 'Field guide', to: '/guide', icon: 'graduation-cap', blurb: 'A practical book: become a better PO or BA, then learn to do it here.', keywords: 'learn book handbook training course help' };
 
 export const SECTIONS: Section[] = [
   {
@@ -108,7 +109,7 @@ export const SECTIONS: Section[] = [
   },
 ];
 
-export const ALL_TOOLS: Tool[] = [HOME, INBOX, ASK, ...SECTIONS.flatMap((s) => s.tools)];
+export const ALL_TOOLS: Tool[] = [HOME, INBOX, ASK, GUIDE, ...SECTIONS.flatMap((s) => s.tools)];
 
 /** Sensible starting pins for each role; people can change them any time. */
 export const DEFAULT_PINS: Record<Persona, string[]> = {

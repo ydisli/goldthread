@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { dailyBrief, openMentions, type BriefItem } from '../../../../core/engines/brief.ts';
 import { commitmentRisk, hubSummary, pendingApprovalsFor, quadrant } from '../../../../core/engines/stakeholders.ts';
 import { daysBetween, isoDate } from '../../../../core/util.ts';
@@ -10,6 +10,7 @@ import { Icon } from '../../ui/icons.tsx';
 import { fmtDate, fmtDateTime, relDays } from '../../ui/format.ts';
 import { hrefOf } from '../../entity/links.ts';
 import { MentionText } from '../../entity/comments.tsx';
+import { GuideCard } from '../guide/lazy.tsx';
 
 const AREA_LABEL: Record<BriefItem['area'], string> = { stakeholders: 'Stakeholders', discover: 'Discover', define: 'Define', deliver: 'Deliver', learn: 'Learn', strategy: 'Strategy' };
 
@@ -106,6 +107,7 @@ export function TodayPage() {
         </div>
 
         <div className="stack">
+          <Suspense fallback={null}><GuideCard /></Suspense>
           <Card title="Coming up" flush>
             {upcoming.length === 0 ? <Empty icon="calendar">Nothing in the next three weeks.</Empty> : (
               <div className="list">

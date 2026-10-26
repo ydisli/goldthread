@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Suspense, type ReactNode } from 'react';
 import { EntityListPage, EntityPage } from './entity/views.tsx';
 import { useEntity } from './store.ts';
 import { InboxPage, TodayPage } from './pages/today/Today.tsx';
@@ -18,7 +18,10 @@ import { FeaturesPage, LedgerPage } from './pages/learn/Learn.tsx';
 import { ActivityPage, AskPage, DocsPage, MeetingPage, MeetingsPage } from './pages/workspace/Workspace.tsx';
 import { SettingsPage } from './pages/settings/Settings.tsx';
 import { SectionPage, ToolsPage } from './pages/tools/Tools.tsx';
+import { ChapterPage, GuidePage } from './pages/guide/lazy.tsx';
 import { AssumptionsPage, BetPage, BetsPage, CustomersPage, ExperimentPage, ExperimentsPage, JourneyPage, OpportunitiesPage, SignalsPage } from './pages/discover/Discover.tsx';
+
+const opening = <div className="page"><div className="empty">Opening the Field Guide…</div></div>;
 
 export interface Route { path: string; render: (p: Record<string, string>, q: URLSearchParams) => ReactNode }
 
@@ -90,6 +93,9 @@ export const ROUTES: Route[] = [
   // Learn
   { path: '/learn/ledger', render: () => <LedgerPage /> },
   { path: '/learn/features', render: () => <FeaturesPage /> },
+  // Field guide
+  { path: '/guide', render: () => <Suspense fallback={opening}><GuidePage /></Suspense> },
+  { path: '/guide/:id', render: (p, q) => <Suspense fallback={opening}><ChapterPage key={p.id} id={p.id} pathId={q.get('path') ?? undefined} /></Suspense> },
   // Workspace
   { path: '/ask', render: () => <AskPage /> },
   { path: '/workspace/meetings', render: () => <MeetingsPage /> },

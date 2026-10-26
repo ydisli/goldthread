@@ -108,7 +108,7 @@ test('demo workspace: IT sample with linked accounts, consistent references, liv
     const ids = new Set(all.map((e) => e.id));
     const dangling: string[] = [];
     for (const e of all) for (const [k, v] of Object.entries(e)) {
-      if (/Ids?$/.test(k) && !['id', 'mapStepId', 'sliceId', 'userId', 'memberUserIds'].includes(k)) {
+      if (/Ids?$/.test(k) && !['id', 'mapStepId', 'sliceId', 'userId', 'memberUserIds', 'authorId'].includes(k)) {
         for (const id of Array.isArray(v) ? v : [v]) if (typeof id === 'string' && !ids.has(id)) dangling.push(`${e.id}.${k}=${id}`);
       }
     }
@@ -172,13 +172,16 @@ test('MCP: initialize, list tools, call search and capture', async () => {
     assert.equal(init.result.serverInfo.name, 'throughline');
     const list = await call({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
     const names = list.result.tools.map((t: { name: string }) => t.name);
-    for (const n of ['search', 'get_item', 'daily_brief', 'prepare_meeting', 'forecast', 'capture', 'create_item', 'check_process']) assert.ok(names.includes(n), n);
+    for (const n of ['search', 'get_item', 'daily_brief', 'prepare_meeting', 'forecast', 'capture', 'create_item', 'check_process', 'guide_contents', 'read_guide']) assert.ok(names.includes(n), n);
     const search = await call({ jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'search', arguments: { query: 'leaver deprovisioning' } } });
     assert.match(search.result.content[0].text, /REQ-5/);
     const item = await call({ jsonrpc: '2.0', id: 4, method: 'tools/call', params: { name: 'get_item', arguments: { id_or_key: 'REQ-4' } } });
     assert.equal(item.result.structuredContent.key, 'REQ-4');
     const cap = await call({ jsonrpc: '2.0', id: 5, method: 'tools/call', params: { name: 'capture', arguments: { kind: 'evidence', text: 'Contractors need laptops too', account: 'IT' } } });
     assert.equal(cap.result.structuredContent.created.type, 'evidence');
+    const chapter = await call({ jsonrpc: '2.0', id: 7, method: 'tools/call', params: { name: 'read_guide', arguments: { id: 'forecasting' } } });
+    assert.equal(chapter.result.structuredContent.title, 'Planning and forecasting honestly');
+    assert.ok(chapter.result.structuredContent.quiz.every((q: { answer?: string }) => q.answer));
     const bad = await call({ jsonrpc: '2.0', id: 6, method: 'nope' });
     assert.equal(bad.error.code, -32601);
   } finally {

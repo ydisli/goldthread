@@ -754,8 +754,8 @@ Access requests bounce between managers and system owners for 46 hours on averag
     put('rf_2', 'reviewFinding', { specId: 'spec_jml', role: 'privacy', severity: 'major', title: 'How long are leaver mailboxes kept?', status: 'converted', resolution: 'Converted to REQ-9 / REQ-10 — now conflicting, see conflicts.', source: 'engine' }, 20);
     put('rf_3', 'reviewFinding', { specId: 'spec_jml', role: 'qa', severity: 'major', title: 'What happens to rehires?', status: 'open', source: 'human', detail: 'Tomás: rehires currently get a second identity.' }, 6);
 
-    put('cmt_1', 'comment', { entityId: 'spec_jml', author: 'Priya Nair', body: 'Can we pin the provisioning SLA before sprint 43? The load test is booked.' }, 4);
+    put('cmt_1', 'comment', { entityId: 'spec_jml', author: 'Priya Nair', authorId: uid('priya'), body: `@${people.me.name} can we pin the provisioning SLA before sprint 43? The load test is booked.`, mentions: [people.me.id] }, 4);
     put('cmt_2', 'comment', { entityId: 'bet_jml', author: 'Morgan Blake', body: 'This is the one the exec team asks about. Keep the forecast honest.' }, 20);
-    put('cmt_3', 'comment', { entityId: 'req_salesla', author: 'Priya Nair', body: 'Contradicts REQ-4. Needs a decision, not two requirements.' }, 8);
+    put('cmt_3', 'comment', { entityId: 'req_salesla', author: 'Priya Nair', authorId: uid('priya'), body: `${uid('jordan') ? '@Jordan Kim ' : ''}Contradicts REQ-4. Needs a decision, not two requirements.`, mentions: uid('jordan') ? [uid('jordan')] : [] }, 8);
   });
 }

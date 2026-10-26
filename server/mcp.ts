@@ -16,6 +16,8 @@ import { concurrency, forecastScope } from '../core/engines/forecast.ts';
 import { impactAnalysis, traceMatrix } from '../core/engines/traceability.ts';
 import { DOC_KINDS, generateDoc, type DocKind } from '../core/engines/docs.ts';
 import { isoDate } from '../core/util.ts';
+import { PARTS, chapterText, quizzesOf } from '../core/book.ts';
+import { loadBook } from './book.ts';
 
 // Model Context Protocol server (Streamable HTTP, JSON responses). Any MCP
 // client — Claude Desktop, Claude Code, ChatGPT connectors, Cursor, VS Code —
@@ -158,6 +160,29 @@ const TOOLS: Tool[] = [
     description: 'Generate a Markdown document from the workspace: prd (subject = spec), brd / prfaq (subject = bet), steering (no subject), release-notes (subject = release), stakeholder-update (subject = bet or release, audience = exec|sales|support|engineering|customer).',
     inputSchema: obj({ kind: { type: 'string', enum: Object.keys(DOC_KINDS) }, subject: { type: 'string' }, audience: { type: 'string', enum: ['exec', 'sales', 'support', 'engineering', 'customer'] } }, ['kind']),
     run: ({ kind, subject, audience }, _ctx, g) => generateDoc(kind as DocKind, g, subject ? find(g, subject).id : undefined, new Date(), { audience }),
+  },
+  {
+    name: 'guide_contents', title: 'Field Guide: contents',
+    description: 'The Field Guide is Throughline\'s book for Product Owners and Business Analysts: Part I teaches the craft (problems, stakeholders, discovery, requirements, modelling, prioritisation, forecasting, governance, outcomes), Part II teaches the tool. Lists chapters with ids, summaries and the tools each covers. Use read_guide to teach or quiz the user from a chapter.',
+    inputSchema: obj({}),
+    run: () => PARTS.map((p) => ({
+      part: `${p.label}: ${p.title}`,
+      chapters: loadBook().filter((c) => c.part === p.id).map((c) => ({ id: c.id, title: c.title, minutes: c.minutes, summary: c.summary, tools: c.tools })),
+    })),
+  },
+  {
+    name: 'read_guide', title: 'Field Guide: read a chapter',
+    description: 'Read a Field Guide chapter as Markdown, plus its check-yourself questions with answers and explanations. Good for explaining a technique in the user\'s context, quizzing them, or pointing to the right Throughline tool. Links like (guide:id) point to other chapters; (tool:id) to tools.',
+    inputSchema: obj({ id: { type: 'string', description: 'Chapter id from guide_contents, e.g. "stakeholders" or "forecasting".' } }, ['id']),
+    run: ({ id }) => {
+      const book = loadBook();
+      const c = book.find((x) => x.id === id) ?? book.find((x) => x.title.toLowerCase().includes(String(id).toLowerCase()));
+      if (!c) throw new HttpError(404, `No chapter "${id}". Call guide_contents for the list.`);
+      return {
+        id: c.id, title: c.title, summary: c.summary, tools: c.tools, text: chapterText(c),
+        quiz: quizzesOf(c.body).map((q) => ({ question: q.question, options: q.options.map((o) => o.text), answer: q.options.find((o) => o.correct)?.text, why: q.why })),
+      };
+    },
   },
   {
     name: 'workspace_schema', title: 'Item types and fields',

@@ -9,7 +9,8 @@
             │ tables · state models · prioritization (RICE/WSJF + sensitivity) · Monte Carlo forecast │
             │ · experiment stats · finance (NPV/ROI/payback) · stakeholder analytics · RACI ·         │
             │ hygiene · clustering (TF-IDF) · traceability & impact · calibration · brief · search ·  │
-            │ extraction · document generation · process models (layout, checks)                       │
+            │ extraction · document generation · process models (layout, checks)                      │
+            │ Jira/ADO import · the Field Guide (book parsing, quiz checks)                           │
             └───────────────┬───────────────────────────────┬──────────────────────────┬──────────────┘
                             │                               │                          │
                  server/ (Node, SQLite)              web/ (React PWA)            cli/ (tl)
@@ -43,6 +44,8 @@
 | 8. Teams | accounts, workspaces & switcher, invites, roles, teams, personal tokens, per-workspace live sync, read-only viewers | A PO invites a BA and a sponsor; each sees what their role allows |
 | 9. Connect | MCP server (HTTP + stdio bridge), OpenAI-compatible providers, per-workspace AI settings with encrypted keys | Claude Desktop can search, prep and capture in a workspace with a personal token |
 | 10. Calm & intuitive | warm neutral design, Home "My day", short sidebar with persona pins, section tabs, All tools directory, guides and jargon explanations, IT sample, visual drag-and-drop process modeller | A new PO or BA finds their way without training |
+| 11. Finish the loop | comments signed server-side with @mentions into the Inbox, undo and restore for deletes, Jira / Azure DevOps CSV import (stories, defects, resolved dates; re-import by key) and export, `tl import`, keyboard shortcuts | A PO can bring their real backlog in, and nothing typed in Throughline can be lost by accident |
+| 12. The Field Guide | a book in `book/` (craft, tool, templates, glossary) rendered in-app with reading paths, progress, quizzes, search, copyable templates; chapters linked from tool guides and readable by assistants over MCP; structure checked by tests | A new PO or BA can learn the job and the tool in one place |
 
 ## Out of scope for this build (designed, needs credentials or native toolchains)
 
