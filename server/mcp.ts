@@ -51,7 +51,7 @@ function brief(e: Entity) {
 const TOOLS: Tool[] = [
   {
     name: 'search', title: 'Search the workspace',
-    description: 'Full-text search across everything in the Throughline workspace: stakeholders, signals, bets, requirements, decisions, stories, releases, risks. Supports "type:decision" filters and keys like REQ-4.',
+    description: 'Full-text search across everything in the Goldthread workspace: stakeholders, signals, bets, requirements, decisions, stories, releases, risks. Supports "type:decision" filters and keys like REQ-4.',
     inputSchema: obj({ query: { type: 'string' }, limit: { type: 'number', description: 'Max results (default 15)' } }, ['query']),
     run: ({ query, limit }, _ctx, g) => new SearchIndex([...g.byId.values()]).search(String(query), Math.min(50, Number(limit) || 15)).map((h) => ({ ...brief(h.entity), snippet: h.snippet })),
   },
@@ -164,7 +164,7 @@ const TOOLS: Tool[] = [
   },
   {
     name: 'guide_contents', title: 'Field Guide: contents',
-    description: 'The Field Guide is Throughline\'s book for Product Owners and Business Analysts: Part I teaches the craft (problems, stakeholders, discovery, requirements, modelling, prioritisation, forecasting, governance, outcomes), Part II teaches the tool. Lists chapters with ids, summaries and the tools each covers. Use read_guide to teach or quiz the user from a chapter.',
+    description: 'The Field Guide is Goldthread\'s book for Product Owners and Business Analysts: Part I teaches the craft (problems, stakeholders, discovery, requirements, modelling, prioritisation, forecasting, governance, outcomes), Part II teaches the tool. Lists chapters with ids, summaries and the tools each covers. Use read_guide to teach or quiz the user from a chapter.',
     inputSchema: obj({}),
     run: () => PARTS.map((p) => ({
       part: `${p.label}: ${p.title}`,
@@ -173,7 +173,7 @@ const TOOLS: Tool[] = [
   },
   {
     name: 'read_guide', title: 'Field Guide: read a chapter',
-    description: 'Read a Field Guide chapter as Markdown, plus its check-yourself questions with answers and explanations. Good for explaining a technique in the user\'s context, quizzing them, or pointing to the right Throughline tool. Links like (guide:id) point to other chapters; (tool:id) to tools.',
+    description: 'Read a Field Guide chapter as Markdown, plus its check-yourself questions with answers and explanations. Good for explaining a technique in the user\'s context, quizzing them, or pointing to the right Goldthread tool. Links like (guide:id) point to other chapters; (tool:id) to tools.',
     inputSchema: obj({ id: { type: 'string', description: 'Chapter id from guide_contents, e.g. "stakeholders" or "forecasting".' } }, ['id']),
     run: ({ id }) => {
       const book = loadBook();
@@ -187,7 +187,7 @@ const TOOLS: Tool[] = [
   },
   {
     name: 'workspace_schema', title: 'Item types and fields',
-    description: 'The item types in Throughline and their fields (with allowed values for enums). Call before create_item or update_item.',
+    description: 'The item types in Goldthread and their fields (with allowed values for enums). Call before create_item or update_item.',
     inputSchema: obj({ type: { type: 'string', enum: TYPES } }),
     run: ({ type }, ctx) => {
       const custom = ctx.ws.store.settings().custom as Customisation | undefined;
@@ -259,8 +259,8 @@ async function handle(msg: Rpc, ctx: WCtx): Promise<unknown> {
       return {
         protocolVersion: SUPPORTED.includes(requested) ? requested : SUPPORTED[0],
         capabilities: { tools: { listChanged: false } },
-        serverInfo: { name: 'throughline', title: 'Throughline', version: '0.2.0' },
-        instructions: `You are connected to the Throughline workspace "${ctx.ws.workspace.name}" as ${ctx.user.name} (${ctx.ws.role}). Throughline holds a product team's stakeholders, evidence, bets, requirements, decisions, stories, releases and risks as a linked graph. Use search or get_item before answering questions about it, and cite item keys. Write tools need an editor role and a write token.`,
+        serverInfo: { name: 'goldthread', title: 'Goldthread', version: '0.2.0' },
+        instructions: `You are connected to the Goldthread workspace "${ctx.ws.workspace.name}" as ${ctx.user.name} (${ctx.ws.role}). Goldthread holds a product team's stakeholders, evidence, bets, requirements, decisions, stories, releases and risks as a linked graph. Use search or get_item before answering questions about it, and cite item keys. Write tools need an editor role and a write token.`,
       };
     }
     case 'ping':

@@ -64,7 +64,7 @@ export function ToolsPage() {
     <div className="page">
       <PageHead
         title="All tools"
-        sub="Everything Throughline can do, grouped by the kind of work. Pin the ones you use every week — they show at the top of your sidebar."
+        sub="Everything Goldthread can do, grouped by the kind of work. Pin the ones you use every week — they show at the top of your sidebar."
         actions={
           <div className="row small muted" style={{ gap: 6 }}>
             Start from

@@ -9,7 +9,7 @@ import { backupData } from '../backup.ts';
 
 test('backup copies every database, the key and uploaded files while the server is open', async () => {
   const h = harness();
-  const out = mkdtempSync(join(tmpdir(), 'throughline-backup-'));
+  const out = mkdtempSync(join(tmpdir(), 'goldthread-backup-'));
   try {
     const a = h.user('ana');
     const w = h.ws.create({ name: 'Team', kind: 'team', owner: a.user, sample: 'empty' });

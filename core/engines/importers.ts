@@ -199,7 +199,7 @@ export function planIssueImport(rows: string[][], existing: Entity[], opts: { bu
     for (const k of Object.keys(data)) if (data[k] === undefined || data[k] === '' || (Array.isArray(data[k]) && !(data[k] as unknown[]).length)) delete data[k];
     const match = key ? byKey.get(key.toLowerCase()) : undefined;
     if (match) {
-      // Only overwrite what the tool owns; keep links and notes made in Throughline.
+      // Only overwrite what the tool owns; keep links and notes made in Goldthread.
       const patch: Record<string, unknown> = {};
       for (const k of ['title', 'status', 'estimate', 'sprint', 'doneAt', 'acceptance'] as const) {
         if (data[k] !== undefined && JSON.stringify(data[k]) !== JSON.stringify(match[k]) && !(k === 'acceptance' && match.acceptance)) patch[k] = data[k];
@@ -221,7 +221,7 @@ const csvCell = (v: unknown) => {
 
 /** Stories as a CSV Jira's importer (and Azure DevOps "Import work items") can map directly. */
 export function storiesToCsv(stories: Entity[]): string {
-  const head = ['Summary', 'Issue Type', 'Description', 'Acceptance Criteria', 'Story Points', 'Labels', 'Sprint', 'Throughline key'];
+  const head = ['Summary', 'Issue Type', 'Description', 'Acceptance Criteria', 'Story Points', 'Labels', 'Sprint', 'Goldthread key'];
   const lines = stories.map((s) => {
     const narrative = s.asA || s.iWant ? `As a ${s.asA ?? '…'}, I want ${s.iWant ?? '…'}${s.soThat ? ` so that ${s.soThat}` : ''}.` : '';
     const description = [narrative, s.description].filter(Boolean).join('\n\n');

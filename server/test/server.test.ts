@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 
-process.env.TL_DEMO = '1';
+process.env.GT_DEMO = '1';
 import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -18,7 +18,7 @@ import { dailyBrief } from '../../core/engines/brief.ts';
 import { findContradictions } from '../../core/engines/contradictions.ts';
 
 function tempDir() {
-  return mkdtempSync(join(tmpdir(), 'throughline-test-'));
+  return mkdtempSync(join(tmpdir(), 'goldthread-test-'));
 }
 
 function fakeCtx(headers: Record<string, string> = {}, body: unknown = {}): Ctx & { sent?: { status: number; body: string } } {
@@ -85,7 +85,7 @@ test('system: users, sessions, invites, tokens, encrypted AI keys', () => {
     assert.equal(sys.inviteByToken(inviteToken)?.id, invite.id);
     assert.equal(sys.invites(ws.id).length, 1);
     const api = sys.createToken({ userId: u.id, workspaceId: ws.id, name: 'CLI', scope: 'read' });
-    assert.match(api.token, /^tl_[0-9a-f]{8}_/);
+    assert.match(api.token, /^gt_[0-9a-f]{8}_/);
     assert.equal(sys.resolveToken(api.token)?.scope, 'read');
     sys.revokeToken(u.id, api.record.id);
     assert.equal(sys.resolveToken(api.token), undefined);
@@ -139,10 +139,10 @@ test('auth: roles are enforced per workspace and read tokens cannot write', () =
     const viewer = sys.members(DEMO_WORKSPACE_ID).find((m) => m.role === 'viewer')!.user;
     const editor = sys.members(DEMO_WORKSPACE_ID).find((m) => m.role === 'editor')!.user;
     const session = sys.createSession(viewer.id, DEMO_WORKSPACE_ID);
-    const ctx = fakeCtx({ cookie: `tl_session=${session}` });
+    const ctx = fakeCtx({ cookie: `gt_session=${session}` });
     authenticate(ctx, 'viewer', sys, ws);
     assert.equal(ctx.ws?.role, 'viewer');
-    assert.throws(() => authenticate(fakeCtx({ cookie: `tl_session=${session}` }), 'editor', sys, ws), (e: unknown) => e instanceof HttpError && e.status === 403);
+    assert.throws(() => authenticate(fakeCtx({ cookie: `gt_session=${session}` }), 'editor', sys, ws), (e: unknown) => e instanceof HttpError && e.status === 403);
     assert.throws(() => authenticate(fakeCtx({}), 'viewer', sys, ws), (e: unknown) => e instanceof HttpError && e.status === 401);
     const read = sys.createToken({ userId: editor.id, workspaceId: DEMO_WORKSPACE_ID, name: 'r', scope: 'read' }).token;
     assert.throws(() => authenticate(fakeCtx({ authorization: `Bearer ${read}` }), 'editor', sys, ws), /read-only/);
@@ -171,7 +171,7 @@ test('MCP: initialize, list tools, call search and capture', async () => {
     };
     const init = await call({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 't', version: '1' } } });
     assert.equal(init.result.protocolVersion, '2025-06-18');
-    assert.equal(init.result.serverInfo.name, 'throughline');
+    assert.equal(init.result.serverInfo.name, 'goldthread');
     const list = await call({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
     const names = list.result.tools.map((t: { name: string }) => t.name);
     for (const n of ['search', 'get_item', 'daily_brief', 'prepare_meeting', 'forecast', 'capture', 'create_item', 'check_process', 'guide_contents', 'read_guide']) assert.ok(names.includes(n), n);

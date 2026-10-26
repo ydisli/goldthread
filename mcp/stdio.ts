@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 // Stdio bridge for MCP clients that launch local commands (Claude Desktop,
 // Claude Code, Cursor, VS Code). It forwards JSON-RPC messages to a running
-// Throughline server's /mcp endpoint using your personal API token.
+// Goldthread server's /mcp endpoint using your personal API token.
 //
-//   TL_URL=http://127.0.0.1:4300 TL_TOKEN=tl_xxx node mcp/stdio.ts
+//   GT_URL=http://127.0.0.1:4300 GT_TOKEN=gt_xxx node mcp/stdio.ts
 
 import { createInterface } from 'node:readline';
 
-const URL_BASE = (process.env.TL_URL ?? 'http://127.0.0.1:4300').replace(/\/$/, '');
-const TOKEN = process.env.TL_TOKEN ?? '';
+const URL_BASE = (process.env.GT_URL ?? 'http://127.0.0.1:4300').replace(/\/$/, '');
+const TOKEN = process.env.GT_TOKEN ?? '';
 
 if (!TOKEN) {
-  process.stderr.write('Throughline MCP: set TL_TOKEN (Settings → Tokens & integrations in the web app).\n');
+  process.stderr.write('Goldthread MCP: set GT_TOKEN (Settings → Tokens & integrations in the web app).\n');
 }
 
 const write = (msg: unknown) => process.stdout.write(`${JSON.stringify(msg)}\n`);
@@ -27,7 +27,7 @@ async function forward(line: string) {
   try {
     const res = await fetch(`${URL_BASE}/mcp`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream', Authorization: `Bearer ${TOKEN}`, 'X-TL-Actor': 'MCP' },
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream', Authorization: `Bearer ${TOKEN}`, 'X-GT-Actor': 'MCP' },
       body: line,
     });
     if (res.status === 202) return;
@@ -40,7 +40,7 @@ async function forward(line: string) {
     }
     process.stdout.write(`${text}\n`);
   } catch (err) {
-    if (msg.id !== undefined && msg.id !== null) write({ jsonrpc: '2.0', id: msg.id, error: { code: -32000, message: `Cannot reach Throughline at ${URL_BASE}: ${(err as Error).message}` } });
+    if (msg.id !== undefined && msg.id !== null) write({ jsonrpc: '2.0', id: msg.id, error: { code: -32000, message: `Cannot reach Goldthread at ${URL_BASE}: ${(err as Error).message}` } });
   }
 }
 

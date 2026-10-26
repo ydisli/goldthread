@@ -10,7 +10,7 @@ import { notifyInvite, notifyReset } from './notify.ts';
 import { oidcConfig } from './oidc.ts';
 import { resolve } from 'node:path';
 
-const signupPolicy = () => (process.env.TL_SIGNUP === 'invite-only' ? 'invite-only' : 'open');
+const signupPolicy = () => (process.env.GT_SIGNUP === 'invite-only' ? 'invite-only' : 'open');
 
 function publicUser(u: User) {
   return { id: u.id, email: u.email, name: u.name, title: u.title, demo: u.demo, prefs: u.prefs, hasPassword: u.hasPassword !== false };
@@ -29,7 +29,7 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
   r.add('GET', '/api/auth/state', 'none', (ctx) => {
     const user = ctx.user;
     const list = user ? sys.workspacesOf(user.id) : [];
-    const requested = ctx.req.headers['x-tl-workspace'];
+    const requested = ctx.req.headers['x-gt-workspace'];
     const current = list.find((w) => w.id === requested) ?? list.find((w) => w.id === ctx.sessionWorkspaceId) ?? list[0];
     return {
       user: user ? publicUser(user) : null,
@@ -201,10 +201,10 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
     return { ok: true };
   });
 
-  /** Everything Throughline holds about you, as one JSON file. */
+  /** Everything Goldthread holds about you, as one JSON file. */
   r.add('GET', '/api/me/export', 'user', (ctx: UCtx) => {
     const u = ctx.user;
-    ctx.res.setHeader('Content-Disposition', `attachment; filename="throughline-my-data-${new Date().toISOString().slice(0, 10)}.json"`);
+    ctx.res.setHeader('Content-Disposition', `attachment; filename="goldthread-my-data-${new Date().toISOString().slice(0, 10)}.json"`);
     return {
       exportedAt: new Date().toISOString(),
       account: { id: u.id, email: u.email, name: u.name, title: u.title, createdAt: u.createdAt, preferences: u.prefs },
@@ -271,7 +271,7 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
   /** Where the local bridges live, so the web app can show copy-paste configs. */
   r.add('GET', '/api/connect-info', 'user', () => ({
     mcpBridge: resolve('mcp/stdio.ts'),
-    cli: resolve('cli/tl.ts'),
+    cli: resolve('cli/goldthread.ts'),
     extension: resolve('extension'),
     mcpTools: MCP_TOOL_NAMES,
   }));
@@ -363,7 +363,7 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
   });
 
   r.add('POST', '/api/admin/mail/test', 'admin', async (ctx: WCtx) => {
-    if (!queueMail(sys, { to: ctx.user.email, subject: 'Throughline test email', text: `This is a test from ${baseUrl(ctx.req)}. If you can read it, email works.` })) throw new HttpError(409, 'Email isn\'t set up. Set TL_SMTP_URL on the server.');
+    if (!queueMail(sys, { to: ctx.user.email, subject: 'Goldthread test email', text: `This is a test from ${baseUrl(ctx.req)}. If you can read it, email works.` })) throw new HttpError(409, 'Email isn\'t set up. Set GT_SMTP_URL on the server.');
     await flushOutbox(sys);
     const last = sys.mailLog(1)[0];
     if (!last?.sentAt) throw new HttpError(502, `Sending failed: ${last?.error ?? 'unknown error'}. It will be retried.`);

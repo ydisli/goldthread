@@ -1,15 +1,15 @@
 {
-  "name": "throughline",
+  "name": "goldthread",
   "version": "0.1.0",
   "private": true,
-  "description": "Throughline \u2014 the intent & alignment layer for Product Owners and Business Analysts",
+  "description": "Goldthread \u2014 the intent & alignment layer for Product Owners and Business Analysts",
   "license": "Apache-2.0",
   "type": "module",
   "engines": {
     "node": ">=24"
   },
   "bin": {
-    "tl": "cli/tl.ts"
+    "goldthread": "cli/goldthread.ts"
   },
   "scripts": {
     "dev": "node server/index.ts --dev",
@@ -18,7 +18,7 @@
     "test": "node --test \"core/test/*.test.ts\" \"server/test/*.test.ts\"",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "seed": "node server/index.ts --reset-only",
-    "tl": "node cli/tl.ts",
+    "goldthread": "node cli/goldthread.ts",
     "reset-password": "node server/index.ts --reset-password",
     "e2e": "playwright test -c e2e/playwright.config.ts",
     "backup": "node server/index.ts --backup"

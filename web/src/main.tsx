@@ -5,7 +5,7 @@ import { boot } from './store.ts';
 import './styles.css';
 
 try {
-  const t = localStorage.getItem('tl.theme');
+  const t = localStorage.getItem('gt.theme');
   if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
 } catch { /* storage unavailable */ }
 

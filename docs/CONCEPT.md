@@ -1,8 +1,8 @@
-# Throughline — Concept v2
+# Goldthread — Concept v2
 
 > Every requirement knows why it exists — and every stakeholder knows where they stand.
 
-Throughline is an overlay for Product Owners and Business Analysts. It keeps the
+Goldthread is an overlay for Product Owners and Business Analysts. It keeps the
 *chain of intent* — strategy → evidence → problem → bet → requirement → story →
 release → outcome → learning — as a live graph, and wraps the people side of the
 job (stakeholders, approvals, commitments, communication) around that chain.
@@ -55,10 +55,10 @@ Every client is just a view or a capture point.
 | **Web app** (responsive) | Everything | ✅ built |
 | **Desktop** (installable PWA on macOS/Windows/Linux) | Daily work, offline read, notifications | ✅ PWA manifest + service worker (offline read-only) + localStorage fallback; native wrapper (Tauri) later for a global capture hotkey |
 | **Mobile** (installable PWA on iOS/Android) | Daily brief, quick capture, approvals, pre-meeting stakeholder brief, log an interaction right after a meeting | ✅ responsive layout + mobile nav |
-| **CLI** (`tl`) | Quick capture, brief, search, scripting, CI checks (e.g. spec lint in a PR) | ✅ built |
+| **CLI** (`goldthread`) | Quick capture, brief, search, scripting, CI checks (e.g. spec lint in a PR) | ✅ built |
 | **Browser extension** | Highlight text on any page (ticket, review, competitor site) → evidence | ✅ minimal Chrome/Edge extension (MV3) |
 | **REST API** | Integrations, automation | ✅ built |
-| **Chat (Slack / Teams)** | `/tl capture`, decision detection in threads, approvals in-chat, brief DM | 🔜 endpoint designed; needs workspace credentials |
+| **Chat (Slack / Teams)** | `/goldthread capture`, decision detection in threads, approvals in-chat, brief DM | 🔜 endpoint designed; needs workspace credentials |
 | **Email-in** | Forward a customer email → evidence or stakeholder request | 🔜 |
 | **Meeting bots** | Zoom/Meet/Teams transcripts → decisions, actions, interactions | 🔜 (paste-transcript extraction built) |
 | **Embeds** | Jira issue panel, Figma plugin, Confluence macro | 🔜 |
@@ -69,7 +69,7 @@ Every client is just a view or a capture point.
 
 ### A. Today
 1. **Daily Brief** — what changed and what needs you: approvals waiting, overdue stakeholder touchpoints, at-risk commitments, rising signal clusters, bets due for measurement, RAID items escalating, backlog health.
-2. **Ask Throughline** — search + Q&A over the whole graph, with citations.
+2. **Ask Goldthread** — search + Q&A over the whole graph, with citations.
 3. **Inbox** — stakeholder requests, review findings and approvals assigned to you.
 
 ### B. Strategy
@@ -231,7 +231,7 @@ external system without approval; PII redaction before any model call.
 - Accessibility: WCAG 2.2 AA; keyboard-first; light/dark.
 - Performance: workspace of 50k entities searchable < 200 ms.
 
-## 8. How we measure Throughline itself
+## 8. How we measure Goldthread itself
 
 - Clarification loops per story ↓, requirement-origin defects ↓
 - Refinement time ↓

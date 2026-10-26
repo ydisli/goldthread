@@ -1,12 +1,12 @@
-# Throughline
+# Goldthread
 
 **The working notebook for Product Owners and Business Analysts — on your own, or with your team.**
 
-Throughline keeps the chain *strategy → evidence → bet → requirement → story → release → outcome → learning* as one live graph, and wraps the people side of the job — stakeholders, approvals, promises, conflicts, communication — around it. It sits next to Jira, Azure DevOps or ServiceNow (the system of record for *work*) as the system of record for *intent* and *alignment*.
+Goldthread keeps the chain *strategy → evidence → bet → requirement → story → release → outcome → learning* as one live graph, and wraps the people side of the job — stakeholders, approvals, promises, conflicts, communication — around it. It sits next to Jira, Azure DevOps or ServiceNow (the system of record for *work*) as the system of record for *intent* and *alignment*.
 
 Every analysis runs locally on deterministic, explainable engines. Connect Claude or any OpenAI-compatible model for deeper reviews, or point your own AI assistant at it over MCP.
 
-It comes with **The Field Guide**, a ~50,000-word book in [`book/`](book/), readable inside the app: Part I teaches the craft of being a good PO or BA, Part II teaches Throughline.
+It comes with **The Field Guide**, a ~50,000-word book in [`book/`](book/), readable inside the app: Part I teaches the craft of being a good PO or BA, Part II teaches Goldthread.
 
 > Concept, gap analysis and module map: [docs/CONCEPT.md](docs/CONCEPT.md) · Architecture and phases: [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) · Running it for a team: [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md)
 
@@ -24,13 +24,13 @@ It comes with **The Field Guide**, a ~50,000-word book in [`book/`](book/), read
 
 **Early, usable, and open for feedback.** Everything described here is built and covered by tests: 113 unit and integration tests, plus 14 browser tests that include accessibility scans. Some things have **not been tested against the real services yet**: email (SMTP), single sign-on, Jira Cloud, Azure DevOps, Slack, Microsoft Teams, inbound email, live AI model calls and the Docker image. Each was built against a local stand-in that follows the provider's documented API. See [what has been tested](docs/SELF_HOSTING.md#what-has-been-tested). If you connect one for real, please [tell us how it went](.github/ISSUE_TEMPLATE/integration_report.md).
 
-**How it was made.** Throughline, its tests and the Field Guide were written with substantial help from an AI model (Claude), directed and reviewed by the maintainer. Treat it as you would any young open-source project: read the code you rely on, and report what you find.
+**How it was made.** Goldthread, its tests and the Field Guide were written with substantial help from an AI model (Claude), directed and reviewed by the maintainer. Treat it as you would any young open-source project: read the code you rely on, and report what you find.
 
 ---
 
 ## Quick start
 
-Requires **Node.js 24 or newer** (Throughline uses Node's native TypeScript support and built-in SQLite — no build step for the server).
+Requires **Node.js 24 or newer** (Goldthread uses Node's native TypeScript support and built-in SQLite — no build step for the server).
 
 ```bash
 npm install
@@ -61,7 +61,7 @@ npm run build && npm start
 | `npm run backup -- <folder>` | Consistent backup of all data, safe while the server runs |
 | `npm run reset-password -- <email>` | Print a one-time password reset link (for operators) |
 
-Configuration is by environment variables: port, data folder, public URL, signup policy, email, single sign-on and AI. They're all listed in [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md). The demo accounts are only on under `npm run dev` (or `TL_DEMO=1`).
+Configuration is by environment variables: port, data folder, public URL, signup policy, email, single sign-on and AI. They're all listed in [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md). The demo accounts are only on under `npm run dev` (or `GT_DEMO=1`).
 
 ---
 
@@ -88,7 +88,7 @@ Configuration is by environment variables: port, data folder, public URL, signup
 A practical book for Product Owners and Business Analysts, in Markdown under `book/` and in the app under **Field guide** (`g f`):
 
 - **Part I: The craft** (16 chapters): the job, problems before solutions, stakeholders, working relationships, discovery, strategy, elicitation, requirements, modelling, specs and reviews, prioritisation, forecasting, delivery and release, governance, learning from outcomes, growing in the role.
-- **Part II: Working in Throughline** (11 chapters): a tour, a first-week setup plan, one chapter per area, teams, connecting AI assistants, and recipes for a real week.
+- **Part II: Working in Goldthread** (11 chapters): a tour, a first-week setup plan, one chapter per area, teams, connecting AI assistants, and recipes for a real week.
 - **Appendices**: fill-in templates and a glossary.
 
 Every chapter uses the same running example as the IT sample workspace (Ashgrove's ServiceHub), names the common traps, links to the tools it uses, and ends with interactive check-yourself questions. Reading paths cover new POs and BAs, experienced ones, and people who only want the tool. Progress is saved per person, Home shows a "continue reading" card, and tool guide panels link back to the chapter that teaches the craft behind them. Connected AI assistants can read chapters and quiz you over MCP.
@@ -127,12 +127,12 @@ Every one of the 53 item types (and any you add) also has generic create/edit/li
 |---|---|
 | **Web** | `npm run dev` / `npm start` |
 | **Desktop & mobile** | Installable PWA (Chrome/Edge "Install app", Safari "Add to Dock" / "Add to Home Screen"). Responsive down to 375 px with a mobile tab bar; read-only offline from the last cached workspace. |
-| **AI assistants (MCP)** | Claude Desktop, Claude Code, Cursor, VS Code or any MCP client: Streamable HTTP at `/mcp` with `Authorization: Bearer <token>`, or the stdio bridge `node mcp/stdio.ts` with `TL_URL` and `TL_TOKEN`. 17 tools: search, get/list items, daily brief, meeting prep, forecast, impact analysis, traceability gaps, spec checks, process-model checks, document generation, schema, the Field Guide (contents and chapters with quiz answers), and (with a write token) capture, create and update. **Settings → Tokens & integrations** shows ready-to-paste configs. |
-| **CLI** | `node cli/tl.ts help` — `capture`, `brief`, `search`, `prep "<name>"`, `import <jira-or-ado.csv>` (schedule it to keep the backlog fresh), `export`, and `lint <spec.md>` which runs fully offline and exits 1 on errors (use it in CI). Set `TL_URL` and `TL_TOKEN`. |
-| **Browser extension** | Load `extension/` unpacked in Chrome/Edge; right-click selected text → *Send to Throughline as signal / request*. Guesses the source from the site (service desk, review site, CRM…). |
-| **Slack & Teams** | Post new requests, sign-off requests, decisions and releases to a channel; capture with `/throughline request: …` in Slack or by @mentioning an outgoing webhook in Teams. Requests are verified with Slack's signing secret or the Teams HMAC. |
+| **AI assistants (MCP)** | Claude Desktop, Claude Code, Cursor, VS Code or any MCP client: Streamable HTTP at `/mcp` with `Authorization: Bearer <token>`, or the stdio bridge `node mcp/stdio.ts` with `GT_URL` and `GT_TOKEN`. 17 tools: search, get/list items, daily brief, meeting prep, forecast, impact analysis, traceability gaps, spec checks, process-model checks, document generation, schema, the Field Guide (contents and chapters with quiz answers), and (with a write token) capture, create and update. **Settings → Tokens & integrations** shows ready-to-paste configs. |
+| **CLI** | `node cli/goldthread.ts help` — `capture`, `brief`, `search`, `prep "<name>"`, `import <jira-or-ado.csv>` (schedule it to keep the backlog fresh), `export`, and `lint <spec.md>` which runs fully offline and exits 1 on errors (use it in CI). Set `GT_URL` and `GT_TOKEN`. |
+| **Browser extension** | Load `extension/` unpacked in Chrome/Edge; right-click selected text → *Send to Goldthread as signal / request*. Guesses the source from the site (service desk, review site, CRM…). |
+| **Slack & Teams** | Post new requests, sign-off requests, decisions and releases to a channel; capture with `/goldthread request: …` in Slack or by @mentioning an outgoing webhook in Teams. Requests are verified with Slack's signing secret or the Teams HMAC. |
 | **Email in** | Forward an email to a private inbound address (Postmark, Mailgun or similar) and it becomes a signal, request, decision or risk, matched to the sender. |
-| **REST API** | `POST /api/capture` for chat bots, scripts and alerts. Full CRUD under `/api/entities`, `/api/batch`, live changes over SSE at `/api/events`. Authenticate with `Authorization: Bearer <token>` (or `X-TL-Token`). |
+| **REST API** | `POST /api/capture` for chat bots, scripts and alerts. Full CRUD under `/api/entities`, `/api/batch`, live changes over SSE at `/api/events`. Authenticate with `Authorization: Bearer <token>` (or `X-GT-Token`). |
 
 Tokens are personal: create one per tool under **Settings → Tokens & integrations**, as read-only or read & write (capped by your role in that workspace). They are stored hashed and can be revoked at any time.
 
@@ -162,7 +162,7 @@ server/      Node HTTP server: accounts, sessions, roles, invites, tokens (syste
 mcp/         stdio bridge for MCP clients that launch local commands
 web/         React PWA (hand-rolled design system, light/dark, charts per the data-viz palette)
 book/        The Field Guide: Markdown chapters with front matter and quiz blocks
-cli/         `tl` command — shares the core
+cli/         `goldthread` command — shares the core
 extension/   Chrome/Edge MV3 capture extension
 docs/        concept, build plan, self-hosting, accessibility, screenshots
 e2e/         Playwright browser tests and accessibility scans

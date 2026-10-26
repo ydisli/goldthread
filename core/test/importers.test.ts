@@ -69,7 +69,7 @@ test('an Azure DevOps export maps iteration paths, tags and HTML', () => {
   assert.equal(plan.creates[1].status, 'in-progress');
 });
 
-test('re-importing updates stories by key and keeps what was written in Throughline', () => {
+test('re-importing updates stories by key and keeps what was written in Goldthread', () => {
   const existing = [{ id: 'sto_1', type: 'story', createdAt: '', updatedAt: '', title: 'Provision VPN', status: 'ready', estimate: 3, externalKey: 'SH-102', acceptance: 'Written here', requirementIds: ['req_1'] }] as Entity[];
   const plan = planIssueImport(parseCsv(JIRA), existing);
   assert.equal(plan.creates.length, 1);

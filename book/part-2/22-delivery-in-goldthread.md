@@ -1,13 +1,13 @@
 ---
-id: delivery-in-throughline
-title: Delivery in Throughline
+id: delivery-in-goldthread
+title: Delivery in Goldthread
 part: tool
 minutes: 14
 summary: Backlog health and Jira or Azure DevOps import, ranking with sensitivity, the roadmap, Monte Carlo forecasts, releases, the RAID log, UAT and defects, and generated traceability.
 tools: [backlog, prioritize, roadmap, pulse, releases, raid, uat, trace]
 ---
 
-The Delivery area supports Chapters 11 to 13: from backlog to release, with honest dates. It isn't a replacement for your team's delivery tool. Most IT teams will keep Jira or Azure DevOps for day-to-day sprint work. Throughline adds what those tools don't do well: ranking you can defend, forecasts you can trust, readiness you can check and traceability you don't have to maintain.
+The Delivery area supports Chapters 11 to 13: from backlog to release, with honest dates. It isn't a replacement for your team's delivery tool. Most IT teams will keep Jira or Azure DevOps for day-to-day sprint work. Goldthread adds what those tools don't do well: ranking you can defend, forecasts you can trust, readiness you can check and traceability you don't have to maintain.
 
 ## Backlog health
 
@@ -24,16 +24,16 @@ The page gives a **health score**, counts stories that meet the Definition of Re
 
 ### Import and export
 
-**Import from Jira / ADO** takes a CSV export from Jira or Azure DevOps (see [Chapter 18](guide:first-week) for how to export). Throughline:
+**Import from Jira / ADO** takes a CSV export from Jira or Azure DevOps (see [Chapter 18](guide:first-week) for how to export). Goldthread:
 
 - detects which tool it came from and maps the columns (summary or title, key, type, status, points, sprint or iteration, labels or tags, description, acceptance criteria, resolved or closed date),
 - maps statuses onto backlog, ready, in progress, in review and done,
 - pulls "As a… I want… so that…" out of descriptions, and Given/When/Then or an "Acceptance criteria" section into the acceptance criteria,
 - imports bugs as **defects** (optional) and skips epics (create those as bets),
 - keeps **resolved dates**, so the forecast can use your real throughput,
-- **updates** stories it has seen before (matched on the issue key) instead of duplicating them, and never overwrites links or notes you added in Throughline.
+- **updates** stories it has seen before (matched on the issue key) instead of duplicating them, and never overwrites links or notes you added in Goldthread.
 
-**Export** writes open stories as a CSV that Jira's importer or Azure DevOps can map directly: summary, description with the user story narrative, acceptance criteria, points, labels and sprint. Choose *new stories only* to push stories you wrote in Throughline (ones without a Jira key yet).
+**Export** writes open stories as a CSV that Jira's importer or Azure DevOps can map directly: summary, description with the user story narrative, acceptance criteria, points, labels and sprint. Choose *new stories only* to push stories you wrote in Goldthread (ones without a Jira key yet).
 
 **Live sync.** Instead of exporting and importing by hand, an admin can connect Jira Cloud or Azure DevOps directly ([Chapter 26](guide:connect)). The backlog then refreshes on a schedule and on **Sync now**, using exactly the same rules as an import, and new stories written here can be created in the delivery tool automatically.
 
@@ -62,7 +62,7 @@ Use it in planning conversations to argue about the inputs that matter, not the 
 - **Work in progress:** a warning when too many things are in flight at once.
 - **Promises vs forecast:** every promise that depends on a bet, with its probability (Chapter 19).
 
-The forecast needs **done dates**. If you import from Jira or Azure DevOps, include the resolved or closed date column. If you track stories in Throughline, set them to done and the date is recorded.
+The forecast needs **done dates**. If you import from Jira or Azure DevOps, include the resolved or closed date column. If you track stories in Goldthread, set them to done and the date is recorded.
 
 ## Releases
 
@@ -101,8 +101,8 @@ Generate test cases from decision tables (Chapter 21) and link each to the rule 
 ```quiz
 Q: The forecast page shows no data for your team even though you imported 300 stories from Jira. What's the likely cause?
 - The Monte Carlo engine needs story points
-- * The export didn't include resolved dates, so Throughline has no throughput history
-- Forecasts only work for bets created in Throughline
+- * The export didn't include resolved dates, so Goldthread has no throughput history
+- Forecasts only work for bets created in Goldthread
 - Jira stories can't be forecast
 Why: Throughput is counted from done dates. Re-export with the Resolved (Jira) or Closed Date (Azure DevOps) column and re-import; existing stories are updated, not duplicated.
 ```

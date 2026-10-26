@@ -178,7 +178,7 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
   });
 
   r.add('GET', '/api/export', 'editor', (ctx) => {
-    ctx.res.setHeader('Content-Disposition', `attachment; filename="throughline-${ctx.ws.workspace.name.replace(/[^\w-]+/g, '-').toLowerCase()}-${isoDate(new Date())}.json"`);
+    ctx.res.setHeader('Content-Disposition', `attachment; filename="goldthread-${ctx.ws.workspace.name.replace(/[^\w-]+/g, '-').toLowerCase()}-${isoDate(new Date())}.json"`);
     return ctx.ws.store.exportAll();
   }, { cors: true });
 

@@ -82,7 +82,7 @@ Where they help:
 - **As a summariser.** Turning meeting notes into decisions, actions and risks; condensing a long ticket export into themes. Check the output against the source.
 - **As a sparring partner.** "What are the strongest arguments against this prioritisation?" "What exceptions might a joiner–mover–leaver process have?" It widens your thinking.
 - **As a drafter of first versions** of routine text (release notes, update emails), which you then edit with your knowledge of the audience.
-- **As an interface to your data.** If your workspace is connected (Throughline supports this through MCP), an assistant can search your stakeholders, specs and decisions, prepare you for a meeting, or capture a note, using your real context rather than generic knowledge.
+- **As an interface to your data.** If your workspace is connected (Goldthread supports this through MCP), an assistant can search your stakeholders, specs and decisions, prepare you for a meeting, or capture a note, using your real context rather than generic knowledge.
 
 Where to be careful:
 

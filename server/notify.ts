@@ -15,12 +15,12 @@ const wants = (u: User, what: keyof NotifyPrefs) => {
 };
 
 const itemLink = (base: string, e: Entity) => `${base}/#/e/${e.type}/${e.id}`;
-const footer = (base: string) => `\n\n—\nThroughline · ${base}\nChange which emails you get under Settings → Profile → Notifications.`;
+const footer = (base: string) => `\n\n—\nGoldthread · ${base}\nChange which emails you get under Settings → Profile → Notifications.`;
 
 export function notifyInvite(sys: SystemDB, input: { email: string; token: string; workspace: string; role: string; by: string; base: string }): boolean {
   return queueMail(sys, {
     to: input.email,
-    subject: `${input.by} invited you to ${input.workspace} on Throughline`,
+    subject: `${input.by} invited you to ${input.workspace} on Goldthread`,
     text: `${input.by} invited you to join “${input.workspace}” as ${input.role}.\n\nAccept the invite:\n${input.base}/#/join/${input.token}\n\nThe link works once, for this email address, for 14 days.` + footer(input.base),
   });
 }
@@ -28,7 +28,7 @@ export function notifyInvite(sys: SystemDB, input: { email: string; token: strin
 export function notifyReset(sys: SystemDB, user: User, token: string, base: string): boolean {
   return queueMail(sys, {
     to: user.email,
-    subject: 'Reset your Throughline password',
+    subject: 'Reset your Goldthread password',
     text: `Someone asked to reset the password for ${user.email}. If it was you, choose a new password here:\n${base}/#/reset/${token}\n\nThe link works once, for 24 hours. If it wasn't you, ignore this email; your password stays as it is.` + footer(base),
   });
 }
@@ -94,7 +94,7 @@ export function sendDigests(sys: SystemDB, workspaces: Workspaces, now = new Dat
       if (lines.length) sections.push(`${w.name}\n${[...new Set(lines)].join('\n')}\n${base}/#/today`);
     }
     if (!sections.length) continue;
-    queueMail(sys, { to: u.email, subject: 'Your week in Throughline', text: `Good morning, ${u.name.split(' ')[0]}. Here is what is waiting on you.\n\n${sections.join('\n\n')}` + footer(base) });
+    queueMail(sys, { to: u.email, subject: 'Your week in Goldthread', text: `Good morning, ${u.name.split(' ')[0]}. Here is what is waiting on you.\n\n${sections.join('\n\n')}` + footer(base) });
     sys.updateUser(u.id, { prefs: { lastDigestAt: now.toISOString() } });
     sent++;
   }

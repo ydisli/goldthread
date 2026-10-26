@@ -43,7 +43,7 @@ When the line is unbroken, anyone can ask "why does this exist?" of any story, t
 - A release that went out on time and changed nothing anybody can measure.
 - An auditor asking why an access rule exists, and nobody knowing.
 
-This book, and the tool it comes with, are named after that line: the **throughline**. Almost every technique you will learn exists to protect one of its links.
+People call that line the **golden thread**, and the tool that comes with this book is named after it. Almost every technique you will learn exists to protect one of its links.
 
 ## Five responsibilities
 
@@ -96,7 +96,7 @@ None of this makes the job less of a product job. It makes it a product job with
 
 ## Meet Ashgrove
 
-Every chapter in this book uses one running example, and the sample workspace in Throughline contains the same story, so you can open what you read about.
+Every chapter in this book uses one running example, and the sample workspace in Goldthread contains the same story, so you can open what you read about.
 
 **Ashgrove** is a mid-sized company with about 1,900 employees and contractors across offices, sales teams and warehouses, hiring around 600 people a year. Its IT department runs **ServiceHub**, the internal platform employees use to get set up, request access, reset passwords and get help.
 
@@ -118,7 +118,7 @@ Alex and Jordan's big bets for the quarter are **automated joiner–mover–leav
 
 **Part I, The craft,** is about the job and works without any tool. Each chapter covers one area, shows it applied at Ashgrove, names the common traps and ends with a few questions to check yourself. Read it in order if you're new to the role; dip in by topic if you're not.
 
-**Part II, Working in Throughline,** maps the craft onto the tool: where each technique lives, how the pieces connect, and recipes for a real working week. Read it once you're using Throughline, or alongside Part I. Each craft chapter links to the tools it uses.
+**Part II, Working in Goldthread,** maps the craft onto the tool: where each technique lives, how the pieces connect, and recipes for a real working week. Read it once you're using Goldthread, or alongside Part I. Each craft chapter links to the tools it uses.
 
 The **appendices** hold fill-in templates (problem statements, interview guides, user stories, decision records, release checklists) and a glossary.
 
@@ -134,12 +134,12 @@ Throughout, callouts mark four kinds of aside:
 > The technique applied to the running example.
 
 > [!try]
-> Where to find it in Throughline.
+> Where to find it in Goldthread.
 
 ## Check yourself
 
 ```quiz
-Q: A stakeholder asks why a particular access rule exists. In a team with a healthy "throughline", what should happen?
+Q: A stakeholder asks why a particular access rule exists. In a team with a healthy "goldthread", what should happen?
 - Someone remembers the meeting where it was decided
 - The rule is removed until someone complains
 - * The rule links to the requirement, decision and problem behind it, so anyone can answer

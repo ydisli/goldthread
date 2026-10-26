@@ -199,7 +199,7 @@ function WorkspaceTab() {
       </Card>
       <Customise />
       <Card title="Use it everywhere">
-        <div className="small">Install Throughline as an app: in Chrome or Edge choose <b>Install app</b> in the address bar; in Safari use <b>File → Add to Dock</b> (macOS) or <b>Share → Add to Home Screen</b> (iPhone, iPad). The last copy of the workspace stays readable offline.</div>
+        <div className="small">Install Goldthread as an app: in Chrome or Edge choose <b>Install app</b> in the address bar; in Safari use <b>File → Add to Dock</b> (macOS) or <b>Share → Add to Home Screen</b> (iPhone, iPad). The last copy of the workspace stays readable offline.</div>
       </Card>
       {isAdmin && <EmailStatus />}
       {cur?.role === 'owner' && (
@@ -224,7 +224,7 @@ function EmailStatus() {
   return (
     <Card title="Email (whole server)" sub={st.enabled ? `Sending as ${st.from} through ${st.host}.` : 'Not set up. Invites and reset links are shared by hand, and notifications stay in the Inbox.'}
       actions={st.enabled && <button className="btn btn-sm" onClick={test} disabled={busy}>{busy ? 'Sending…' : 'Send me a test email'}</button>}>
-      {!st.enabled && <div className="small">Set <code>TL_SMTP_URL</code> (for example <code>smtp://user:password@smtp.example.com:587</code>), <code>TL_MAIL_FROM</code> and <code>TL_PUBLIC_URL</code> on the server and restart it. See the self-hosting guide.</div>}
+      {!st.enabled && <div className="small">Set <code>GT_SMTP_URL</code> (for example <code>smtp://user:password@smtp.example.com:587</code>), <code>GT_MAIL_FROM</code> and <code>GT_PUBLIC_URL</code> on the server and restart it. See the self-hosting guide.</div>}
       {st.enabled && st.recent.length > 0 && (
         <div className="list">{st.recent.map((m, i) => (
           <div key={i} className="list-item small" style={{ padding: '6px 0' }}>
@@ -472,7 +472,7 @@ function ConnectTab() {
   const origin = location.origin;
   const tok = fresh ?? '<your token>';
   const wsName = s.auth?.current?.name ?? 'this workspace';
-  const desktop = JSON.stringify({ mcpServers: { throughline: { command: 'node', args: [info?.mcpBridge ?? '/path/to/throughline/mcp/stdio.ts'], env: { TL_URL: origin, TL_TOKEN: tok } } } }, null, 2);
+  const desktop = JSON.stringify({ mcpServers: { goldthread: { command: 'node', args: [info?.mcpBridge ?? '/path/to/goldthread/mcp/stdio.ts'], env: { GT_URL: origin, GT_TOKEN: tok } } } }, null, 2);
   return (
     <div className="stack">
       <Card title="Personal access tokens" sub={`Tokens let other tools act as you in ${wsName}. They carry your role, capped at read-only or read & write. Create one per tool so you can revoke them separately.`}>
@@ -503,7 +503,7 @@ function ConnectTab() {
       <Card title="AI assistants (MCP)" sub="Give Claude Desktop, Claude Code, Cursor, VS Code or any MCP client access to this workspace. It can search, read, prepare meetings, forecast, check specs — and, with a write token, capture and update items.">
         <div className="stack" style={{ gap: 14 }}>
           <Snippet title="Claude Desktop — claude_desktop_config.json" code={desktop} hint="Settings → Developer → Edit config. Restart Claude Desktop afterwards. Needs Node 23.6 or newer on this machine." />
-          <Snippet title="Claude Code" code={`claude mcp add --transport http throughline ${origin}/mcp --header "Authorization: Bearer ${tok}"`} />
+          <Snippet title="Claude Code" code={`claude mcp add --transport http goldthread ${origin}/mcp --header "Authorization: Bearer ${tok}"`} />
           <Snippet title="Any client that speaks Streamable HTTP" code={`URL:    ${origin}/mcp\nHeader: Authorization: Bearer ${tok}`} />
           {info && <div className="small muted">Tools offered: {info.mcpTools.map((t) => <code key={t} style={{ marginRight: 6 }}>{t}</code>)}</div>}
         </div>
@@ -511,8 +511,8 @@ function ConnectTab() {
 
       <Card title="Command line, browser and REST">
         <div className="stack" style={{ gap: 14 }}>
-          <Snippet title="CLI" code={`export TL_URL=${origin}\nexport TL_TOKEN=${tok}\nnode ${info?.cli ?? 'cli/tl.ts'} brief\nnode ${info?.cli ?? 'cli/tl.ts'} capture "Service desk can't see MFA status" --account "Service Desk"\nnode ${info?.cli ?? 'cli/tl.ts'} lint docs/spec.md   # exits 1 on errors, for CI`} />
-          <div className="small"><b>Browser extension.</b> In Chrome open Extensions → Developer mode → Load unpacked, and choose <code>{info?.extension ?? 'extension/'}</code>. Paste the URL and a write token in its options. Then select text on any page → right-click → <i>Send to Throughline</i>.</div>
+          <Snippet title="CLI" code={`export GT_URL=${origin}\nexport GT_TOKEN=${tok}\nnode ${info?.cli ?? 'cli/goldthread.ts'} brief\nnode ${info?.cli ?? 'cli/goldthread.ts'} capture "Service desk can't see MFA status" --account "Service Desk"\nnode ${info?.cli ?? 'cli/goldthread.ts'} lint docs/spec.md   # exits 1 on errors, for CI`} />
+          <div className="small"><b>Browser extension.</b> In Chrome open Extensions → Developer mode → Load unpacked, and choose <code>{info?.extension ?? 'extension/'}</code>. Paste the URL and a write token in its options. Then select text on any page → right-click → <i>Send to Goldthread</i>.</div>
           <Snippet title="REST" code={`curl -X POST ${origin}/api/capture \\\n  -H "Authorization: Bearer ${tok}" -H "Content-Type: application/json" \\\n  -d '{"kind":"evidence","text":"VPN drops during Teams calls","source":"support"}'`} />
         </div>
       </Card>
@@ -544,7 +544,7 @@ function AiTab() {
   const status = s.ai.enabled ? `On — ${s.ai.provider === 'anthropic' ? 'Claude' : 'OpenAI-compatible'}${s.ai.model ? ` (${s.ai.model})` : ''}` : 'Off — built-in engines only';
   const intro = (
     <div className="small muted">
-      Every analysis in Throughline works without AI: the spec checks, forecasts, gap detection and briefs are deterministic and explainable.
+      Every analysis in Goldthread works without AI: the spec checks, forecasts, gap detection and briefs are deterministic and explainable.
       Connecting a model adds deeper spec reviews, plain-language answers in Ask, and extraction from meeting notes. Emails, phone numbers and IBANs are masked before anything is sent, and AI only proposes — nothing is saved without your click.
     </div>
   );
@@ -606,7 +606,7 @@ function AiTab() {
         </div>
       </Card>
       <Card title="Other ways to bring AI in">
-        <div className="small">You can also point your own assistant at Throughline instead: connect Claude Desktop, Claude Code or any MCP client under <a href="#/workspace/settings?tab=connect">Tokens & integrations</a>. That uses your assistant's model and subscription, and Throughline stays the source of truth.</div>
+        <div className="small">You can also point your own assistant at Goldthread instead: connect Claude Desktop, Claude Code or any MCP client under <a href="#/workspace/settings?tab=connect">Tokens & integrations</a>. That uses your assistant's model and subscription, and Goldthread stays the source of truth.</div>
       </Card>
     </div>
   );

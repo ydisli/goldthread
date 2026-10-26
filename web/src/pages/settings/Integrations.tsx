@@ -130,7 +130,7 @@ function ChatCard({ kind, current, onChange }: { kind: 'slack' | 'teams'; curren
   const disconnect = async () => { if (confirm(`Disconnect ${slack ? 'Slack' : 'Teams'}?`)) { await api(`/api/admin/integrations/${kind}`, { method: 'DELETE' }).catch(errorToast); onChange(); } };
   return (
     <Card title={<span className="row" style={{ gap: 8 }}>{slack ? 'Slack' : 'Microsoft Teams'}{current?.connected && <span className="badge green">Connected</span>}</span>}
-      sub={slack ? 'Post updates to a channel, and capture from any conversation with a /throughline slash command.' : 'Post updates to a channel through a Workflows webhook, and capture by @mentioning an outgoing webhook.'}>
+      sub={slack ? 'Post updates to a channel, and capture from any conversation with a /goldthread slash command.' : 'Post updates to a channel through a Workflows webhook, and capture by @mentioning an outgoing webhook.'}>
       <form className="form-grid" onSubmit={(e) => { e.preventDefault(); void save(); }}>
         <div className="field full">
           <label htmlFor={`${kind}-hook`}>{slack ? 'Incoming webhook URL' : 'Workflows webhook URL'}</label>
@@ -146,10 +146,10 @@ function ChatCard({ kind, current, onChange }: { kind: 'slack' | 'teams'; curren
         <div className="field full">
           <label htmlFor={`${kind}-verify`}>{slack ? 'Signing secret (for the slash command)' : 'Security token (for the outgoing webhook)'}</label>
           <input id={`${kind}-verify`} className="input" type="password" autoComplete="off" value={verify} onChange={(e) => setVerify(e.target.value)} placeholder={current?.hasVerification ? 'Saved — paste a new one to replace it' : ''} />
-          <span className="help">{slack ? <>Slack app → Basic Information → Signing Secret. Create a slash command <code>/throughline</code> with this request URL:</> : <>Team → Manage team → Apps → Create an outgoing webhook with this callback URL; Teams shows the token once:</>} <code className="selectable">{inbound}</code></span>
+          <span className="help">{slack ? <>Slack app → Basic Information → Signing Secret. Create a slash command <code>/goldthread</code> with this request URL:</> : <>Team → Manage team → Apps → Create an outgoing webhook with this callback URL; Teams shows the token once:</>} <code className="selectable">{inbound}</code></span>
         </div>
         <div className="full row-wrap">
-          <span className="small muted grow">{slack ? 'Try: /throughline request: bulk unlock for shift leads' : 'Try: @Throughline risk: CRM connector rate-limits bulk provisioning'}</span>
+          <span className="small muted grow">{slack ? 'Try: /goldthread request: bulk unlock for shift leads' : 'Try: @Goldthread risk: CRM connector rate-limits bulk provisioning'}</span>
           {current?.connected && <button type="button" className="btn btn-ghost btn-danger" onClick={disconnect}>Disconnect</button>}
           {current?.hasWebhook && <button type="button" className="btn" onClick={test} disabled={busy}>Send a test message</button>}
           <button className="btn btn-primary" disabled={busy}>Save</button>
@@ -189,7 +189,7 @@ export function IntegrationsTab() {
   if (!all) return null;
   return (
     <div className="stack">
-      <p className="small muted" style={{ margin: 0 }}>Your team keeps working in its delivery tool; Throughline keeps the backlog in step for analysis, forecasts and traceability. A sync behaves like re-importing an export: known items are updated by key, and links or notes you made here are kept.</p>
+      <p className="small muted" style={{ margin: 0 }}>Your team keeps working in its delivery tool; Goldthread keeps the backlog in step for analysis, forecasts and traceability. A sync behaves like re-importing an export: known items are updated by key, and links or notes you made here are kept.</p>
       <IntegrationCard key={`jira-${!!all.jira}`} kind="jira" current={all.jira} onChange={load} />
       <IntegrationCard key={`ado-${!!all.ado}`} kind="ado" current={all.ado} onChange={load} />
       <ChatCard key={`slack-${!!all.slack}`} kind="slack" current={all.slack} onChange={load} />

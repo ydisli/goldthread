@@ -1,13 +1,13 @@
 ---
-id: discovery-in-throughline
-title: Discovery in Throughline
+id: discovery-in-goldthread
+title: Discovery in Goldthread
 part: tool
 minutes: 12
 summary: Capturing signals from anywhere, grouping them into themes, the opportunity tree with evidence strength, bets, the assumption map, the experiment lab, personas, journeys and research.
 tools: [signals, opportunities, bets, assumptions, experiments, customers, research]
 ---
 
-The Discovery area supports Chapters 2 and 5: getting from what people say and do to problems worth solving, and from beliefs to tested bets. Its central idea is that **evidence accumulates**. Every quote, ticket count and interview finding you capture adds weight to a problem, and Throughline shows you how much weight each problem actually has.
+The Discovery area supports Chapters 2 and 5: getting from what people say and do to problems worth solving, and from beliefs to tested bets. Its central idea is that **evidence accumulates**. Every quote, ticket count and interview finding you capture adds weight to a problem, and Goldthread shows you how much weight each problem actually has.
 
 ## Signals: evidence from anywhere
 
@@ -22,14 +22,14 @@ A **signal** is one piece of evidence: a quote from an interview, a ticket, a su
 You can capture signals from many places, so evidence doesn't get lost on the way:
 
 - **In the app:** press **C** anywhere and choose *Signal*.
-- **From the terminal:** `tl capture "Locked out again before my shift" --source support`.
+- **From the terminal:** `goldthread capture "Locked out again before my shift" --source support`.
 - **From the browser:** highlight text on any page (a ticket, an email in webmail, a forum) and send it with the browser extension.
-- **From your AI assistant:** "capture this as a signal" when Throughline is connected over MCP (Chapter 26).
+- **From your AI assistant:** "capture this as a signal" when Goldthread is connected over MCP (Chapter 26).
 - **In bulk:** **Signals → Import** takes CSV from your service desk, survey tool or CRM.
 
 ### Unlinked and themes
 
-New signals land in **Unlinked** until you connect them to an opportunity. For each one, Throughline suggests existing opportunities that look similar. Link with a click, or create a new opportunity if nothing fits.
+New signals land in **Unlinked** until you connect them to an opportunity. For each one, Goldthread suggests existing opportunities that look similar. Link with a click, or create a new opportunity if nothing fits.
 
 **Themes** groups signals by similarity, even before you've linked them, so patterns show up early: "twelve signals about lockouts before shift start" is a theme worth an opportunity.
 
@@ -47,7 +47,7 @@ Each opportunity shows an **evidence strength** score, computed from the signals
 - **Behaviour:** the share of signals that are observed behaviour rather than opinion.
 - **Recency:** how much of the evidence is recent.
 
-If one source dominates (say a single VP or a single site accounts for most of the signals), Throughline warns you that the problem may be **one loud voice** rather than a broad pattern. That's the trap from [Chapter 5](guide:discovery), caught automatically.
+If one source dominates (say a single VP or a single site accounts for most of the signals), Goldthread warns you that the problem may be **one loud voice** rather than a broad pattern. That's the trap from [Chapter 5](guide:discovery), caught automatically.
 
 Write each opportunity as a problem statement ([Chapter 2](guide:problems-first)): who, what gets in the way, the impact, the evidence.
 
@@ -98,7 +98,7 @@ The map plots importance against evidence. **Top-left (important but unproven) i
 ## Check yourself
 
 ```quiz
-Q: An opportunity has 25 linked signals, but Throughline warns that one source accounts for 70% of them. What does that suggest?
+Q: An opportunity has 25 linked signals, but Goldthread warns that one source accounts for 70% of them. What does that suggest?
 - The evidence is very strong
 - * The problem may reflect one loud voice rather than a broad pattern, so look for evidence from other groups
 - The signals should be deleted

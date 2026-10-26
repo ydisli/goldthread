@@ -77,7 +77,7 @@ export function Customise() {
 
   return (
     <>
-      <Card title="Fields of your own" sub="Add what your team tracks that Throughline doesn't: a vendor on requirements, a regulatory reference on decisions, a cost centre on requests. They show in forms, on the item, in the workspace export and to AI assistants.">
+      <Card title="Fields of your own" sub="Add what your team tracks that Goldthread doesn't: a vendor on requirements, a regulatory reference on decisions, a cost centre on requests. They show in forms, on the item, in the workspace export and to AI assistants.">
         <div className="row-wrap" style={{ marginBottom: 12 }}>
           <label className="small strong" htmlFor="custom-type">On</label>
           <select id="custom-type" className="select input-sm" style={{ width: 'auto' }} value={type} onChange={(e) => setType(e.target.value)}>

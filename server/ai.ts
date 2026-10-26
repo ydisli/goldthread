@@ -5,7 +5,7 @@ import { Graph } from '../core/graph.ts';
 import { ENTITY_MAP, REVIEW_ROLES, type Entity } from '../core/schema.ts';
 import { SearchIndex } from '../core/engines/search.ts';
 
-// Optional AI layer. Every analysis in Throughline has a deterministic engine;
+// Optional AI layer. Every analysis in Goldthread has a deterministic engine;
 // a language model adds depth when one is configured for the workspace:
 //  - Claude through the Anthropic SDK (default when ANTHROPIC_API_KEY is set), or
 //  - any OpenAI-compatible chat-completions endpoint (OpenAI, Azure OpenAI,
@@ -21,15 +21,15 @@ interface Resolved {
   baseUrl?: string;
 }
 
-const envAnthropic = () => !!(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || process.env.TL_AI === '1');
+const envAnthropic = () => !!(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || process.env.GT_AI === '1');
 
 function resolve(sys: SystemDB, workspaceId: string): Resolved | null {
   const cfg = sys.aiConfig(workspaceId);
-  if (!cfg) return envAnthropic() ? { provider: 'anthropic', model: process.env.TL_MODEL ?? DEFAULT_CLAUDE_MODEL } : null;
+  if (!cfg) return envAnthropic() ? { provider: 'anthropic', model: process.env.GT_MODEL ?? DEFAULT_CLAUDE_MODEL } : null;
   if (cfg.provider === 'none') return null;
   if (cfg.provider === 'anthropic') {
     if (!cfg.apiKey && !envAnthropic()) return null;
-    return { provider: 'anthropic', model: cfg.model || process.env.TL_MODEL || DEFAULT_CLAUDE_MODEL, apiKey: cfg.apiKey };
+    return { provider: 'anthropic', model: cfg.model || process.env.GT_MODEL || DEFAULT_CLAUDE_MODEL, apiKey: cfg.apiKey };
   }
   if (!cfg.baseUrl || !cfg.model) return null;
   return { provider: 'openai-compatible', model: cfg.model, apiKey: cfg.apiKey, baseUrl: cfg.baseUrl };

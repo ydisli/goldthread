@@ -1,4 +1,4 @@
-// Throughline schema: every entity type is declared once here and shared by
+// Goldthread schema: every entity type is declared once here and shared by
 // the server, the web app, the CLI and the browser extension. References
 // between entities are typed fields, and the Intent Graph is derived from them.
 

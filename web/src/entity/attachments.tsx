@@ -17,7 +17,7 @@ export async function uploadFile(entityId: string, file: File): Promise<Entity> 
   const ws = getState().auth?.current?.id;
   const res = await fetch(`/api/files?entityId=${encodeURIComponent(entityId)}&name=${encodeURIComponent(file.name)}`, {
     method: 'POST', credentials: 'same-origin', body: file,
-    headers: { 'Content-Type': file.type || 'application/octet-stream', ...(ws ? { 'X-TL-Workspace': ws } : {}) },
+    headers: { 'Content-Type': file.type || 'application/octet-stream', ...(ws ? { 'X-GT-Workspace': ws } : {}) },
   });
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new ApiError(res.status, body.error ?? res.statusText);

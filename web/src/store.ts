@@ -64,7 +64,7 @@ let state: State = {
   status: 'loading',
   auth: null,
   entities: new Map(),
-  settings: { workspaceName: 'Throughline', productName: '', currency: '$' },
+  settings: { workspaceName: 'Goldthread', productName: '', currency: '$' },
   members: [],
   role: 'viewer',
   ai: { enabled: false },
@@ -100,7 +100,7 @@ export function conflictOf(err: unknown): Conflict | null {
   return err instanceof ApiError && err.status === 409 && err.data?.conflict ? (err.data.conflict as Conflict) : null;
 }
 
-const WS_KEY = 'tl.workspace';
+const WS_KEY = 'gt.workspace';
 let currentWs: string | null = (() => { try { return localStorage.getItem(WS_KEY); } catch { return null; } })();
 
 export async function api<T = any>(path: string, init: RequestInit & { json?: unknown } = {}): Promise<T> {
@@ -108,7 +108,7 @@ export async function api<T = any>(path: string, init: RequestInit & { json?: un
   const res = await fetch(path, {
     ...rest,
     credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json', ...(currentWs ? { 'X-TL-Workspace': currentWs } : {}), ...(rest.headers ?? {}) },
+    headers: { 'Content-Type': 'application/json', ...(currentWs ? { 'X-GT-Workspace': currentWs } : {}), ...(rest.headers ?? {}) },
     body: json !== undefined ? JSON.stringify(json) : rest.body,
   });
   const text = await res.text();
@@ -123,7 +123,7 @@ export async function api<T = any>(path: string, init: RequestInit & { json?: un
 
 // ---------------- boot, auth & workspace loading ----------------
 
-const CACHE_KEY = 'tl.workspace.cache.v2';
+const CACHE_KEY = 'gt.workspace.cache.v2';
 
 export async function boot() {
   let auth: AuthState;

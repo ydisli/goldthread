@@ -4,7 +4,7 @@ import { harness } from './harness.ts';
 import { json, standIn } from './standin.ts';
 
 // Model providers are tested against local stand-ins that speak their HTTP APIs.
-// This checks what Throughline sends and how it reads replies, not the real services.
+// This checks what Goldthread sends and how it reads replies, not the real services.
 
 const anthropicReply = (payload: unknown, stop = 'end_turn') => ({
   id: 'msg_test', type: 'message', role: 'assistant', model: 'claude-opus-5-5', stop_reason: stop, stop_sequence: null,

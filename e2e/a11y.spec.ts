@@ -47,7 +47,7 @@ test('keyboard: skip link, page titles, and focus moves to the new page', async 
   await page.getByRole('link', { name: /Inbox/ }).first().click();
   await expect(page.locator('main h1')).toHaveText('Inbox');
   await expect(page.locator('main h1')).toBeFocused();
-  await expect(page).toHaveTitle('Inbox · Throughline');
+  await expect(page).toHaveTitle('Inbox · Goldthread');
 
   // Escape closes drawers and dialogs, and the editor's fields are labelled.
   await page.keyboard.press('c');

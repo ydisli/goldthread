@@ -1,6 +1,6 @@
-# Contributing to Throughline
+# Contributing to Goldthread
 
-Thanks for helping. Throughline is for product owners and business analysts, so contributions from people who do that work are as valuable as code. That includes bug reports, reports from trying an integration for real, Field Guide corrections and accessibility testing.
+Thanks for helping. Goldthread is for product owners and business analysts, so contributions from people who do that work are as valuable as code. That includes bug reports, reports from trying an integration for real, Field Guide corrections and accessibility testing.
 
 ## The most useful things right now
 
@@ -22,7 +22,7 @@ npm run dev          # http://127.0.0.1:4300, with one-click demo accounts
 |---|---|
 | `npm run typecheck` | TypeScript over everything |
 | `npm test` | Unit and integration tests: engines, server, accounts, integrations against local stand-ins |
-| `npm run build && npm run e2e` | Browser tests and accessibility scans in Chromium (run `npx playwright install chromium` once, or set `TL_E2E_CHROMIUM` to an installed Chromium) |
+| `npm run build && npm run e2e` | Browser tests and accessibility scans in Chromium (run `npx playwright install chromium` once, or set `GT_E2E_CHROMIUM` to an installed Chromium) |
 | `npm run seed` | Put the demo workspace back to how it started |
 
 ## How the code is organised

@@ -16,7 +16,7 @@ import { ValidationError } from '../db.ts';
 
 /** A tiny in-process client: route lookup, auth and the handler, without a socket. */
 export function harness() {
-  const dir = mkdtempSync(join(tmpdir(), 'throughline-acct-'));
+  const dir = mkdtempSync(join(tmpdir(), 'goldthread-acct-'));
   const sys = new SystemDB(dir);
   const ws = new Workspaces(sys, dir);
   const router = new Router();
@@ -31,8 +31,8 @@ export function harness() {
     const hit = router.match(method, url.pathname);
     if (!hit) throw new Error(`no route ${method} ${path}`);
     const headers: Record<string, string> = { ...(opts.headers ?? {}) };
-    if (opts.session) headers.cookie = `tl_session=${opts.session}`;
-    if (opts.workspace) headers['x-tl-workspace'] = opts.workspace;
+    if (opts.session) headers.cookie = `gt_session=${opts.session}`;
+    if (opts.workspace) headers['x-gt-workspace'] = opts.workspace;
     const res: any = {
       headers: {} as Record<string, string | string[]>, statusCode: 200, headersSent: false,
       setHeader(k: string, v: string) { this.headers[k.toLowerCase()] = v; },

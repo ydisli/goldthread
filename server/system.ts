@@ -458,7 +458,7 @@ export class SystemDB {
   createToken(input: { userId: string; workspaceId: string; name: string; scope: 'read' | 'write' }): { token: string; record: ApiToken } {
     const secret = randomBytes(24).toString('base64url');
     const prefix = randomBytes(4).toString('hex');
-    const token = `tl_${prefix}_${secret}`;
+    const token = `gt_${prefix}_${secret}`;
     const t = { id: id('tok'), created_at: now() };
     this.db.prepare('INSERT INTO tokens(id, user_id, workspace_id, name, scope, prefix, token_hash, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
       .run(t.id, input.userId, input.workspaceId, input.name.trim() || 'Token', input.scope, prefix, sha256(token), t.created_at);

@@ -1,13 +1,13 @@
 ---
-id: stakeholders-in-throughline
-title: Stakeholders in Throughline
+id: stakeholders-in-goldthread
+title: Stakeholders in Goldthread
 part: tool
 minutes: 13
 summary: The People area tool by tool, from profiles, maps and meeting prep to cadence, requests, promises checked against the forecast, RACI, approvals and conflicts.
 tools: [stakeholders, maps, engagement, requests, commitments, raci, approvals, conflicts]
 ---
 
-The People area turns Chapters 3, 4 and 14 into daily practice. It's where many POs and BAs spend the most time, and where Throughline differs most from a ticket tracker: it treats relationships as work worth managing, with the same care as requirements.
+The People area turns Chapters 3, 4 and 14 into daily practice. It's where many POs and BAs spend the most time, and where Goldthread differs most from a ticket tracker: it treats relationships as work worth managing, with the same care as requirements.
 
 ## Stakeholders
 
@@ -56,17 +56,17 @@ Use it exactly as [Chapter 4](guide:relationships) describes: capture everything
 
 ## Promises
 
-**People → Promises** is the commitment ledger: what was promised, to whom, by when, by whom. Throughline checks each promise against the **delivery forecast** for the work it depends on and shows the probability of keeping it. Promises below your comfort level are flagged on Home and in the stakeholder's prep.
+**People → Promises** is the commitment ledger: what was promised, to whom, by when, by whom. Goldthread checks each promise against the **delivery forecast** for the work it depends on and shows the probability of keeping it. Promises below your comfort level are flagged on Home and in the stakeholder's prep.
 
 This is what turns [Chapter 12](guide:forecasting) into trust: you find out a promise is in trouble while there's still time to renegotiate. Link each promise to the bet or release it depends on, or the forecast can't check it.
 
 ## RACI
 
-**People → RACI** holds RACI matrices: activities as rows, people as columns, R/A/C/I in the cells. Click a cell to cycle the role. Throughline validates each matrix as you go: rows with **no accountable**, **more than one accountable**, or **no responsible** are flagged, along with people who are accountable for too much. Add activities, rename by double-clicking, and link a matrix to the bet or release it governs.
+**People → RACI** holds RACI matrices: activities as rows, people as columns, R/A/C/I in the cells. Click a cell to cycle the role. Goldthread validates each matrix as you go: rows with **no accountable**, **more than one accountable**, or **no responsible** are flagged, along with people who are accountable for too much. Add activities, rename by double-clicking, and link a matrix to the bet or release it governs.
 
 ## Approvals
 
-**People → Approvals & sign-offs** tracks every approval request: what's being approved (a spec, a baseline, a release, a decision), who must approve, the due date, and each approver's response (approved, rejected, changes requested) with comments. Approvals waiting on you appear in your Inbox. For approvers who aren't in Throughline, copy a ready-made reminder message.
+**People → Approvals & sign-offs** tracks every approval request: what's being approved (a spec, a baseline, a release, a decision), who must approve, the due date, and each approver's response (approved, rejected, changes requested) with comments. Approvals waiting on you appear in your Inbox. For approvers who aren't in Goldthread, copy a ready-made reminder message.
 
 Every response is kept as an audit trail: who approved which version, when. Request approval directly from a spec in Spec Studio; a baseline shows the approval that signed it off.
 
@@ -91,7 +91,7 @@ On a release, the **stakeholder update** view renders the same facts for differe
 ## Check yourself
 
 ```quiz
-Q: Where does Throughline get the probability shown next to a promise?
+Q: Where does Goldthread get the probability shown next to a promise?
 - From the stakeholder's sentiment
 - * From the delivery forecast for the bet or release the promise depends on
 - From the requester's priority

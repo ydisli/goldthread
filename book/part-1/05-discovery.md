@@ -182,7 +182,7 @@ And discovery never fully stops. Once something ships, measurement and feedback 
 > Take one initiative you're about to start. Write it as a bet with a measurable prediction and a confidence. List at least eight assumptions across value, usability, feasibility and viability. Rate each for importance and evidence. Pick the two riskiest and design the cheapest test that would change your mind about each.
 
 > [!try]
-> Capture evidence in [Signals](tool:signals). Throughline groups similar signals into themes and shows how strong each theme is. Organise problems in [Opportunities](tool:opportunities), write bets in [Bets](tool:bets), map risk in [Assumptions](tool:assumptions) and size tests in [Experiments](tool:experiments), which calculates sample sizes and significance for you. Personas and journeys live in [Personas & journeys](tool:customers), and interview plans and findings in [Research](tool:research).
+> Capture evidence in [Signals](tool:signals). Goldthread groups similar signals into themes and shows how strong each theme is. Organise problems in [Opportunities](tool:opportunities), write bets in [Bets](tool:bets), map risk in [Assumptions](tool:assumptions) and size tests in [Experiments](tool:experiments), which calculates sample sizes and significance for you. Personas and journeys live in [Personas & journeys](tool:customers), and interview plans and findings in [Research](tool:research).
 
 ## Check yourself
 

@@ -4,7 +4,7 @@ import { createHmac } from 'node:crypto';
 import { harness } from './harness.ts';
 import { json, standIn } from './standin.ts';
 
-// Slack, Teams and inbound email against local stand-ins: what Throughline posts, and how
+// Slack, Teams and inbound email against local stand-ins: what Goldthread posts, and how
 // it verifies and handles what they send. Not tested against the real services.
 
 const until = async (cond: () => boolean, ms = 3000) => { const end = Date.now() + ms; while (!cond() && Date.now() < end) await new Promise((r) => setTimeout(r, 20)); assert.ok(cond(), 'timed out waiting'); };
@@ -32,7 +32,7 @@ test('Slack and Teams: chosen events post to the channel with a link back', asyn
     await until(() => hook.requests.some((r) => r.path === '/slack'));
     const slack = hook.requests.find((r) => r.path === '/slack')!;
     assert.match(slack.body.text, /^\*New request: Bulk reset for the warehouse\*/);
-    assert.match(slack.body.text, /<http:\/\/.*\/#\/e\/request\/req_[\w-]+\|Open in Throughline>/);
+    assert.match(slack.body.text, /<http:\/\/.*\/#\/e\/request\/req_[\w-]+\|Open in Goldthread>/);
     assert.ok(!hook.requests.some((r) => r.path === '/teams'), 'Teams did not ask for requests');
 
     await h.call('POST', '/api/entities', { ...s, body: { type: 'decision', title: 'Retire the chatbot', chosen: 'After answer-first search ships' } });
@@ -56,7 +56,7 @@ test('Slack slash command: signed requests capture; unsigned or stale ones are r
     const owner = h.user('alex');
     const w = h.ws.create({ name: 'ServiceHub', kind: 'team', owner: owner.user, sample: 'empty' });
     await h.call('PUT', '/api/admin/integrations/slack', { session: owner.session, workspace: w.id, body: { signingSecret: 'slack-secret' } });
-    const body = new URLSearchParams({ command: '/throughline', text: 'request: shift leads need bulk unlock', user_name: 'olivia' }).toString();
+    const body = new URLSearchParams({ command: '/goldthread', text: 'request: shift leads need bulk unlock', user_name: 'olivia' }).toString();
     const ok = await h.call('POST', `/api/inbound/slack/${w.id}`, { raw: body, headers: slackSign('slack-secret', body) });
     assert.equal(ok.status, 200);
     assert.match(ok.body.text, /Captured as a request: “shift leads need bulk unlock”/);
@@ -80,7 +80,7 @@ test('Teams outgoing webhook: HMAC verified, mention stripped', async () => {
     const w = h.ws.create({ name: 'ServiceHub', kind: 'team', owner: owner.user, sample: 'empty' });
     const token = Buffer.from('teams-shared-secret-32-bytes-long!').toString('base64');
     await h.call('PUT', '/api/admin/integrations/teams', { session: owner.session, workspace: w.id, body: { securityToken: token } });
-    const raw = JSON.stringify({ type: 'message', text: '<at>Throughline</at>&nbsp;risk: CRM connector rate-limits bulk provisioning', from: { name: 'Priya Nair' } });
+    const raw = JSON.stringify({ type: 'message', text: '<at>Goldthread</at>&nbsp;risk: CRM connector rate-limits bulk provisioning', from: { name: 'Priya Nair' } });
     const auth = `HMAC ${createHmac('sha256', Buffer.from(token, 'base64')).update(raw).digest('base64')}`;
     const r = await h.call('POST', `/api/inbound/teams/${w.id}`, { raw, headers: { authorization: auth, 'content-type': 'application/json' } });
     assert.match(r.body.text, /Captured as a raid: “CRM connector rate-limits bulk provisioning”/);

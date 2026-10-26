@@ -11,23 +11,23 @@ import type { Workspaces } from './workspaces.ts';
 // Single sign-on with OpenID Connect (authorization code flow + PKCE). Works with any
 // standards-compliant provider: Entra ID, Okta, Google Workspace, Auth0, Keycloak…
 //
-//   TL_OIDC_ISSUER        e.g. https://login.microsoftonline.com/<tenant>/v2.0
-//   TL_OIDC_CLIENT_ID     the app registration's client id
-//   TL_OIDC_CLIENT_SECRET its secret (omit for public clients)
-//   TL_OIDC_NAME          label on the button, e.g. "Microsoft" (default "single sign-on")
-//   TL_OIDC_DOMAINS       optional comma list; only these email domains may sign up through SSO
-//   TL_PUBLIC_URL         where people reach Throughline; the redirect URI is <it>/api/auth/oidc/callback
+//   GT_OIDC_ISSUER        e.g. https://login.microsoftonline.com/<tenant>/v2.0
+//   GT_OIDC_CLIENT_ID     the app registration's client id
+//   GT_OIDC_CLIENT_SECRET its secret (omit for public clients)
+//   GT_OIDC_NAME          label on the button, e.g. "Microsoft" (default "single sign-on")
+//   GT_OIDC_DOMAINS       optional comma list; only these email domains may sign up through SSO
+//   GT_PUBLIC_URL         where people reach Goldthread; the redirect URI is <it>/api/auth/oidc/callback
 
 export interface OidcConfig { issuer: string; clientId: string; clientSecret?: string; name: string; domains: string[] }
 
 export function oidcConfig(env = process.env): OidcConfig | null {
-  if (!env.TL_OIDC_ISSUER || !env.TL_OIDC_CLIENT_ID) return null;
+  if (!env.GT_OIDC_ISSUER || !env.GT_OIDC_CLIENT_ID) return null;
   return {
-    issuer: env.TL_OIDC_ISSUER.replace(/\/$/, ''),
-    clientId: env.TL_OIDC_CLIENT_ID,
-    clientSecret: env.TL_OIDC_CLIENT_SECRET || undefined,
-    name: env.TL_OIDC_NAME || 'single sign-on',
-    domains: (env.TL_OIDC_DOMAINS ?? '').split(',').map((d) => d.trim().toLowerCase()).filter(Boolean),
+    issuer: env.GT_OIDC_ISSUER.replace(/\/$/, ''),
+    clientId: env.GT_OIDC_CLIENT_ID,
+    clientSecret: env.GT_OIDC_CLIENT_SECRET || undefined,
+    name: env.GT_OIDC_NAME || 'single sign-on',
+    domains: (env.GT_OIDC_DOMAINS ?? '').split(',').map((d) => d.trim().toLowerCase()).filter(Boolean),
   };
 }
 
@@ -141,8 +141,8 @@ export function oidcRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
     if (user?.demo) return fail(ctx, 'Demo accounts cannot use single sign-on.');
     if (!user) {
       const domain = email.split('@')[1];
-      const allowed = usableInvite || (cfg.domains.length ? cfg.domains.includes(domain) : process.env.TL_SIGNUP !== 'invite-only');
-      if (!allowed) return fail(ctx, `There is no Throughline account for ${email}. Ask an admin for an invite.`);
+      const allowed = usableInvite || (cfg.domains.length ? cfg.domains.includes(domain) : process.env.GT_SIGNUP !== 'invite-only');
+      if (!allowed) return fail(ctx, `There is no Goldthread account for ${email}. Ask an admin for an invite.`);
       user = sys.createUser({ email, name: (claims.name ?? email.split('@')[0]).slice(0, 80), prefs: { persona: 'both' } });
       if (!usableInvite) workspaces.create({ name: `${user.name.split(' ')[0]}'s workspace`, kind: 'personal', owner: user, sample: 'empty' });
     }

@@ -27,7 +27,7 @@ export function App() {
     const id = setTimeout(() => {
       const h1 = document.querySelector<HTMLElement>('main h1');
       const name = path === '/' || path === '/today' ? 'Home' : h1?.textContent;
-      document.title = name ? `${name} · Throughline` : 'Throughline';
+      document.title = name ? `${name} · Goldthread` : 'Goldthread';
       if (firstPage.current) { firstPage.current = false; return; }
       if (h1 && !document.querySelector('.drawer, [role="dialog"]')) { h1.tabIndex = -1; h1.focus({ preventScroll: true }); }
     }, 30);
@@ -39,7 +39,7 @@ export function App() {
   if (join) return <><JoinScreen token={join.token} /><Toasts /></>;
   const reset = match('/reset/:token', path);
   if (reset) return <><ResetScreen token={reset.token} /><Toasts /></>;
-  if (s.status === 'loading' && !s.auth) return <div className="boot"><span className="ws-mark">T</span></div>;
+  if (s.status === 'loading' && !s.auth) return <div className="boot"><span className="ws-mark">G</span></div>;
   if (s.status === 'auth') return <><AuthScreen /><Toasts /></>;
 
   let page: ReactNode = null;
@@ -57,12 +57,12 @@ export function App() {
       <div className="main-col">
         <header className="topbar">
           <button className="btn btn-ghost btn-icon menu-btn" onClick={() => setMenu(true)} aria-label="Open menu"><Icon name="menu" /></button>
-          <span className="ws-name" style={{ flex: 1 }}>{s.auth?.current?.name ?? 'Throughline'}</span>
+          <span className="ws-name" style={{ flex: 1 }}>{s.auth?.current?.name ?? 'Goldthread'}</span>
         </header>
         <main id="main" tabIndex={-1}>
           {s.status === 'offline' && <div className="banner">You're offline. Showing the last copy of this workspace — changes are paused until the server is back.</div>}
           {s.status === 'loading' && <div className="page"><Empty icon="clock">Opening workspace…</Empty></div>}
-          {s.status === 'error' && <div className="page"><Empty icon="circle-alert">Could not reach the Throughline server: {s.error}. Is <code>npm run dev</code> running?</Empty></div>}
+          {s.status === 'error' && <div className="page"><Empty icon="circle-alert">Could not reach the Goldthread server: {s.error}. Is <code>npm run dev</code> running?</Empty></div>}
           {noWorkspace && <NoWorkspace />}
           {!noWorkspace && (s.status === 'ready' || s.status === 'offline') && (
             <>

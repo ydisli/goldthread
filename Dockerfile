@@ -1,7 +1,7 @@
-# Throughline — production image. Untested here (no Docker on the build machine);
+# Goldthread — production image. Untested here (no Docker on the build machine);
 # the same production start is exercised by `npm run build && npm start`.
-#   docker build -t throughline .
-#   docker run -p 4300:4300 -v throughline-data:/data -e TL_PUBLIC_URL=https://throughline.example.com throughline
+#   docker build -t goldthread .
+#   docker run -p 4300:4300 -v goldthread-data:/data -e GT_PUBLIC_URL=https://goldthread.example.com goldthread
 
 FROM node:24-alpine AS build
 WORKDIR /app
@@ -11,7 +11,7 @@ COPY . .
 RUN npm run build
 
 FROM node:24-alpine
-ENV NODE_ENV=production HOST=0.0.0.0 PORT=4300 TL_DATA=/data TL_DEMO=0
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=4300 GT_DATA=/data GT_DEMO=0
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force

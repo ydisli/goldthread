@@ -6,7 +6,7 @@ import { flushOutbox, formatMessage, mailConfig, sendSmtp } from '../mail.ts';
 import { sendDigests } from '../notify.ts';
 import { harness } from './harness.ts';
 
-// A local SMTP stand-in. It checks Throughline's SMTP conversation and the messages it
+// A local SMTP stand-in. It checks Goldthread's SMTP conversation and the messages it
 // builds; it is not a real mail provider, so STARTTLS and deliverability are untested here.
 
 interface Received { from: string; to: string[]; auth?: string; data: string; subject: string; body: string }
@@ -55,11 +55,11 @@ async function smtpStandIn(opts: { rejectRcpt?: boolean } = {}) {
 
 const withSmtp = async (fn: (s: Awaited<ReturnType<typeof smtpStandIn>>) => Promise<void>, opts = {}) => {
   const s = await smtpStandIn(opts);
-  process.env.TL_SMTP_URL = `smtp://mailer:s3cret@127.0.0.1:${s.port}`;
-  process.env.TL_SMTP_INSECURE = '1';
-  process.env.TL_MAIL_FROM = 'Throughline <noreply@example.com>';
+  process.env.GT_SMTP_URL = `smtp://mailer:s3cret@127.0.0.1:${s.port}`;
+  process.env.GT_SMTP_INSECURE = '1';
+  process.env.GT_MAIL_FROM = 'Goldthread <noreply@example.com>';
   try { await fn(s); } finally {
-    delete process.env.TL_SMTP_URL; delete process.env.TL_SMTP_INSECURE; delete process.env.TL_MAIL_FROM;
+    delete process.env.GT_SMTP_URL; delete process.env.GT_SMTP_INSECURE; delete process.env.GT_MAIL_FROM;
     await s.close();
   }
 };
@@ -75,13 +75,13 @@ test('SMTP: authenticates, delivers UTF-8 and dot-stuffs lines', () => withSmtp(
 }));
 
 test('SMTP: refuses to send a password in clear text without STARTTLS', () => withSmtp(async () => {
-  delete process.env.TL_SMTP_INSECURE;
+  delete process.env.GT_SMTP_INSECURE;
   await assert.rejects(sendSmtp(mailConfig()!, { to: 'a@example.com', subject: 's', text: 't' }), /STARTTLS/);
 }));
 
 test('messages are well formed', () => {
-  const raw = formatMessage({ from: 'Throughline <noreply@example.com>' }, { to: 'a@example.com', subject: 'Hi', text: 'x' }, new Date('2026-10-26T09:00:00Z'));
-  assert.match(raw, /^From: Throughline <noreply@example.com>\r\nTo: a@example.com\r\nSubject: Hi\r\nDate: Mon, 26 Oct 2026 09:00:00 GMT\r\nMessage-ID: <[0-9a-f]+@example.com>/);
+  const raw = formatMessage({ from: 'Goldthread <noreply@example.com>' }, { to: 'a@example.com', subject: 'Hi', text: 'x' }, new Date('2026-10-26T09:00:00Z'));
+  assert.match(raw, /^From: Goldthread <noreply@example.com>\r\nTo: a@example.com\r\nSubject: Hi\r\nDate: Mon, 26 Oct 2026 09:00:00 GMT\r\nMessage-ID: <[0-9a-f]+@example.com>/);
 });
 
 test('invites, mentions, approvals and forgotten passwords send emails', () => withSmtp(async (s) => {
@@ -112,7 +112,7 @@ test('invites, mentions, approvals and forgotten passwords send emails', () => w
     assert.match(mention.body, /> @jo can you check this\?/);
     assert.match(mention.body, new RegExp(`#/e/decision/${doc.body.id}`));
     assert.deepEqual(by(/sign-off is requested: Baseline v2/)!.to, ['jo@example.com']);
-    const reset = by(/Reset your Throughline password/)!;
+    const reset = by(/Reset your Goldthread password/)!;
     assert.deepEqual(reset.to, ['jo@example.com'], 'nothing is sent for unknown addresses');
     const token = /#\/reset\/([\w-]+)/.exec(reset.body)![1];
     assert.equal((await h.call('POST', `/api/password-reset/${token}`, { body: { password: 'a whole new password' } })).status, 200);
@@ -145,7 +145,7 @@ test('weekly digest: Mondays, opted-in people only, at most once a week', () => 
     assert.equal(sendDigests(h.sys, h.ws, monday), 1);
     assert.equal(sendDigests(h.sys, h.ws, new Date(monday.getTime() + 3_600_000)), 0, 'once a week');
     await flushOutbox(h.sys);
-    assert.equal(s.received[0].subject, 'Your week in Throughline');
+    assert.equal(s.received[0].subject, 'Your week in Goldthread');
     assert.match(s.received[0].body, /ServiceHub\r?\n- /);
     assert.equal(s.received[0].body.split('Requirements baseline v1').length - 1, 1, 'each item once');
   } finally { h.done(); }

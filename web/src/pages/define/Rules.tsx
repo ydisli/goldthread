@@ -19,7 +19,7 @@ export function DecisionTablesPage() {
   return (
     <div className="page">
       <PageHead guide={<ToolGuide id="decision-tables" title="Business rules as tables" steps={[
-        <>Each column is a condition and each row a rule. Throughline checks every combination of inputs.</>,
+        <>Each column is a condition and each row a rule. Goldthread checks every combination of inputs.</>,
         <><b>Gaps</b> (no rule applies) and <b>overlaps</b> (two rules disagree) are flagged with the exact inputs.</>,
         <>Test cases are generated for you — hand them to QA as they are.</>,
       ]} />} title="Decision tables" sub="Business rules as tables (DMN-style): every combination checked for gaps and conflicts, and tests generated automatically." actions={<button className="btn btn-primary" onClick={() => openEditor({ type: 'decisionTable', defaults: { conditions: [{ name: 'Condition', values: ['yes', 'no'] }], actions: [{ name: 'Outcome' }], rules: [] } })}><Icon name="plus" size={14} />New table</button>} />

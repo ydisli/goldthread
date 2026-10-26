@@ -13,7 +13,7 @@ const freePort = () => new Promise<number>((resolve) => { const s = createServer
 
 // Uploads go through the real HTTP server (streams, limits and headers matter here).
 test('attachments: upload, safe download, limits, viewer access, remove and restore', async () => {
-  const dir = mkdtempSync(join(tmpdir(), 'throughline-files-'));
+  const dir = mkdtempSync(join(tmpdir(), 'goldthread-files-'));
   const sys = new SystemDB(dir);
   const ws = new Workspaces(sys, dir);
   const owner = sys.createUser({ email: 'o@example.com', name: 'Olga', password: 'correct horse battery' });
@@ -22,9 +22,9 @@ test('attachments: upload, safe download, limits, viewer access, remove and rest
   sys.addMember(w.id, viewer.id, 'viewer');
   const item = ws.store(w.id).create('decision', { title: 'Retire the chatbot' }, 'test');
   const port = await freePort();
-  const server = spawn(process.execPath, [join(ROOT, 'server/index.ts'), '--port', String(port)], { env: { ...process.env, TL_DATA: dir, TL_DEMO: '0' }, stdio: 'ignore' });
+  const server = spawn(process.execPath, [join(ROOT, 'server/index.ts'), '--port', String(port)], { env: { ...process.env, GT_DATA: dir, GT_DEMO: '0' }, stdio: 'ignore' });
   const base = `http://127.0.0.1:${port}`;
-  const as = (userId: string) => ({ cookie: `tl_session=${sys.createSession(userId, w.id)}`, 'X-TL-Workspace': w.id });
+  const as = (userId: string) => ({ cookie: `gt_session=${sys.createSession(userId, w.id)}`, 'X-GT-Workspace': w.id });
   try {
     for (let i = 0; i < 100; i++) { try { if ((await fetch(`${base}/api/health`)).ok) break; } catch { /* starting */ } await new Promise((r) => setTimeout(r, 100)); }
     const ownerH = as(owner.id), viewerH = as(viewer.id);

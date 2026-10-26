@@ -1,9 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = Number(process.env.TL_E2E_PORT ?? 4391);
+const PORT = Number(process.env.GT_E2E_PORT ?? 4391);
 
 // One worker against one server: the tests share the demo workspace and run in order.
-// TL_E2E_CHROMIUM points at an already-installed Chromium; otherwise run `npx playwright install chromium`.
+// GT_E2E_CHROMIUM points at an already-installed Chromium; otherwise run `npx playwright install chromium`.
 export default defineConfig({
   testDir: '.',
   timeout: 45_000,
@@ -17,7 +17,7 @@ export default defineConfig({
     ...devices['Desktop Chrome'],
     baseURL: `http://127.0.0.1:${PORT}`,
     trace: 'retain-on-failure',
-    launchOptions: process.env.TL_E2E_CHROMIUM ? { executablePath: process.env.TL_E2E_CHROMIUM } : {},
+    launchOptions: process.env.GT_E2E_CHROMIUM ? { executablePath: process.env.GT_E2E_CHROMIUM } : {},
   },
   webServer: {
     command: 'node e2e/serve.ts',
@@ -25,6 +25,6 @@ export default defineConfig({
     url: `http://127.0.0.1:${PORT}/api/health`,
     reuseExistingServer: false,
     timeout: 30_000,
-    env: { TL_E2E_PORT: String(PORT) },
+    env: { GT_E2E_PORT: String(PORT) },
   },
 });

@@ -15,7 +15,7 @@ const CALLOUTS: Record<string, { icon: string; label: string }> = {
   tip: { icon: 'lightbulb', label: 'Tip' },
   trap: { icon: 'triangle-alert', label: 'Common trap' },
   example: { icon: 'briefcase-business', label: 'At Ashgrove' },
-  try: { icon: 'play', label: 'Try it in Throughline' },
+  try: { icon: 'play', label: 'Try it in Goldthread' },
   note: { icon: 'bookmark', label: 'Note' },
   exercise: { icon: 'notebook-pen', label: 'Exercise' },
 };

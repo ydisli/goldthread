@@ -14,7 +14,7 @@ $('send').addEventListener('click', async () => {
     const a = document.createElement('a');
     a.href = out.link;
     a.target = '_blank';
-    a.textContent = 'Captured — open in Throughline';
+    a.textContent = 'Captured — open in Goldthread';
     $('msg').append('✓ ', a);
     if (out.similar?.length) {
       const p = document.createElement('div');

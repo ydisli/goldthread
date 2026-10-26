@@ -1,19 +1,19 @@
 ---
 id: tour
-title: A tour of Throughline
+title: A tour of Goldthread
 part: tool
 minutes: 10
-summary: How Throughline is organised, how everything links together, and the handful of moves you'll use every day.
+summary: How Goldthread is organised, how everything links together, and the handful of moves you'll use every day.
 tools: [home, inbox, ask, guide]
 ---
 
-Part I described the craft without any tool. Part II shows how Throughline supports it. This chapter is the map: how the app is organised, the idea that ties it together, and the few moves you'll use constantly. The following chapters go area by area.
+Part I described the craft without any tool. Part II shows how Goldthread supports it. This chapter is the map: how the app is organised, the idea that ties it together, and the few moves you'll use constantly. The following chapters go area by area.
 
 ## The idea underneath: one connected graph
 
-Throughline is built around the throughline idea from Chapter 1. Everything you put in, whether a stakeholder, a signal, a requirement, a story, a test, a decision or a release, is an item in one connected **graph**. Items link to each other through ordinary fields: a story has a *Requirements* field, a test has *Stories*, a bet has *Opportunities*, a commitment has a *Stakeholder*.
+Goldthread is built around the golden thread from Chapter 1. Everything you put in, whether a stakeholder, a signal, a requirement, a story, a test, a decision or a release, is an item in one connected **graph**. Items link to each other through ordinary fields: a story has a *Requirements* field, a test has *Stories*, a bet has *Opportunities*, a commitment has a *Stakeholder*.
 
-You never maintain those connections twice. Because the links live in the items themselves, Throughline can work out the rest:
+You never maintain those connections twice. Because the links live in the items themselves, Goldthread can work out the rest:
 
 - every item shows **what links to it** (a requirement shows its stories, tests, defects and decisions),
 - the **traceability matrix** is generated, never hand-maintained,
@@ -21,7 +21,7 @@ You never maintain those connections twice. Because the links live in the items 
 - a stakeholder's **360° view** gathers everything connected to that person,
 - the **daily brief** on Home looks across all of it for things that need attention.
 
-The more you link, the more Throughline can do for you. A story with no requirement is fine, but it can't show up in the audit trail.
+The more you link, the more Goldthread can do for you. A story with no requirement is fine, but it can't show up in the audit trail.
 
 ## The layout
 
@@ -67,7 +67,7 @@ If your team tracks something extra, such as a vendor, a regulatory reference or
 
 ## Moves you'll use every day
 
-**Capture without breaking flow.** Press **C**. Type what you heard; the first line becomes the title. Choose what it is (signal, request, interaction, decision, risk or bet), who it's from, and save. Sort it out later. Throughline warns you if something very similar was captured already.
+**Capture without breaking flow.** Press **C**. Type what you heard; the first line becomes the title. Choose what it is (signal, request, interaction, decision, risk or bet), who it's from, and save. Sort it out later. Goldthread warns you if something very similar was captured already.
 
 **Find anything.** Press **⌘K** and type. Item keys work (REQ-12, ST-4), so do filters like `type:decision`. Tools and actions show up too.
 
@@ -97,7 +97,7 @@ If you signed in with a demo account, you're in **ServiceHub (demo)**, the Ashgr
 ## Check yourself
 
 ```quiz
-Q: Why does Throughline never ask you to maintain a traceability matrix by hand?
+Q: Why does Goldthread never ask you to maintain a traceability matrix by hand?
 - It doesn't support traceability
 - * Links live in the items themselves (a story's Requirements field, a test's Stories field), so the matrix is generated from them
 - An AI writes it

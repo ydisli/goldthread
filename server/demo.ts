@@ -4,7 +4,7 @@ import type { Workspaces } from './workspaces.ts';
 /**
  * Demo accounts for the sample workspace. They can sign in with one click from
  * the sign-in page while demo mode is on: by default only under `npm run dev`
- * (TL_DEMO=1 turns it on elsewhere). With demo mode off, demo accounts cannot
+ * (GT_DEMO=1 turns it on elsewhere). With demo mode off, demo accounts cannot
  * sign in at all. The shared password below is a test value for local evaluation only.
  */
 export const DEMO_PASSWORD = 'servicehub-demo-2026';
@@ -18,7 +18,7 @@ const DEMO_USERS: { alias: string; name: string; email: string; title: string; r
   { alias: 'kim', name: 'Kim Lee', email: 'kim.lee@ashgrove.example', title: 'Internal Audit Manager', role: 'viewer', persona: 'both' },
 ];
 
-export const demoEnabled = () => process.env.TL_DEMO === '1';
+export const demoEnabled = () => process.env.GT_DEMO === '1';
 
 /** Installs created before the sample company was renamed keep their demo accounts. */
 function migrateDemoEmails(sys: SystemDB) {

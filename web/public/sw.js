@@ -1,5 +1,5 @@
-// Throughline service worker: offline app shell + last-known workspace (read-only).
-const VERSION = 'tl-v1';
+// Goldthread service worker: offline app shell + last-known workspace (read-only).
+const VERSION = 'gt-v1';
 const SHELL = ['/', '/index.html', '/icon.svg', '/icon-192.png', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {

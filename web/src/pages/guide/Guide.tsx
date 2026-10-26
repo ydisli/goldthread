@@ -62,7 +62,7 @@ export function GuidePage() {
       <header className="guide-cover">
         <div className="eyebrow">Field guide</div>
         <h1>The Field Guide</h1>
-        <p className="guide-lede">A practical book for Product Owners and Business Analysts. Part I teaches the craft, in any tool or none. Part II shows how to do it in Throughline. Every chapter uses the same running example: ServiceHub, Ashgrove's internal IT service platform.</p>
+        <p className="guide-lede">A practical book for Product Owners and Business Analysts. Part I teaches the craft, in any tool or none. Part II shows how to do it in Goldthread. Every chapter uses the same running example: ServiceHub, Ashgrove's internal IT service platform.</p>
         <div className="guide-progress">
           <div className="meter" style={{ maxWidth: 320 }}><span style={{ width: `${(doneCount / Math.max(1, main.length)) * 100}%` }} /></div>
           <span className="small muted">{doneCount} of {main.length} chapters finished</span>
@@ -225,7 +225,7 @@ export function ChapterPage({ id, pathId }: { id: string; pathId?: string }) {
 
 /** Every chapter in order, as one Markdown document for Word or print. */
 function bookMarkdown(): string {
-  const intro = `# The Field Guide\n\n*A practical book for Product Owners and Business Analysts. Part I teaches the craft; Part II shows how to do it in Throughline.*\n\nLicensed under Creative Commons Attribution 4.0 (CC BY 4.0). All people, companies and products in the running example are fictional.\n`;
+  const intro = `# The Field Guide\n\n*A practical book for Product Owners and Business Analysts. Part I teaches the craft; Part II shows how to do it in Goldthread.*\n\nLicensed under Creative Commons Attribution 4.0 (CC BY 4.0). All people, companies and products in the running example are fictional.\n`;
   return [intro, ...CHAPTERS.map((c) => chapterMarkdown(c, chapterLabel(c)))].join('\n\n');
 }
 
@@ -240,7 +240,7 @@ export function GuideCard() {
     <Link to={`/guide/${c.id}`} className="guide-card">
       <Icon name="graduation-cap" size={18} className="lead" />
       <div className="grow" style={{ minWidth: 0 }}>
-        <div className="tiny muted">{doneCount ? `Field guide · ${doneCount} of ${main.length} read` : 'Field guide · new to the role, or to Throughline?'}</div>
+        <div className="tiny muted">{doneCount ? `Field guide · ${doneCount} of ${main.length} read` : 'Field guide · new to the role, or to Goldthread?'}</div>
         <div className="strong">{doneCount ? `Continue: ${c.title}` : `Start with “${c.title}”`}</div>
         <div className="small muted">{chapterLabel(c)} · {c.minutes} min</div>
       </div>

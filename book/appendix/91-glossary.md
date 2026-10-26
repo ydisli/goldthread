@@ -17,7 +17,7 @@ Terms are grouped loosely by theme. Chapter numbers point to where each is expla
 
 **Product manager.** Usually owns longer-term product strategy and market direction, often across several teams. (1)
 
-**Throughline.** The unbroken line from a real problem to a working change that solves it, through decisions, requirements, stories, tests, releases and measurement. (1)
+**Golden thread.** The unbroken line from a real problem to a working change that solves it, through decisions, requirements, stories, tests, releases and measurement. (1)
 
 **Refinement.** Regular work, with part of the team, to get backlog items ready to build. (11)
 
@@ -249,7 +249,7 @@ Terms are grouped loosely by theme. Chapter numbers point to where each is expla
 
 **Feature lifecycle.** Alpha, beta, generally available, deprecated, sunset. (15)
 
-## Throughline terms
+## Goldthread terms
 
 **Workspace.** One product, platform or programme: personal or shared with a team. (25)
 
@@ -265,4 +265,4 @@ Terms are grouped loosely by theme. Chapter numbers point to where each is expla
 
 **Personal access token.** A key that lets a tool act as you in one workspace, read-only or read & write. (26)
 
-**MCP (Model Context Protocol).** An open standard that lets AI assistants use tools such as Throughline. (26)
+**MCP (Model Context Protocol).** An open standard that lets AI assistants use tools such as Goldthread. (26)

@@ -17,12 +17,12 @@ import { hrefOf } from './entity/links.ts';
 
 export function useTheme(): ['light' | 'dark' | 'system', (t: 'light' | 'dark' | 'system') => void] {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(() => {
-    try { return (localStorage.getItem('tl.theme') as 'light' | 'dark') ?? 'system'; } catch { return 'system'; }
+    try { return (localStorage.getItem('gt.theme') as 'light' | 'dark') ?? 'system'; } catch { return 'system'; }
   });
   useEffect(() => {
     if (theme === 'system') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', theme);
-    try { localStorage.setItem('tl.theme', theme); } catch { /* ignore */ }
+    try { localStorage.setItem('gt.theme', theme); } catch { /* ignore */ }
   }, [theme]);
   return [theme, setTheme];
 }
@@ -130,9 +130,9 @@ function WorkspaceSwitcher({ onNavigate }: { onNavigate: () => void }) {
     <>
       <Dropdown width={260} trigger={(toggle) => (
         <button className="ws-switch" onClick={toggle} title="Switch workspace" aria-haspopup="menu">
-          <span className="ws-mark">{(cur?.name ?? 'T').trim()[0]?.toUpperCase()}</span>
+          <span className="ws-mark">{(cur?.name ?? 'G').trim()[0]?.toUpperCase()}</span>
           <span style={{ minWidth: 0, flex: 1 }}>
-            <div className="ws-name">{cur?.name ?? 'Throughline'}</div>
+            <div className="ws-name">{cur?.name ?? 'Goldthread'}</div>
             <div className="ws-kind">{cur ? `${cur.kind === 'personal' ? 'Personal' : 'Team'} · ${ROLE_LABEL[cur.role]}${s.members.length > 1 ? ` · ${s.members.length} people` : ''}` : 'No workspace'}</div>
           </span>
           <Icon name="chevrons-up-down" size={14} className="muted" />
@@ -291,7 +291,7 @@ export function CommandPalette() {
       for (const h of index.search(q, 12)) {
         items.push({ group: 'Results', label: <>{h.entity.key && <span className="key">{h.entity.key} </span>}{nameOf(h.entity)}</>, sub: `${ENTITY_MAP[h.entity.type]?.label} · ${h.snippet}`, icon: ENTITY_MAP[h.entity.type]?.icon ?? 'circle-dot', run: () => navigate(hrefOf(h.entity)) });
       }
-      items.push({ group: 'Ask', label: `Ask Throughline: “${q.trim()}”`, icon: 'sparkles', run: () => navigate(`/ask?q=${encodeURIComponent(q.trim())}`) });
+      items.push({ group: 'Ask', label: `Ask Goldthread: “${q.trim()}”`, icon: 'sparkles', run: () => navigate(`/ask?q=${encodeURIComponent(q.trim())}`) });
     }
     const creatable = !can('editor') ? [] : ENTITIES.filter((d) => !['comment', 'vision'].includes(d.type) && (!t || `new ${d.label}`.toLowerCase().includes(t))).slice(0, t ? 5 : 0);
     for (const d of creatable) items.push({ group: 'Create', label: `New ${d.label.toLowerCase()}`, icon: d.icon, run: () => openEditor({ type: d.type }) });

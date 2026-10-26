@@ -341,7 +341,7 @@ export function PulsePage() {
   return (
     <div className="page">
       <PageHead guide={<ToolGuide id="forecast" title="Forecasts, not promises" steps={[
-        <>Throughline replays your team's real weekly throughput thousands of times (a <Term explain="Simulating many possible futures from past data to get a range of outcomes instead of one guess.">Monte Carlo</Term> simulation) to see when the remaining work is likely done.</>,
+        <>Goldthread replays your team's real weekly throughput thousands of times (a <Term explain="Simulating many possible futures from past data to get a range of outcomes instead of one guess.">Monte Carlo</Term> simulation) to see when the remaining work is likely done.</>,
         <>Promise the <b>85% date</b>: in 85 of 100 simulated futures the work is done by then. The 50% date is a coin flip.</>,
         <>Scope added after the start is tracked separately, so you can show why a date moved.</>,
       ]} />} title="Delivery pulse" sub="Probabilistic forecasts from real throughput (no story-point theatre), scope creep, dependencies and promises vs forecast." />

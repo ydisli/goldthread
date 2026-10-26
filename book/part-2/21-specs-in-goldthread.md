@@ -1,6 +1,6 @@
 ---
-id: specs-in-throughline
-title: Specs and analysis in Throughline
+id: specs-in-goldthread
+title: Specs and analysis in Goldthread
 part: tool
 minutes: 16
 summary: Spec Studio's live checks and review board, managed requirements with baselines and contradictions, decisions, decision tables, the process modeller, story maps, the BA toolkit and the glossary.
@@ -60,7 +60,7 @@ Open review questions appear in the Inbox and on the spec until resolved.
 - **Versions:** editing an approved requirement creates a new version, so history is never lost.
 - **Baselines:** **Capture baseline** freezes the current set as an agreed snapshot, typically at sign-off. A baseline page shows exactly what has changed since: added, removed and modified requirements, side by side.
 - **Change requests:** propose a change to baselined requirements. The change request shows the **impact**: affected requirements, stories, tests, releases and promises. Decide it with a recorded reason.
-- **Contradictions:** Throughline compares requirements for conflicts, such as different numbers for the same measure (15 minutes versus 5) or opposing statements about the same subject (retain for 90 days versus delete after 30). Each contradiction links both requirements. Resolve it with a decision or open a conflict.
+- **Contradictions:** Goldthread compares requirements for conflicts, such as different numbers for the same measure (15 minutes versus 5) or opposing statements about the same subject (retain for 90 days versus delete after 30). Each contradiction links both requirements. Resolve it with a decision or open a conflict.
 
 ## Decisions
 
@@ -72,7 +72,7 @@ Log a decision from anywhere with **C → Decision**, or from a meeting (Chapter
 
 **Specs & analysis → Business rules** holds decision tables ([Chapter 9](guide:modelling)). Define the conditions with their allowed values and the actions, then add rules row by row. Use "–" for "any value". Choose a hit policy: *unique* (exactly one rule should match), *first* (the first matching rule wins) or *any* (several may match, as long as they agree).
 
-Throughline checks **every combination** of inputs:
+Goldthread checks **every combination** of inputs:
 
 - **Gaps**: combinations no rule covers, listed with the exact inputs.
 - **Overlaps**: combinations two rules cover with different outcomes.
@@ -94,7 +94,7 @@ It then **generates test cases** with the expected outcome for each: every combi
 - **Delete** removes, **arrow keys** nudge, **⌘Z** / **⇧⌘Z** undo and redo, **Tidy** re-spaces everything along the flow.
 - Export as **SVG** for PowerPoint, Visio, Confluence or Figma.
 
-While you draw, Throughline reviews the model: missing start or end events, dead ends, unreachable steps, decisions with only one outcome or unlabelled branches, decisions not phrased as questions, steps in lanes that no longer exist. It counts **steps, decisions, handoffs** (connections crossing lanes) and **rework loops** (connections going backwards). Link an **as-is** model to its **to-be** counterpart and the page compares the two.
+While you draw, Goldthread reviews the model: missing start or end events, dead ends, unreachable steps, decisions with only one outcome or unlabelled branches, decisions not phrased as questions, steps in lanes that no longer exist. It counts **steps, decisions, handoffs** (connections crossing lanes) and **rework loops** (connections going backwards). Link an **as-is** model to its **to-be** counterpart and the page compares the two.
 
 Your AI assistant can review a process model too, over MCP (Chapter 26).
 

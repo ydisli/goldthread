@@ -64,7 +64,7 @@ export function integrationRoutes(r: Router, sys: SystemDB, workspaces: Workspac
     if (!c?.secret.signingSecret || !verifySlack(c.secret.signingSecret, ctx.req.headers, raw)) throw new HttpError(401, 'Bad signature.');
     const f = new URLSearchParams(raw);
     const { kind, text } = kindFromPrefix(f.get('text') ?? '');
-    if (!text.trim()) return { response_type: 'ephemeral', text: 'Usage: /throughline <what you heard>  — or start with request:, decision:, risk: or idea:' };
+    if (!text.trim()) return { response_type: 'ephemeral', text: 'Usage: /goldthread <what you heard>  — or start with request:, decision:, risk: or idea:' };
     const store = inboundStore(ctx.params.ws);
     const out = capture(store, { kind: kind ?? 'evidence', text, source: 'chat', channel: 'chat', from: f.get('user_name') ?? undefined }, { name: `${f.get('user_name') ?? 'someone'} (Slack)` });
     broadcast(ctx.params.ws, [{ op: 'upsert', entity: out.entity }]);
@@ -145,7 +145,7 @@ export function integrationRoutes(r: Router, sys: SystemDB, workspaces: Workspac
   r.add('POST', '/api/admin/integrations/:kind/test', 'admin', async (ctx: WCtx) => {
     const kind = kindOf(ctx);
     if (kind === 'slack' || kind === 'teams') {
-      const sent = await postToChat(sys, ctx.ws.workspace.id, 'test', { title: 'Throughline is connected', text: `Posts from “${ctx.ws.workspace.name}” will appear here.`, link: `${baseUrl(ctx.req)}/#/today` });
+      const sent = await postToChat(sys, ctx.ws.workspace.id, 'test', { title: 'Goldthread is connected', text: `Posts from “${ctx.ws.workspace.name}” will appear here.`, link: `${baseUrl(ctx.req)}/#/today` });
       if (!sent) throw new HttpError(502, String((sys.integration(ctx.ws.workspace.id, kind)?.status.lastPost as { error?: string } | undefined)?.error ?? 'No webhook URL is set.'));
       return { ok: true, message: `Test message posted to ${kind === 'slack' ? 'Slack' : 'Teams'}.` };
     }

@@ -20,8 +20,8 @@ function Brand({ children }: { children?: ReactNode }) {
   return (
     <aside className="auth-brand">
       <div className="row" style={{ gap: 10 }}>
-        <span className="ws-mark" style={{ background: 'var(--on-ink)', color: 'var(--ink)' }}>T</span>
-        <span style={{ fontWeight: 650, fontSize: 15, letterSpacing: '-0.01em' }}>Throughline</span>
+        <span className="ws-mark" style={{ background: 'var(--on-ink)', color: 'var(--ink)' }}>G</span>
+        <span style={{ fontWeight: 650, fontSize: 15, letterSpacing: '-0.01em' }}>Goldthread</span>
       </div>
       <div className="col" style={{ gap: 18 }}>
         <h1>The working notebook for product owners and business analysts.</h1>

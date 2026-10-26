@@ -21,7 +21,7 @@ export function chatSecret(sys: SystemDB, workspaceId: string, kind: ChatKind): 
 }
 
 export function slackPayload(title: string, text: string, link?: string) {
-  return { text: `*${title}*${text ? `\n${text}` : ''}${link ? `\n<${link}|Open in Throughline>` : ''}` };
+  return { text: `*${title}*${text ? `\n${text}` : ''}${link ? `\n<${link}|Open in Goldthread>` : ''}` };
 }
 
 export function teamsPayload(title: string, text: string, link?: string) {
@@ -32,7 +32,7 @@ export function teamsPayload(title: string, text: string, link?: string) {
       content: {
         $schema: 'http://adaptivecards.io/schemas/adaptive-card.json', type: 'AdaptiveCard', version: '1.4',
         body: [{ type: 'TextBlock', text: title, weight: 'Bolder', wrap: true }, ...(text ? [{ type: 'TextBlock', text, wrap: true }] : [])],
-        actions: link ? [{ type: 'Action.OpenUrl', title: 'Open in Throughline', url: link }] : [],
+        actions: link ? [{ type: 'Action.OpenUrl', title: 'Open in Goldthread', url: link }] : [],
       },
     }],
   };

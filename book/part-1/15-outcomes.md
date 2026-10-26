@@ -9,7 +9,7 @@ tools: [ledger, features, metrics, bets]
 
 Most teams celebrate the release and move on. The release was the goal; the next item is waiting. Months later, nobody can say whether the thing they shipped changed anything. The roadmap keeps filling with new bets placed with the same confidence as the last ones, whether or not the last ones paid off.
 
-This is the link in the throughline that breaks most often, and it's the one that teaches the most. This chapter is about closing the loop: going back, measuring, learning, and letting what you learn change how you bet next time.
+This is the link in the golden thread that breaks most often, and it's the one that teaches the most. This chapter is about closing the loop: going back, measuring, learning, and letting what you learn change how you bet next time.
 
 ## Plan the measurement before you ship
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Throughline CLI — capture, brief, search, prep and spec linting from the terminal.
-// Uses the same platform-agnostic core as the web app; `tl lint` runs fully offline.
+// Goldthread CLI — capture, brief, search, prep and spec linting from the terminal.
+// Uses the same platform-agnostic core as the web app; `goldthread lint` runs fully offline.
 
 import { readFileSync } from 'node:fs';
 import { Graph } from '../core/graph.ts';
@@ -11,8 +11,8 @@ import { reviewSpec, ROLE_INFO } from '../core/engines/review.ts';
 import { prepBrief } from '../core/engines/stakeholders.ts';
 import { parseCsv, planIssueImport } from '../core/engines/importers.ts';
 
-const URL_BASE = (process.env.TL_URL ?? 'http://127.0.0.1:4300').replace(/\/$/, '');
-const TOKEN = process.env.TL_TOKEN ?? '';
+const URL_BASE = (process.env.GT_URL ?? 'http://127.0.0.1:4300').replace(/\/$/, '');
+const TOKEN = process.env.GT_TOKEN ?? '';
 const tty = process.stdout.isTTY;
 const c = (code: number) => (s: string) => (tty ? `\x1b[${code}m${s}\x1b[0m` : s);
 const red = c(31), yellow = c(33), green = c(32), dim = c(2), bold = c(1), cyan = c(36);
@@ -36,11 +36,11 @@ async function call<T>(path: string, init: { method?: string; body?: unknown } =
   try {
     res = await fetch(`${URL_BASE}${path}`, {
       method: init.method ?? 'GET',
-      headers: { 'Content-Type': 'application/json', 'X-TL-Token': TOKEN, 'X-TL-Actor': 'cli' },
+      headers: { 'Content-Type': 'application/json', 'X-GT-Token': TOKEN, 'X-GT-Actor': 'cli' },
       body: init.body === undefined ? undefined : JSON.stringify(init.body),
     });
   } catch {
-    throw new Error(`Cannot reach Throughline at ${URL_BASE}. Is the server running (npm run dev)? Set TL_URL if it runs elsewhere.`);
+    throw new Error(`Cannot reach Goldthread at ${URL_BASE}. Is the server running (npm run dev)? Set GT_URL if it runs elsewhere.`);
   }
   const text = await res.text();
   const json = text ? JSON.parse(text) : undefined;
@@ -48,24 +48,24 @@ async function call<T>(path: string, init: { method?: string; body?: unknown } =
   return json as T;
 }
 
-const HELP = `${bold('tl')} — Throughline from the terminal
+const HELP = `${bold('goldthread')} — Goldthread from the terminal
 
 ${bold('Usage')}
-  tl capture "<text>" [--kind evidence|request|interaction|decision] [--account Halcyon Foods]
-                      [--source support|sales-call|interview|…] [--from "Stakeholder name"] [--url URL]
-  tl brief [--all]                 Today's brief (high and critical by default)
-  tl search "<query>"              Search the whole workspace (supports type:decision, REQ-12)
-  tl prep "<stakeholder name>"     Meeting prep brief for someone
-  tl lint <spec.md> [--json] [--max-errors N] [--min-score S]
+  goldthread capture "<text>" [--kind evidence|request|interaction|decision] [--account Halcyon Foods]
+                              [--source support|sales-call|interview|…] [--from "Stakeholder name"] [--url URL]
+  goldthread brief [--all]         Today's brief (high and critical by default)
+  goldthread search "<query>"      Search the whole workspace (supports type:decision, REQ-12)
+  goldthread prep "<name>"         Meeting prep brief for a stakeholder
+  goldthread lint <spec.md> [--json] [--max-errors N] [--min-score S]
                                    Lint a spec offline; exits 1 when thresholds are exceeded (CI)
-  tl import <export.csv> [--dry-run] [--no-bugs]
+  goldthread import <export.csv> [--dry-run] [--no-bugs]
                                    Import a Jira or Azure DevOps CSV export into the backlog;
                                    re-running updates stories by key (good for a nightly job)
-  tl export                        Print the workspace as JSON
+  goldthread export                Print the workspace as JSON
 
 ${bold('Environment')}
-  TL_URL    server URL (default ${URL_BASE})
-  TL_TOKEN  personal access token (web app → Settings → Tokens & integrations;
+  GT_URL    server URL (default ${URL_BASE})
+  GT_TOKEN  personal access token (web app → Settings → Tokens & integrations;
             use a read & write token for capture)
 `;
 
@@ -75,7 +75,7 @@ async function main() {
   switch (cmd) {
     case 'capture': {
       const text = pos.join(' ').trim();
-      if (!text) throw new Error('Nothing to capture. Usage: tl capture "text"');
+      if (!text) throw new Error('Nothing to capture. Usage: goldthread capture "text"');
       const out = await call<{ entity: Entity; similar: { title: string; similarity: number }[] }>('/api/capture', {
         method: 'POST',
         body: { text, kind: flags.kind ?? 'evidence', account: flags.account, source: flags.source, from: flags.from, url: flags.url, actor: 'cli' },
@@ -124,7 +124,7 @@ async function main() {
     }
     case 'lint': {
       const file = pos[0];
-      if (!file) throw new Error('Usage: tl lint <spec.md>');
+      if (!file) throw new Error('Usage: goldthread lint <spec.md>');
       const text = readFileSync(file, 'utf8');
       const issues = lint(text);
       const summary = lintSummary(text, issues);
@@ -156,7 +156,7 @@ async function main() {
     }
     case 'import': {
       const file = pos[0];
-      if (!file) throw new Error('Usage: tl import <export.csv> [--dry-run] [--no-bugs]');
+      if (!file) throw new Error('Usage: goldthread import <export.csv> [--dry-run] [--no-bugs]');
       const existing = [...await call<Entity[]>('/api/entities?type=story'), ...await call<Entity[]>('/api/entities?type=defect')];
       const plan = planIssueImport(parseCsv(readFileSync(file, 'utf8')), existing, { bugsAsDefects: !flags['no-bugs'] });
       const source = { jira: 'Jira', ado: 'Azure DevOps', generic: 'CSV' }[plan.source];

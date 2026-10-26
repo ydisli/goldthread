@@ -5,10 +5,10 @@ import { harness } from './harness.ts';
 import { json, standIn } from './standin.ts';
 
 // A local OpenID Connect provider stand-in: discovery, a key set, and a token endpoint that
-// checks PKCE and the client secret and signs real RS256 ID tokens. It exercises Throughline's
+// checks PKCE and the client secret and signs real RS256 ID tokens. It exercises Goldthread's
 // side of the flow; real providers (Entra ID, Okta, Google) are not contacted here.
 
-const CLIENT = 'throughline-test', SECRET = 'idp-secret';
+const CLIENT = 'goldthread-test', SECRET = 'idp-secret';
 
 function makeIdp() {
   const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
@@ -40,9 +40,9 @@ async function withIdp(fn: (ctx: { url: string; idp: ReturnType<typeof makeIdp> 
     json(res, 404, {});
   });
   const saved = { ...process.env };
-  Object.assign(process.env, { TL_OIDC_ISSUER: srv.url, TL_OIDC_CLIENT_ID: CLIENT, TL_OIDC_CLIENT_SECRET: SECRET, TL_OIDC_NAME: 'Test IdP', TL_PUBLIC_URL: 'https://throughline.example.com', ...env });
+  Object.assign(process.env, { GT_OIDC_ISSUER: srv.url, GT_OIDC_CLIENT_ID: CLIENT, GT_OIDC_CLIENT_SECRET: SECRET, GT_OIDC_NAME: 'Test IdP', GT_PUBLIC_URL: 'https://goldthread.example.com', ...env });
   try { await fn({ url: srv.url, idp }); } finally {
-    for (const k of ['TL_OIDC_ISSUER', 'TL_OIDC_CLIENT_ID', 'TL_OIDC_CLIENT_SECRET', 'TL_OIDC_NAME', 'TL_PUBLIC_URL', 'TL_OIDC_DOMAINS', 'TL_SIGNUP']) if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k];
+    for (const k of ['GT_OIDC_ISSUER', 'GT_OIDC_CLIENT_ID', 'GT_OIDC_CLIENT_SECRET', 'GT_OIDC_NAME', 'GT_PUBLIC_URL', 'GT_OIDC_DOMAINS', 'GT_SIGNUP']) if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k];
     await srv.close();
   }
 }
@@ -53,7 +53,7 @@ async function signIn(h: ReturnType<typeof harness>, idp: ReturnType<typeof make
   assert.equal(start.status, 302);
   const auth = new URL(String(start.headers.location));
   assert.equal(auth.searchParams.get('code_challenge_method'), 'S256');
-  assert.equal(auth.searchParams.get('redirect_uri'), 'https://throughline.example.com/api/auth/oidc/callback');
+  assert.equal(auth.searchParams.get('redirect_uri'), 'https://goldthread.example.com/api/auth/oidc/callback');
   const full = { iss: issuer, aud: CLIENT, sub: 'sub-1', email_verified: true, nonce: auth.searchParams.get('nonce'), iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 300, ...claims };
   opts.tamper?.(full);
   idp.codes.set('code-1', { claims: full, challenge: auth.searchParams.get('code_challenge')!, signWith: opts.signWith ?? idp.privateKey });
@@ -68,7 +68,7 @@ test('SSO: a new person from an allowed domain gets an account and a session', (
     const r = await signIn(h, idp, url, { email: 'Sam.Lee@Example.com', name: 'Sam Lee' });
     assert.equal(r.status, 302);
     assert.equal(r.headers.location, '/#/today');
-    assert.match(String(r.headers['set-cookie']), /tl_session=/);
+    assert.match(String(r.headers['set-cookie']), /gt_session=/);
     const u = h.sys.userByEmail('sam.lee@example.com')!;
     assert.equal(u.name, 'Sam Lee');
     assert.equal(u.hasPassword, false);
@@ -78,13 +78,13 @@ test('SSO: a new person from an allowed domain gets an account and a session', (
     assert.equal(again.headers.location, '/#/today');
     assert.equal(h.sys.allUsers().length, 1);
   } finally { h.done(); }
-}, { TL_OIDC_DOMAINS: 'example.com' }));
+}, { GT_OIDC_DOMAINS: 'example.com' }));
 
 test('SSO: other domains, forged tokens, replayed and mismatched responses are refused', () => withIdp(async ({ url, idp }) => {
   const h = harness();
   try {
     const err = (r: { headers: Record<string, unknown> }) => decodeURIComponent(String(r.headers.location).split('sso_error=')[1] ?? '');
-    assert.match(err(await signIn(h, idp, url, { email: 'x@elsewhere.org' })), /no Throughline account for x@elsewhere.org/);
+    assert.match(err(await signIn(h, idp, url, { email: 'x@elsewhere.org' })), /no Goldthread account for x@elsewhere.org/);
     assert.match(err(await signIn(h, idp, url, { email: 'a@example.com' }, { signWith: idp.other })), /signature is not valid/);
     assert.match(err(await signIn(h, idp, url, { email: 'a@example.com' }, { tamper: (c) => { c.nonce = 'other'; } })), /does not match this request/);
     assert.match(err(await signIn(h, idp, url, { email: 'a@example.com' }, { tamper: (c) => { c.aud = 'someone-else'; } })), /different application/);
@@ -94,7 +94,7 @@ test('SSO: other domains, forged tokens, replayed and mismatched responses are r
     assert.match(err(unknownState), /took too long or was already used/);
     assert.equal(h.sys.allUsers().length, 0, 'nobody got in');
   } finally { h.done(); }
-}, { TL_OIDC_DOMAINS: 'example.com' }));
+}, { GT_OIDC_DOMAINS: 'example.com' }));
 
 test('SSO: accepting an invite through the provider joins the workspace', () => withIdp(async ({ url, idp }) => {
   const h = harness();
@@ -110,4 +110,4 @@ test('SSO: accepting an invite through the provider joins the workspace', () => 
     assert.equal(h.sys.membership(w.id, guest.id)?.role, 'viewer');
     assert.equal(h.sys.workspacesOf(guest.id).length, 1, 'no extra personal workspace for invited people');
   } finally { h.done(); }
-}, { TL_SIGNUP: 'invite-only' }));
+}, { GT_SIGNUP: 'invite-only' }));

@@ -27,7 +27,7 @@ export interface Quiz {
 
 export const PARTS: { id: BookPart; label: string; title: string; blurb: string }[] = [
   { id: 'craft', label: 'Part I', title: 'The craft', blurb: 'How to be a good Product Owner or Business Analyst — in any tool, or none.' },
-  { id: 'tool', label: 'Part II', title: 'Working in Throughline', blurb: 'How the craft maps onto Throughline, tool by tool, with recipes for a real week.' },
+  { id: 'tool', label: 'Part II', title: 'Working in Goldthread', blurb: 'How the craft maps onto Goldthread, tool by tool, with recipes for a real week.' },
   { id: 'appendix', label: 'Appendices', title: 'Templates & reference', blurb: 'Fill-in templates and a glossary of the terms used in the book.' },
 ];
 
@@ -123,7 +123,7 @@ export function checkBook(chapters: Chapter[], knownTools: string[]): BookCheck[
   return out;
 }
 
-const CALLOUT_LABEL: Record<string, string> = { tip: 'Tip', trap: 'Common trap', example: 'Example', try: 'Try it in Throughline', note: 'Note', exercise: 'Exercise' };
+const CALLOUT_LABEL: Record<string, string> = { tip: 'Tip', trap: 'Common trap', example: 'Example', try: 'Try it in Goldthread', note: 'Note', exercise: 'Exercise' };
 
 /**
  * A chapter as self-contained Markdown for exporting (Word, print): title and summary on top,

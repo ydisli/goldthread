@@ -6,7 +6,7 @@ import { adfToText, textToAdf } from '../sync.ts';
 import { scheduledSyncs } from '../integrations.ts';
 
 // Jira Cloud and Azure DevOps are replaced by local stand-ins that speak the parts of their
-// REST APIs Throughline uses. This checks requests, paging, mapping and re-sync behaviour,
+// REST APIs Goldthread uses. This checks requests, paging, mapping and re-sync behaviour,
 // not compatibility with every Jira or Azure DevOps configuration.
 
 const adf = (text: string) => ({ type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] });
@@ -62,7 +62,7 @@ test('Jira: connect, pull in pages, map fields, and re-sync by key', async () =>
     assert.deepEqual([s201.status, s201.estimate, s201.sprint, s201.doneAt, s201.asA, s201.description], ['done', 5, 'SH Sprint 12', '2026-10-20', 'new joiner', 'Laptop arrives before day one.']);
     assert.equal(store.byType('defect')[0].externalKey, 'SH-203');
 
-    // Jira moves on; Throughline links are kept and nothing is duplicated.
+    // Jira moves on; Goldthread links are kept and nothing is duplicated.
     store.update(s201.id, { requirementIds: [] , tags: ['onboarding', 'kept'] }, 'test');
     jira.issues[1].fields.status = { name: 'Done', statusCategory: { key: 'done' } };
     jira.issues[1].fields.resolutiondate = '2026-10-25T10:00:00.000+0000';
@@ -74,7 +74,7 @@ test('Jira: connect, pull in pages, map fields, and re-sync by key', async () =>
     assert.equal(store.byType('defect')[0].status, 'closed');
     assert.deepEqual(store.get(s201.id)!.tags, ['onboarding', 'kept']);
 
-    // Push: stories written in Throughline get created in Jira and keep the new key.
+    // Push: stories written in Goldthread get created in Jira and keep the new key.
     const mine = store.create('story', { title: 'Show ticket ETA', asA: 'employee', iWant: 'to see when my request is done', acceptance: 'Given a request\nThen the ETA shows', estimate: 2 }, 'test');
     const pushed = await h.call('POST', '/api/integrations/jira/sync', { ...s, body: { push: true } });
     assert.equal(pushed.body.pushed, 1);

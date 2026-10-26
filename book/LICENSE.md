@@ -7,7 +7,7 @@ You may share and adapt it for any purpose, including commercially, as long as
 you give appropriate credit, link to the licence, and indicate if changes were
 made. A suitable credit line:
 
-> Adapted from *The Field Guide* by the Throughline contributors, CC BY 4.0.
+> Adapted from *The Field Guide* by the Goldthread contributors, CC BY 4.0.
 
 The rest of the repository (the application code) is licensed under the
 Apache License 2.0; see `LICENSE` in the repository root.

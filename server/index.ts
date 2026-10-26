@@ -31,10 +31,10 @@ const opt = (name: string, fallback: string) => {
 const DEV = flag('dev');
 const PORT = Number(process.env.PORT ?? opt('port', '4300'));
 const HOST = process.env.HOST ?? opt('host', '127.0.0.1');
-const DATA = resolve(process.env.TL_DATA ?? opt('data', join(ROOT, 'data')));
+const DATA = resolve(process.env.GT_DATA ?? opt('data', join(ROOT, 'data')));
 
 // Demo accounts share a published password, so they are on for development only unless asked for.
-if (process.env.TL_DEMO === undefined) process.env.TL_DEMO = DEV || flag('reset-only') ? '1' : '0';
+if (process.env.GT_DEMO === undefined) process.env.GT_DEMO = DEV || flag('reset-only') ? '1' : '0';
 
 // Operator command: `npm run backup -- /path/to/new/folder` copies everything, safely, even while running.
 if (flag('backup')) {
@@ -57,13 +57,13 @@ if (flag('reset-password')) {
   const user = sys.userByEmail(email);
   if (!user) { console.error(`No account for "${email}".`); process.exit(1); }
   const { token, expiresAt } = sys.createResetLink(user.id, 'operator');
-  const base = (process.env.TL_PUBLIC_URL ?? `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`).replace(/\/$/, '');
+  const base = (process.env.GT_PUBLIC_URL ?? `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`).replace(/\/$/, '');
   console.log(`Password reset link for ${user.name} <${user.email}>, valid until ${expiresAt}:\n${base}/#/reset/${token}`);
   process.exit(0);
 }
 
 if (flag('reset-only')) {
-  console.log(resetDemo(sys, workspaces) ? 'Reset the ServiceHub demo workspace.' : 'No demo workspace to reset (TL_DEMO=0, or this install started without one).');
+  console.log(resetDemo(sys, workspaces) ? 'Reset the ServiceHub demo workspace.' : 'No demo workspace to reset (GT_DEMO=0, or this install started without one).');
   process.exit(0);
 }
 
@@ -74,7 +74,7 @@ integrationRoutes(router, sys, workspaces);
 fileRoutes(router, workspaces);
 apiRoutes(router, sys, workspaces);
 aiRoutes(router, sys);
-router.add('GET', '/api/health', 'none', () => ({ ok: true, name: 'throughline', version: '0.2.0' }), { cors: true });
+router.add('GET', '/api/health', 'none', () => ({ ok: true, name: 'goldthread', version: '0.2.0' }), { cors: true });
 
 // ---------------- request handling ----------------
 
@@ -111,7 +111,7 @@ function serveStatic(res: ServerResponse, url: URL) {
 
 const gzCache = new Map<string, { mtime: number; data: Buffer }>();
 
-const CORS_HEADERS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-TL-Token, X-TL-Actor, Mcp-Protocol-Version, Mcp-Session-Id', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE' };
+const CORS_HEADERS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-GT-Token, X-GT-Actor, Mcp-Protocol-Version, Mcp-Session-Id', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE' };
 
 async function handleApi(req: IncomingMessage, res: ServerResponse, url: URL) {
   const origin = req.headers.origin;
@@ -172,7 +172,7 @@ if (DEV) {
 
 server.on('error', (err: NodeJS.ErrnoException) => {
   if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is already in use — Throughline is probably already running at http://${HOST}:${PORT}.`);
+    console.error(`Port ${PORT} is already in use — Goldthread is probably already running at http://${HOST}:${PORT}.`);
     console.error(`Open that URL, stop the other process, or start a second copy with: PORT=${PORT + 1} npm run dev`);
   } else {
     console.error(`Could not start the server: ${err.message}`);
@@ -192,7 +192,7 @@ setInterval(() => { scheduledSyncs(sys, workspaces).catch((err) => console.error
 
 server.listen(PORT, HOST, () => {
   const where = `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`;
-  console.log(`Throughline running at ${where}${DEV ? ' (dev)' : ''}`);
+  console.log(`Goldthread running at ${where}${DEV ? ' (dev)' : ''}`);
   console.log(`Data: ${DATA}`);
   console.log(`MCP endpoint for AI assistants: ${where}/mcp (create a token under Settings → Tokens & integrations)`);
 });

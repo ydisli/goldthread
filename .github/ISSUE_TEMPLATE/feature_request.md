@@ -1,6 +1,6 @@
 ---
 name: Idea or request
-about: Something Throughline should do
+about: Something Goldthread should do
 labels: idea
 ---
 

@@ -6,7 +6,7 @@ import type { SystemDB } from './system.ts';
 // Live sync with Jira Cloud and Azure DevOps over their REST APIs. Pulling reuses the CSV
 // importer's mapping (issues become rows), so a sync behaves exactly like re-importing an
 // export: new stories are created, known ones updated by key, bugs become defects, and
-// links or notes made in Throughline are kept. Pushing creates issues for stories that
+// links or notes made in Goldthread are kept. Pushing creates issues for stories that
 // don't have a key yet. Tested against local stand-ins of both APIs, not the real services.
 
 export type SyncKind = 'jira' | 'ado';

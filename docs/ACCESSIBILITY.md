@@ -1,6 +1,6 @@
 # Accessibility
 
-Throughline aims for **WCAG 2.1 AA**. This page says what is checked, how, and what still needs a person.
+Goldthread aims for **WCAG 2.1 AA**. This page says what is checked, how, and what still needs a person.
 
 ## What is checked automatically
 

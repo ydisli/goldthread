@@ -5,8 +5,8 @@ import { hostname } from 'node:os';
 import type { IncomingMessage } from 'node:http';
 import type { SystemDB } from './system.ts';
 
-// Email is optional. With TL_SMTP_URL set (smtp://user:pass@host:587, or smtps:// for port 465)
-// Throughline sends invites, mention and approval notices, password reset links and a weekly
+// Email is optional. With GT_SMTP_URL set (smtp://user:pass@host:587, or smtps:// for port 465)
+// Goldthread sends invites, mention and approval notices, password reset links and a weekly
 // digest through a queue that retries. Without it, nothing is sent and links are shared by hand.
 
 export interface MailConfig {
@@ -21,8 +21,8 @@ export interface MailConfig {
 }
 
 export function mailConfig(env = process.env): MailConfig | null {
-  if (!env.TL_SMTP_URL) return null;
-  const u = new URL(env.TL_SMTP_URL);
+  if (!env.GT_SMTP_URL) return null;
+  const u = new URL(env.GT_SMTP_URL);
   const secure = u.protocol === 'smtps:';
   return {
     host: u.hostname,
@@ -30,21 +30,21 @@ export function mailConfig(env = process.env): MailConfig | null {
     secure,
     user: u.username ? decodeURIComponent(u.username) : undefined,
     pass: u.password ? decodeURIComponent(u.password) : undefined,
-    from: env.TL_MAIL_FROM ?? `Throughline <throughline@${u.hostname}>`,
-    insecure: env.TL_SMTP_INSECURE === '1',
+    from: env.GT_MAIL_FROM ?? `Goldthread <goldthread@${u.hostname}>`,
+    insecure: env.GT_SMTP_INSECURE === '1',
   };
 }
 
-export const mailEnabled = () => !!process.env.TL_SMTP_URL;
+export const mailEnabled = () => !!process.env.GT_SMTP_URL;
 
 /** Public base URL for links in emails and SSO redirects, without a trailing slash. */
 export function publicUrl(fallbackHost?: string): string {
-  return (process.env.TL_PUBLIC_URL ?? (fallbackHost ? `http://${fallbackHost}` : 'http://localhost:4300')).replace(/\/$/, '');
+  return (process.env.GT_PUBLIC_URL ?? (fallbackHost ? `http://${fallbackHost}` : 'http://localhost:4300')).replace(/\/$/, '');
 }
 
-/** The base URL for links, from TL_PUBLIC_URL or else the request that triggered the email. */
+/** The base URL for links, from GT_PUBLIC_URL or else the request that triggered the email. */
 export function baseUrl(req?: IncomingMessage): string {
-  if (process.env.TL_PUBLIC_URL || !req) return publicUrl();
+  if (process.env.GT_PUBLIC_URL || !req) return publicUrl();
   const proto = req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
   return `${proto}://${req.headers.host}`;
 }
@@ -107,7 +107,7 @@ export async function sendSmtp(cfg: MailConfig, m: Message): Promise<void> {
     return reply;
   };
   const send = (line: string) => socket.write(`${line}\r\n`);
-  const helloName = hostname() || 'throughline';
+  const helloName = hostname() || 'goldthread';
 
   try {
     await converse();
@@ -131,7 +131,7 @@ export async function sendSmtp(cfg: MailConfig, m: Message): Promise<void> {
       caps = await expect([250], 'EHLO after STARTTLS');
     } else if (!cfg.secure && !cfg.insecure && cfg.user) {
       socket.destroy();
-      throw new Error('The SMTP server does not offer STARTTLS; refusing to send the password in clear text. Set TL_SMTP_INSECURE=1 for a trusted local relay.');
+      throw new Error('The SMTP server does not offer STARTTLS; refusing to send the password in clear text. Set GT_SMTP_INSECURE=1 for a trusted local relay.');
     }
     if (cfg.user) {
       if (caps.some((l) => /AUTH.*PLAIN/i.test(l))) {

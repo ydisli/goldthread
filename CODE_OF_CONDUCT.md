@@ -1,6 +1,6 @@
 # Code of conduct
 
-Throughline adopts the [Contributor Covenant, version 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). Everyone taking part in issues, pull requests, discussions and any other project space is expected to follow it.
+Goldthread adopts the [Contributor Covenant, version 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). Everyone taking part in issues, pull requests, discussions and any other project space is expected to follow it.
 
 In short: be kind and specific, assume good intent, critique ideas rather than people, and make room for people who are new to open source, to product work, or to English.
 

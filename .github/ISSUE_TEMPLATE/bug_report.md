@@ -13,7 +13,7 @@ labels: bug
 2.
 
 **Where**
-- Throughline version or commit:
+- Goldthread version or commit:
 - Browser, or CLI / MCP client:
 - Self-hosted how (npm start, Docker, behind which proxy):
 

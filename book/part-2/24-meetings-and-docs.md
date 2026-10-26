@@ -7,7 +7,7 @@ summary: Meeting notes that turn into decisions, actions, risks and requirements
 tools: [meetings, docs, decisions, raid]
 ---
 
-Meetings and documents are where a lot of product work happens and a lot of it gets lost. Decisions made in a steering meeting live in someone's notebook; the PRD sent last month no longer matches the requirements. This chapter shows how Throughline keeps both connected to the rest of the work.
+Meetings and documents are where a lot of product work happens and a lot of it gets lost. Decisions made in a steering meeting live in someone's notebook; the PRD sent last month no longer matches the requirements. This chapter shows how Goldthread keeps both connected to the rest of the work.
 
 ## Meetings
 
@@ -19,7 +19,7 @@ Write the agenda in the meeting before it starts. Link the items you'll discuss 
 
 ### During: notes that do the work
 
-Type notes during the meeting, or paste a transcript afterwards. Throughline reads the notes and **extracts**:
+Type notes during the meeting, or paste a transcript afterwards. Goldthread reads the notes and **extracts**:
 
 - **Decisions:** lines starting with *Decision:*, *Agreed:*, *We decided to…*, *Going with…*
 - **Action items:** lines starting with *Action:*, *Todo:*, *Follow-up:* or *Next step:*, or lines that assign someone (*@Priya to check the CRM rate limit by Friday*, *Hannah will send the cohort list*). The owner is matched to your stakeholders and the due date is read from phrases like *by Friday* or *next week*.
@@ -27,7 +27,7 @@ Type notes during the meeting, or paste a transcript afterwards. Throughline rea
 - **Open questions:** lines starting with *Question:* or ending with a question mark.
 - **Requirement candidates:** sentences with *must*, *shall*, *needs to* and similar.
 
-Transcript formats work too: timestamps and speaker names ("Priya Nair: …") are handled. Click **Import transcript** to bring in the file Teams or Zoom gives you after a recorded meeting: a WebVTT (`.vtt`), SubRip (`.srt`), Teams Word (`.docx`) or plain-text transcript. Throughline turns it into readable "Name: what they said" lines, merging consecutive lines from the same speaker, and runs the same extraction.
+Transcript formats work too: timestamps and speaker names ("Priya Nair: …") are handled. Click **Import transcript** to bring in the file Teams or Zoom gives you after a recorded meeting: a WebVTT (`.vtt`), SubRip (`.srt`), Teams Word (`.docx`) or plain-text transcript. Goldthread turns it into readable "Name: what they said" lines, merging consecutive lines from the same speaker, and runs the same extraction.
 
 > [!tip] Transcripts are long; decisions are short
 > A one-hour transcript holds a handful of decisions and actions. Read the extracted list against your memory of the meeting before you create anything. Spoken language is vaguer than notes, and *"we should probably look at that"* isn't an action until someone owns it.
@@ -67,7 +67,7 @@ Each meeting shows its **action items** with owners and due dates. Tick them off
 Pick the document type and its subject, review the output, then **copy** the Markdown, download it as **Markdown** or a **Word** document, or choose **Print / PDF** for a clean printable page you can save as a PDF. If your organisation needs a particular template, generate the document and adjust it: most of the work is gathering the content, and that's done.
 
 > [!trap] Editing the generated document instead of the source
-> If you fix a requirement in the downloaded PRD rather than in Throughline, the next generated version will have the old wording. Fix the source, then regenerate.
+> If you fix a requirement in the downloaded PRD rather than in Goldthread, the next generated version will have the old wording. Fix the source, then regenerate.
 
 > [!try]
 > In the sample, open **Documents**, choose **Steering pack**, and read what Morgan would see at the next steering committee. Then choose **Stakeholder update** for the JML bet and switch between the executive and support audiences.
@@ -84,7 +84,7 @@ Why: Action prefixes or an assigned person with a deadline make a line an action
 ```
 
 ```quiz
-Q: Why generate a steering pack from Throughline rather than writing it by hand?
+Q: Why generate a steering pack from Goldthread rather than writing it by hand?
 - Generated documents are longer
 - * It's assembled from the current state of OKRs, roadmap, promises, risks and decisions, so it's accurate and takes minutes
 - Steering committees prefer Markdown

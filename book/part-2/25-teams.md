@@ -7,7 +7,7 @@ summary: Personal and team workspaces, inviting people, roles, teams inside a wo
 tools: [inbox, approvals, raci, capacity]
 ---
 
-Throughline works well as a personal tool, but most product work is shared. A PO and a BA working on the same product, a sponsor who wants to see the roadmap, an auditor who needs the traceability, a team lead who wants the forecast. This chapter covers how to bring people in and keep the right access in place.
+Goldthread works well as a personal tool, but most product work is shared. A PO and a BA working on the same product, a sponsor who wants to see the roadmap, an auditor who needs the traceability, a team lead who wants the forecast. This chapter covers how to bring people in and keep the right access in place.
 
 ## Workspaces
 
@@ -67,10 +67,10 @@ Everything that needs you shows up in your **Inbox**. If your server has email s
 
 ### When two people edit the same thing
 
-Two people can have the same item open. When you save, Throughline sends only the fields you changed, so someone else's edit to a different field is kept. If you both changed **the same field**, nothing is overwritten silently. You see what they saved next to what you wrote, choose which to keep for each field, and then save.
+Two people can have the same item open. When you save, Goldthread sends only the fields you changed, so someone else's edit to a different field is kept. If you both changed **the same field**, nothing is overwritten silently. You see what they saved next to what you wrote, choose which to keep for each field, and then save.
 
 > [!example] At Ashgrove
-> Jordan tightens the wording of REQ-12 while Priya, in a refinement session, changes the same statement to match what engineering can build. Priya saves first. When Jordan saves, Throughline shows both versions side by side. Jordan keeps Priya's wording and adds a comment explaining the audit constraint, rather than quietly reverting it.
+> Jordan tightens the wording of REQ-12 while Priya, in a refinement session, changes the same statement to match what engineering can build. Priya saves first. When Jordan saves, Goldthread shows both versions side by side. Jordan keeps Priya's wording and adds a comment explaining the audit constraint, rather than quietly reverting it.
 
 ### Files
 
@@ -78,7 +78,7 @@ Attach screenshots, documents, exports or audit evidence to any item: drop them 
 
 ### Fields and item types of your own
 
-Every team tracks something Throughline doesn't. Admins can add both under **Settings → Workspace**:
+Every team tracks something Goldthread doesn't. Admins can add both under **Settings → Workspace**:
 
 - **Fields of your own** on any item type: a *Vendor* on requirements, a *Regulatory reference* on decisions, a *Cost centre* on requests. Choose the kind (text, number, date, pick one, yes/no, link) and whether it's required. A field you make required later doesn't block edits to older items, but it can't be cleared once set.
 - **Item types of your own** for things the built-in types don't cover, such as *Environments*, *Vendors*, *Controls* or *Contracts*. Each type gets its own list in the sidebar under *Your item types*, its own form and fields, and links to everything else like any other item.
@@ -140,7 +140,7 @@ Q: You and a colleague both edited the acceptance criteria of the same story, an
 - Their version is kept and your change is discarded
 - * You see both versions side by side and choose which to keep before anything is saved
 - The story is locked until an admin decides
-Why: Edits to different fields merge on their own. When the same field was changed by both of you, Throughline asks rather than silently overwriting, so nobody loses work without knowing.
+Why: Edits to different fields merge on their own. When the same field was changed by both of you, Goldthread asks rather than silently overwriting, so nobody loses work without knowing.
 ```
 
 ```quiz

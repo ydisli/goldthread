@@ -1,6 +1,6 @@
 ---
-id: strategy-in-throughline
-title: Strategy and learning in Throughline
+id: strategy-in-goldthread
+title: Strategy and learning in Goldthread
 part: tool
 minutes: 11
 summary: The vision board and OKRs, the metric tree and tracking plan, business cases with sensitivity, alternatives, capacity and tech debt, the bet ledger and the feature catalog.
@@ -27,7 +27,7 @@ The **Tracking plan** tab lists the measurement each bet needs before it can be 
 
 ## Business cases
 
-**Strategy → Business cases** calculates the numbers from [Chapter 6](guide:strategy): one-time cost, annual cost, annual benefit with a **ramp-up** per year, discount rate and horizon. Throughline computes **NPV, ROI, payback period, IRR** and **cost of delay per week**, and ranks your business cases by value.
+**Strategy → Business cases** calculates the numbers from [Chapter 6](guide:strategy): one-time cost, annual cost, annual benefit with a **ramp-up** per year, discount rate and horizon. Goldthread computes **NPV, ROI, payback period, IRR** and **cost of delay per week**, and ranks your business cases by value.
 
 The **assumptions** field is where you write out each benefit line, so anyone can challenge it. The sensitivity view shows which input the answer depends on most: halve the benefit, double the cost, and see whether the decision survives.
 

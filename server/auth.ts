@@ -3,7 +3,7 @@ import { HttpError, type Ctx, type Need } from './http.ts';
 import { ROLE_RANK, type Role, type SystemDB } from './system.ts';
 import type { Workspaces } from './workspaces.ts';
 
-export const SESSION_COOKIE = 'tl_session';
+export const SESSION_COOKIE = 'gt_session';
 const SESSION_DAYS = 30;
 
 export function parseCookies(req: IncomingMessage): Record<string, string> {
@@ -29,11 +29,11 @@ export function clearSessionCookie(res: ServerResponse) {
   res.setHeader('Set-Cookie', `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
 }
 
-/** API token from `Authorization: Bearer`, `X-TL-Token` or `?token=` (for EventSource). */
+/** API token from `Authorization: Bearer`, `X-GT-Token` or `?token=` (for EventSource). */
 export function bearerToken(req: IncomingMessage, url: URL): string | undefined {
   const auth = String(req.headers.authorization ?? '');
   if (auth.toLowerCase().startsWith('bearer ')) return auth.slice(7).trim();
-  const header = req.headers['x-tl-token'];
+  const header = req.headers['x-gt-token'];
   if (typeof header === 'string' && header) return header;
   return url.searchParams.get('token') ?? undefined;
 }
@@ -61,7 +61,7 @@ export function clearFailures(key: string) {
 
 /**
  * Resolve who is calling and in which workspace, then check the route's
- * requirement. Session users pick a workspace with the `X-TL-Workspace`
+ * requirement. Session users pick a workspace with the `X-GT-Workspace`
  * header (falling back to the session's last workspace); API tokens are bound
  * to one workspace.
  */
@@ -86,7 +86,7 @@ export function authenticate(ctx: Ctx, need: Need, sys: SystemDB, workspaces: Wo
       ctx.sessionHash = s.idHash;
       ctx.sessionWorkspaceId = s.workspaceId;
       ctx.via = 'session';
-      const requested = req.headers['x-tl-workspace'];
+      const requested = req.headers['x-gt-workspace'];
       workspaceId = (typeof requested === 'string' && requested) || url.searchParams.get('ws') || s.workspaceId;
     }
   }
@@ -114,6 +114,6 @@ export function authenticate(ctx: Ctx, need: Need, sys: SystemDB, workspaces: Wo
 }
 
 export function actorOf(ctx: Ctx): { id?: string; name: string } {
-  const via = ctx.via === 'token' ? ` (${String(ctx.req.headers['x-tl-actor'] ?? 'API')})` : '';
+  const via = ctx.via === 'token' ? ` (${String(ctx.req.headers['x-gt-actor'] ?? 'API')})` : '';
   return { id: ctx.user?.id, name: `${ctx.user?.name ?? 'system'}${via}` };
 }

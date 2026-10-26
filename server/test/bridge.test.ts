@@ -28,7 +28,7 @@ async function waitFor(url: string, ms = 15_000) {
 // server and the real bridge as processes and talks JSON-RPC over the bridge's stdin/stdout,
 // exactly as an MCP client does. (It does not drive Claude Desktop itself.)
 test('MCP stdio bridge: initialize, list tools, search and capture through a running server', async () => {
-  const dir = mkdtempSync(join(tmpdir(), 'throughline-bridge-'));
+  const dir = mkdtempSync(join(tmpdir(), 'goldthread-bridge-'));
   const procs: ChildProcess[] = [];
   try {
     const sys = new SystemDB(dir);
@@ -38,11 +38,11 @@ test('MCP stdio bridge: initialize, list tools, search and capture through a run
     const { token } = sys.createToken({ userId: u.id, workspaceId: w.id, name: 'bridge test', scope: 'write' });
 
     const port = await freePort();
-    const server = spawn(process.execPath, [join(ROOT, 'server/index.ts'), '--port', String(port)], { env: { ...process.env, TL_DATA: dir, TL_DEMO: '0' }, stdio: 'ignore' });
+    const server = spawn(process.execPath, [join(ROOT, 'server/index.ts'), '--port', String(port)], { env: { ...process.env, GT_DATA: dir, GT_DEMO: '0' }, stdio: 'ignore' });
     procs.push(server);
     await waitFor(`http://127.0.0.1:${port}/api/health`);
 
-    const bridge = spawn(process.execPath, [join(ROOT, 'mcp/stdio.ts')], { env: { ...process.env, TL_URL: `http://127.0.0.1:${port}`, TL_TOKEN: token }, stdio: ['pipe', 'pipe', 'inherit'] });
+    const bridge = spawn(process.execPath, [join(ROOT, 'mcp/stdio.ts')], { env: { ...process.env, GT_URL: `http://127.0.0.1:${port}`, GT_TOKEN: token }, stdio: ['pipe', 'pipe', 'inherit'] });
     procs.push(bridge);
     const replies = new Map<number, any>();
     const waiters = new Map<number, (v: any) => void>();
@@ -60,7 +60,7 @@ test('MCP stdio bridge: initialize, list tools, search and capture through a run
     });
 
     const init = await rpc('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'test-client', version: '1' } });
-    assert.equal(init.result.serverInfo.name, 'throughline');
+    assert.equal(init.result.serverInfo.name, 'goldthread');
     bridge.stdin!.write(`${JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' })}\n`);
     const tools = await rpc('tools/list');
     assert.ok(tools.result.tools.some((t: { name: string }) => t.name === 'read_guide'));
@@ -78,7 +78,7 @@ test('MCP stdio bridge: initialize, list tools, search and capture through a run
 });
 
 test('MCP stdio bridge: a bad token comes back as a JSON-RPC error, not a crash', async () => {
-  const bridge = spawn(process.execPath, [join(ROOT, 'mcp/stdio.ts')], { env: { ...process.env, TL_URL: 'http://127.0.0.1:9', TL_TOKEN: 'tl_nope' }, stdio: ['pipe', 'pipe', 'ignore'] });
+  const bridge = spawn(process.execPath, [join(ROOT, 'mcp/stdio.ts')], { env: { ...process.env, GT_URL: 'http://127.0.0.1:9', GT_TOKEN: 'gt_nope' }, stdio: ['pipe', 'pipe', 'ignore'] });
   try {
     const line = await new Promise<string>((resolve) => {
       createInterface({ input: bridge.stdout! }).once('line', resolve);
@@ -86,6 +86,6 @@ test('MCP stdio bridge: a bad token comes back as a JSON-RPC error, not a crash'
     });
     const msg = JSON.parse(line);
     assert.equal(msg.id, 7);
-    assert.match(msg.error.message, /Cannot reach Throughline/);
+    assert.match(msg.error.message, /Cannot reach Goldthread/);
   } finally { bridge.kill(); }
 });

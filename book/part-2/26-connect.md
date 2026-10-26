@@ -3,22 +3,22 @@ id: connect
 title: Connecting AI assistants and other tools
 part: tool
 minutes: 17
-summary: Adding Claude or another model to your workspace, letting your own AI assistant work with Throughline over MCP, keeping Jira or Azure DevOps in step, Slack and Teams, capturing by email, personal tokens, the command line, the browser extension, the REST API and keeping data safe.
+summary: Adding Claude or another model to your workspace, letting your own AI assistant work with Goldthread over MCP, keeping Jira or Azure DevOps in step, Slack and Teams, capturing by email, personal tokens, the command line, the browser extension, the REST API and keeping data safe.
 tools: [ask, specs, signals, backlog]
 ---
 
-Throughline is designed to sit among the tools you already use rather than replace them. This chapter covers the two ways AI fits in, and the ways to get information in and out from the terminal, the browser and other systems.
+Goldthread is designed to sit among the tools you already use rather than replace them. This chapter covers the two ways AI fits in, and the ways to get information in and out from the terminal, the browser and other systems.
 
 ## Two ways to use AI
 
-There are two distinct ways AI can work with Throughline, and you can use either, both or neither.
+There are two distinct ways AI can work with Goldthread, and you can use either, both or neither.
 
-1. **AI inside Throughline.** An admin connects a model provider to the workspace. Throughline then uses it for the **Review board** in Spec Studio and for answering questions in **Ask**, grounded in your workspace's items, with citations.
-2. **Your assistant, using Throughline.** You connect your own AI assistant (Claude Desktop, Claude Code, Cursor, VS Code or any client that supports the Model Context Protocol) to Throughline. Your assistant can then search your workspace, prepare you for meetings, check specs, run forecasts and, if you allow it, capture and update items, all from the conversation you're already having.
+1. **AI inside Goldthread.** An admin connects a model provider to the workspace. Goldthread then uses it for the **Review board** in Spec Studio and for answering questions in **Ask**, grounded in your workspace's items, with citations.
+2. **Your assistant, using Goldthread.** You connect your own AI assistant (Claude Desktop, Claude Code, Cursor, VS Code or any client that supports the Model Context Protocol) to Goldthread. Your assistant can then search your workspace, prepare you for meetings, check specs, run forecasts and, if you allow it, capture and update items, all from the conversation you're already having.
 
-Without any AI connected, everything in Throughline still works. Every analysis (linting, completeness, contradictions, review board, forecasts, decision tables, traceability) has a built-in engine that runs without a model.
+Without any AI connected, everything in Goldthread still works. Every analysis (linting, completeness, contradictions, review board, forecasts, decision tables, traceability) has a built-in engine that runs without a model.
 
-## AI inside Throughline
+## AI inside Goldthread
 
 Admins set this up in **Settings → AI**. Choose a provider:
 
@@ -30,11 +30,11 @@ Click **Test** to check the connection. Keys are encrypted at rest on the server
 
 ### What gets sent
 
-When the review board or Ask uses a model, Throughline sends only the relevant items (the spec being reviewed, related requirements and decisions, or the items most relevant to the question), and **redacts personal data** first: email addresses, phone numbers and bank account numbers are replaced before anything leaves the server. Check what your organisation allows before enabling a cloud provider, and prefer local models for sensitive workspaces.
+When the review board or Ask uses a model, Goldthread sends only the relevant items (the spec being reviewed, related requirements and decisions, or the items most relevant to the question), and **redacts personal data** first: email addresses, phone numbers and bank account numbers are replaced before anything leaves the server. Check what your organisation allows before enabling a cloud provider, and prefer local models for sensitive workspaces.
 
-## Your assistant, using Throughline (MCP)
+## Your assistant, using Goldthread (MCP)
 
-The **Model Context Protocol (MCP)** is an open standard that lets AI assistants use tools. Throughline is an MCP server. Connect your assistant once and you can say things like:
+The **Model Context Protocol (MCP)** is an open standard that lets AI assistants use tools. Goldthread is an MCP server. Connect your assistant once and you can say things like:
 
 - *"What's waiting on me in ServiceHub today?"*
 - *"Prepare me for my meeting with Daniel Brooks."*
@@ -72,7 +72,7 @@ Your assistant only gets what your role allows, and write tools need a token wit
 
 1. Open **Settings → Tokens & integrations** and create a **personal access token** for the workspace. Choose **read** (search, prepare, check) or **read & write** (also capture and update). Copy it; it's shown once.
 2. Under **AI assistants (MCP)**, copy the snippet for your client. The snippets already include your server address and token:
-   - **Claude Desktop:** add the snippet to `claude_desktop_config.json` (Settings → Developer → Edit config) and restart Claude Desktop. It uses a small bridge that ships with Throughline.
+   - **Claude Desktop:** add the snippet to `claude_desktop_config.json` (Settings → Developer → Edit config) and restart Claude Desktop. It uses a small bridge that ships with Goldthread.
    - **Claude Code:** run the one-line `claude mcp add` command.
    - **Any client that supports Streamable HTTP** (Cursor, VS Code and others): use the server URL ending in `/mcp` with the Authorization header.
 3. Ask your assistant something simple, such as *"Search ServiceHub for mailbox retention."*
@@ -85,24 +85,24 @@ Your assistant only gets what your role allows, and write tools need a token wit
 
 ## Jira and Azure DevOps, kept in step
 
-Your team keeps working in Jira or Azure Boards. Throughline keeps a copy of the backlog in step so that health checks, forecasts, traceability and promises use real data. Admins connect it under **Settings → Jira, ADO & more**:
+Your team keeps working in Jira or Azure Boards. Goldthread keeps a copy of the backlog in step so that health checks, forecasts, traceability and promises use real data. Admins connect it under **Settings → Jira, ADO & more**:
 
 - **Jira Cloud:** your site address, the email of the account to use, an API token, and a JQL query for which issues to bring in.
 - **Azure DevOps:** your organisation address, the project, and a personal access token with *Work Items: Read & write*.
 
-Choose how often to sync (every 15 minutes to once a day, or only when you click **Sync now**), then press **Test**. A sync behaves exactly like re-importing an export ([Chapter 22](guide:delivery-in-throughline)): new issues become stories, known ones are updated by key, bugs become defects, resolved dates feed the forecast, and the links and notes you added in Throughline are kept. Editors can sync on demand from the backlog.
+Choose how often to sync (every 15 minutes to once a day, or only when you click **Sync now**), then press **Test**. A sync behaves exactly like re-importing an export ([Chapter 22](guide:delivery-in-goldthread)): new issues become stories, known ones are updated by key, bugs become defects, resolved dates feed the forecast, and the links and notes you added in Goldthread are kept. Editors can sync on demand from the backlog.
 
-If you tick **Create issues for new stories written here**, stories you write in Throughline that don't have a key yet are created in Jira or Azure DevOps on the next sync, with their narrative and acceptance criteria, and get the new key back.
+If you tick **Create issues for new stories written here**, stories you write in Goldthread that don't have a key yet are created in Jira or Azure DevOps on the next sync, with their narrative and acceptance criteria, and get the new key back.
 
 > [!tip] Start with a narrow query
-> Connect with a query for one project and the last 90 days. Check the backlog looks right, then widen it. The account or token you use decides what Throughline can see, so a service account with access to just the right projects is safest.
+> Connect with a query for one project and the last 90 days. Check the backlog looks right, then widen it. The account or token you use decides what Goldthread can see, so a service account with access to just the right projects is safest.
 
 ## Slack and Microsoft Teams
 
-Bring Throughline into the conversations your stakeholders already have:
+Bring Goldthread into the conversations your stakeholders already have:
 
 - **Posting:** choose which events go to a channel (new requests, sign-offs requested, decisions made, releases shipped). Each message links back to the item. For Slack, paste an incoming webhook URL. For Teams, paste the URL of a Workflows webhook.
-- **Capturing:** in Slack, a `/throughline` slash command captures whatever follows it. In Teams, an outgoing webhook does the same when someone @mentions it. Start with **request:**, **decision:**, **risk:** or **idea:** to choose the kind; anything else becomes a signal. For example, `/throughline request: contractors need laptops on day one`. The settings card shows the exact URL to paste into Slack or Teams, and every message is verified with Slack's signing secret or the Teams security token.
+- **Capturing:** in Slack, a `/goldthread` slash command captures whatever follows it. In Teams, an outgoing webhook does the same when someone @mentions it. Start with **request:**, **decision:**, **risk:** or **idea:** to choose the kind; anything else becomes a signal. For example, `/goldthread request: contractors need laptops on day one`. The settings card shows the exact URL to paste into Slack or Teams, and every message is verified with Slack's signing secret or the Teams security token.
 
 ## Email in
 
@@ -122,21 +122,21 @@ Personal access tokens let tools act as you in one workspace:
 
 ## Command line
 
-The `tl` command-line tool works with the same server:
+The `goldthread` command-line tool works with the same server:
 
 ```bash
-export TL_URL=https://throughline.example.com
-export TL_TOKEN=tl_…
-tl brief                                   # today's brief
-tl search "mailbox retention"              # search everything
-tl prep "Daniel Brooks"                    # meeting prep
-tl capture "Scanner unlock times out" --source support
-tl lint spec.md --max-errors 0             # check a spec offline; fails CI if it has errors
-tl import jira-export.csv                  # import or refresh the backlog from Jira / ADO
-tl export > backup.json                    # the whole workspace as JSON
+export GT_URL=https://goldthread.example.com
+export GT_TOKEN=gt_…
+goldthread brief                           # today's brief
+goldthread search "mailbox retention"      # search everything
+goldthread prep "Daniel Brooks"            # meeting prep
+goldthread capture "Scanner unlock times out" --source support
+goldthread lint spec.md --max-errors 0     # check a spec offline; fails CI if it has errors
+goldthread import jira-export.csv          # import or refresh the backlog from Jira / ADO
+goldthread export > backup.json            # the whole workspace as JSON
 ```
 
-Two uses are worth highlighting. **`tl lint`** runs fully offline, so you can check specs kept in a Git repository as part of a CI pipeline and fail the build when they contain errors. **`tl import`** can run on a schedule (a nightly job, say) so the backlog, defects and resolved dates stay current without anyone clicking import.
+Two uses are worth highlighting. **`goldthread lint`** runs fully offline, so you can check specs kept in a Git repository as part of a CI pipeline and fail the build when they contain errors. **`goldthread import`** can run on a schedule (a nightly job, say) so the backlog, defects and resolved dates stay current without anyone clicking import.
 
 ## Browser extension
 
@@ -155,7 +155,7 @@ Everything is also available over a simple HTTP API with the same token: read it
 - **Everything is logged.** The activity trail shows changes made by tokens, assistants and imports as clearly as changes made in the app.
 
 > [!try]
-> Create a read token in **Settings → Tokens & integrations**, connect Claude Code or Claude Desktop with the snippet, and ask: *"Using Throughline, what's waiting on me today, and who am I overdue to talk to?"*
+> Create a read token in **Settings → Tokens & integrations**, connect Claude Code or Claude Desktop with the snippet, and ask: *"Using Goldthread, what's waiting on me today, and who am I overdue to talk to?"*
 
 ## Check yourself
 
@@ -169,12 +169,12 @@ Why: Every analysis has a built-in engine that needs no model, and a local OpenA
 ```
 
 ```quiz
-Q: Your team works in Jira and you've connected it to Throughline. A BA adds a link from a story to a requirement in Throughline, and the next sync updates that story's status from Jira. What happens to the link?
+Q: Your team works in Jira and you've connected it to Goldthread. A BA adds a link from a story to a requirement in Goldthread, and the next sync updates that story's status from Jira. What happens to the link?
 - It's removed, because Jira is the source of truth
 - The sync stops and asks which to keep
-- * It's kept; the sync updates the fields that come from Jira and leaves Throughline's links and notes alone
+- * It's kept; the sync updates the fields that come from Jira and leaves Goldthread's links and notes alone
 - The story is duplicated
-Why: A sync behaves like a re-import by key. It refreshes what Jira owns, such as the title, status, points and dates, and never overwrites what you added in Throughline.
+Why: A sync behaves like a re-import by key. It refreshes what Jira owns, such as the title, status, points and dates, and never overwrites what you added in Goldthread.
 ```
 
 ```quiz

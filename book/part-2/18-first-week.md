@@ -3,11 +3,11 @@ id: first-week
 title: "Your first week: setting up"
 part: tool
 minutes: 12
-summary: A day-by-day plan for setting up Throughline for your real work, from the first stakeholders and backlog import to your first spec and your daily rhythm.
+summary: A day-by-day plan for setting up Goldthread for your real work, from the first stakeholders and backlog import to your first spec and your daily rhythm.
 tools: [stakeholders, backlog, specs, signals, bets, vision]
 ---
 
-The fastest way to get value from Throughline is not to configure everything up front. It's to put in the few things that pay back immediately (your people, your current backlog, the spec you're working on) and let the rest grow as you work. This chapter is a five-day plan. Each day takes about an hour.
+The fastest way to get value from Goldthread is not to configure everything up front. It's to put in the few things that pay back immediately (your people, your current backlog, the spec you're working on) and let the rest grow as you work. This chapter is a five-day plan. Each day takes about an hour.
 
 ## Before you start
 
@@ -20,7 +20,7 @@ The fastest way to get value from Throughline is not to configure everything up 
 
 ## Day 1: your people
 
-Stakeholders are where Throughline pays back first, so start there.
+Stakeholders are where Goldthread pays back first, so start there.
 
 1. Open **People → Stakeholders** and add the eight to fifteen people who matter most for your current work. Use the five "follow the…" questions from [Chapter 3](guide:stakeholders): money, data, approvals, support path, and who could stop it.
 2. For each, set **power** and **interest** (1–5), tick **legitimacy** and **urgency** if they apply, and choose **current** and **desired engagement**.
@@ -28,15 +28,15 @@ Stakeholders are where Throughline pays back first, so start there.
 4. Set a **cadence** (how often you want to talk) for your key players.
 5. Open **Maps**. Your power/interest grid and engagement gaps are already drawn.
 
-You'll also see yourself as a stakeholder, linked to your account. That's how Throughline knows which approvals and action items are yours.
+You'll also see yourself as a stakeholder, linked to your account. That's how Goldthread knows which approvals and action items are yours.
 
 ## Day 2: your backlog
 
-If your team's backlog lives in Jira or Azure DevOps, bring it in. You keep using that tool for day-to-day delivery; Throughline adds the analysis around it.
+If your team's backlog lives in Jira or Azure DevOps, bring it in. You keep using that tool for day-to-day delivery; Goldthread adds the analysis around it.
 
 1. In Jira, run a filter for your project and choose **Export → Export CSV (all fields)**. In Azure DevOps, open a query and choose **Export to CSV**. Include resolved or closed dates if you can; they let the forecast use your team's real history.
-2. Open **Delivery → Backlog health** and click **Import from Jira / ADO**. Choose the file. Throughline detects the source, shows how it mapped the columns, and previews what will be created.
-3. Bugs become **defects** (you can switch that off). Epics are skipped, because in Throughline they're **bets**, which you'll create deliberately on Day 4.
+2. Open **Delivery → Backlog health** and click **Import from Jira / ADO**. Choose the file. Goldthread detects the source, shows how it mapped the columns, and previews what will be created.
+3. Bugs become **defects** (you can switch that off). Epics are skipped, because in Goldthread they're **bets**, which you'll create deliberately on Day 4.
 4. Import. The backlog health checks run immediately: duplicates, stale items, missing acceptance criteria, oversized stories.
 
 Re-importing the same export later **updates** stories by their key instead of duplicating them, so you can refresh weekly. If you'd rather automate it, the command-line tool can import on a schedule (Chapter 26).
@@ -62,7 +62,7 @@ Now connect the work to its reasons.
 3. Add a few **signals**, the evidence behind the bet: a quote, a ticket count, an interview finding. Press **C** to capture each one.
 4. If your organisation has quarterly objectives, add them in **Strategy → Vision & OKRs** and link the bet to the objective.
 
-Now the throughline exists for your main initiative: evidence → bet → spec → requirements → stories.
+Now the golden thread exists for your main initiative: evidence → bet → spec → requirements → stories.
 
 ## Day 5: your rhythm
 
@@ -84,14 +84,14 @@ From here, grow it as you work rather than as a project:
 - Connect your AI assistant (Chapter 26).
 
 > [!trap] Importing everything on day one
-> It's tempting to load every stakeholder, every historical decision and every old spec. Resist. Throughline is most useful when what's in it is current and accurate. Add history only when you need it.
+> It's tempting to load every stakeholder, every historical decision and every old spec. Resist. Goldthread is most useful when what's in it is current and accurate. Add history only when you need it.
 
 ## Check yourself
 
 ```quiz
 Q: You re-import the same Jira export a week later after the team updated statuses. What happens?
 - Every story is duplicated
-- * Stories are updated by their Jira key; links and notes you made in Throughline are kept
+- * Stories are updated by their Jira key; links and notes you made in Goldthread are kept
 - The import is refused
 - Old stories are deleted and recreated
 Why: Re-imports match on the issue key and only update fields the tool owns (title, status, points, sprint, done date), so you can refresh regularly.

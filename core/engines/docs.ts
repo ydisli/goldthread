@@ -48,7 +48,7 @@ function prd(g: Graph, spec: Entity, now: Date): string {
   const approvals = g.all('approval').filter((a) => a.subjectId === spec.id);
   const L = [
     `# ${spec.title}`,
-    `_Status: ${spec.status} · Owner: ${nameOf(g.get(spec.ownerId))} · Generated ${isoDate(now)} by Throughline_`, '',
+    `_Status: ${spec.status} · Owner: ${nameOf(g.get(spec.ownerId))} · Generated ${isoDate(now)} by Goldthread_`, '',
   ];
   if (bet) {
     L.push('## Bet', `**${bet.title}** — ${bet.hypothesis ?? ''}`, '');
@@ -80,7 +80,7 @@ function brd(g: Graph, bet: Entity, now: Date): string {
   const assumptions = g.referencing(bet.id, 'assumption', 'betId');
   const raid = g.all('raid').filter((r) => (r.relatedIds ?? []).includes(bet.id));
   const bc = g.referencing(bet.id, 'businessCase', 'betId')[0];
-  const L = [`# Business Requirements Document — ${bet.title}`, `_Generated ${isoDate(now)} by Throughline_`, ''];
+  const L = [`# Business Requirements Document — ${bet.title}`, `_Generated ${isoDate(now)} by Goldthread_`, ''];
   L.push('## 1. Executive summary', bet.hypothesis ?? '', '');
   L.push('## 2. Business objectives');
   if (objective) L.push(`**${objective.title}** (${objective.period ?? ''})`, ...krs.map((k) => `- ${k.title}: ${k.current ?? '?'} → ${k.target ?? '?'} ${k.unit ?? ''}`));

@@ -3,7 +3,7 @@ id: templates
 title: Templates
 part: appendix
 minutes: 10
-summary: Fill-in templates for the techniques in this book. Copy them into your notes, a spec or a Throughline item.
+summary: Fill-in templates for the techniques in this book. Copy them into your notes, a spec or a Goldthread item.
 tools: [specs, bets, decisions, releases]
 ---
 

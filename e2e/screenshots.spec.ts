@@ -3,8 +3,8 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 // README screenshots from the demo workspace. Not part of the normal run:
-//   TL_SCREENSHOTS=1 npm run e2e -- screenshots
-test.skip(!process.env.TL_SCREENSHOTS, 'Set TL_SCREENSHOTS=1 to refresh docs/screenshots');
+//   GT_SCREENSHOTS=1 npm run e2e -- screenshots
+test.skip(!process.env.GT_SCREENSHOTS, 'Set GT_SCREENSHOTS=1 to refresh docs/screenshots');
 
 const OUT = join(import.meta.dirname, '..', 'docs', 'screenshots');
 

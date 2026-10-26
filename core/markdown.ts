@@ -1,5 +1,5 @@
 // A small Markdown parser that produces a block tree, for exporters (Word) that need
-// structure rather than HTML. Covers what Throughline writes: headings, paragraphs,
+// structure rather than HTML. Covers what Goldthread writes: headings, paragraphs,
 // lists (nested by indent), tables, code blocks, quotes, rules, bold, italic, code, links.
 
 export type Inline =

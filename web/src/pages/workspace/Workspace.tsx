@@ -212,7 +212,7 @@ export function AskPage() {
   const SUGGESTIONS = ['Why is Workday the source of truth?', 'What does the service desk complain about?', 'mailbox retention', 'type:request access', 'Who is resistant?'];
   return (
     <div className="page">
-      <PageHead title="Ask Throughline" sub="Search everything — decisions, evidence, requirements, people. Every answer links to its source." />
+      <PageHead title="Ask Goldthread" sub="Search everything — decisions, evidence, requirements, people. Every answer links to its source." />
       <form className="row mb16" onSubmit={(e) => { e.preventDefault(); setQuery({ q: draft.trim() || undefined }); }}>
         <input aria-label="Ask a question or search" className="input" style={{ fontSize: 15, minHeight: 42 }} autoFocus placeholder="Ask a question or search… (type:decision, REQ-12 …)" value={draft} onChange={(e) => setDraft(e.target.value)} />
         <button className="btn btn-primary" style={{ height: 42 }}>Search</button>
