@@ -12,6 +12,8 @@ import { accountRoutes } from './account.ts';
 import { apiRoutes } from './api.ts';
 import { aiRoutes } from './ai.ts';
 import { mcpHandler } from './mcp.ts';
+import { flushOutbox, mailEnabled } from './mail.ts';
+import { sendDigests } from './notify.ts';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const args = process.argv.slice(2);
@@ -144,6 +146,13 @@ server.on('error', (err: NodeJS.ErrnoException) => {
   }
   process.exit(1);
 });
+
+// Email: send what's queued every minute; weekly digests are checked hourly.
+if (mailEnabled()) {
+  setInterval(() => { void flushOutbox(sys); }, 60_000).unref();
+  setInterval(() => { try { sendDigests(sys, workspaces); } catch (err) { console.error('Digest failed:', err); } }, 3_600_000).unref();
+  setTimeout(() => { void flushOutbox(sys); sendDigests(sys, workspaces); }, 5_000).unref();
+}
 
 server.listen(PORT, HOST, () => {
   const where = `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`;

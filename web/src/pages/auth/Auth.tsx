@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { acceptInvite, api, demoLogin, login, logout, resetPassword, signup, useStore, type Persona, type Role } from '../../store.ts';
-import { navigate } from '../../router.tsx';
+import { navigate, useRoute } from '../../router.tsx';
 import { Avatar, Seg } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 
@@ -61,25 +61,54 @@ export function AuthScreen() {
 }
 
 function SignIn() {
+  const auth = useStore().auth;
+  const { query } = useRoute();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(query.get('sso_error') ?? '');
+  const [forgot, setForgot] = useState<'no' | 'asking' | 'sent'>('no');
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setBusy(true); setError('');
-    try { await login(email, password); } catch (err) { setError(errText(err)); setBusy(false); }
+    try {
+      if (forgot === 'asking') {
+        await api('/api/auth/forgot', { method: 'POST', json: { email } });
+        setForgot('sent'); setBusy(false);
+      } else await login(email, password);
+    } catch (err) { setError(errText(err)); setBusy(false); }
   };
+  if (forgot === 'sent') {
+    return (
+      <div className="col" style={{ gap: 12 }}>
+        <h2 style={{ fontSize: 20 }}>Check your email</h2>
+        <p className="small muted" style={{ margin: 0 }}>If there's an account for <b>{email}</b>, a link to choose a new password is on its way. It works once, for 24 hours.</p>
+        <button className="btn" onClick={() => setForgot('no')}>Back to sign in</button>
+      </div>
+    );
+  }
   return (
     <form className="col" style={{ gap: 14 }} onSubmit={submit}>
       <div>
-        <h2 style={{ fontSize: 20 }}>Welcome back</h2>
-        <div className="small muted">Sign in to your workspaces.</div>
+        <h2 style={{ fontSize: 20 }}>{forgot === 'asking' ? 'Forgot your password?' : 'Welcome back'}</h2>
+        <div className="small muted">{forgot === 'asking' ? 'We will email you a link to choose a new one.' : 'Sign in to your workspaces.'}</div>
       </div>
+      {auth?.sso && forgot === 'no' && (
+        <>
+          <a className="btn btn-lg" href="/api/auth/oidc/start"><Icon name="key-round" size={15} />Continue with {auth.sso.name}</a>
+          <div className="or-line small muted"><span>or with a password</span></div>
+        </>
+      )}
       <div className="field"><label htmlFor="si-email">Email</label><input id="si-email" className="input" type="email" autoComplete="email" autoFocus value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-      <div className="field"><label htmlFor="si-pw">Password</label><input id="si-pw" className="input" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
-      {error && <div className="err">{error}</div>}
-      <button className="btn btn-primary btn-lg" disabled={busy || !email || !password}>{busy ? 'Signing in…' : 'Sign in'}</button>
+      {forgot === 'no' && (
+        <div className="field">
+          <div className="row"><label htmlFor="si-pw">Password</label><span className="spacer" />{auth?.mail && <button type="button" className="btn-link small" onClick={() => { setForgot('asking'); setError(''); }}>Forgot password?</button>}</div>
+          <input id="si-pw" className="input" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </div>
+      )}
+      {error && <div className="err" role="alert">{error}</div>}
+      <button className="btn btn-primary btn-lg" disabled={busy || !email || (forgot === 'no' && !password)}>{busy ? 'One moment…' : forgot === 'asking' ? 'Email me a link' : 'Sign in'}</button>
+      {forgot === 'asking' && <button type="button" className="btn btn-ghost" onClick={() => setForgot('no')}>Back to sign in</button>}
     </form>
   );
 }

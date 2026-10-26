@@ -13,6 +13,8 @@ import { completeness, completenessScore } from '../core/engines/completeness.ts
 import { reviewSpec } from '../core/engines/review.ts';
 import { similar } from '../core/engines/clustering.ts';
 import { isoDate } from '../core/util.ts';
+import { baseUrl } from './mail.ts';
+import { notifyApproval, notifyMentions } from './notify.ts';
 
 export const graphFor = (ctx: WCtx) => new Graph(ctx.ws.store.all(), { meUserId: ctx.user.id });
 
@@ -57,6 +59,8 @@ export function apiRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) {
     }
     const e = ctx.ws.store.create(type, fields, actorOf(ctx));
     broadcast(wsId(ctx), [{ op: 'upsert', entity: e }]);
+    if (type === 'comment') notifyMentions(sys, e, ctx.ws.store.get(e.entityId), ctx.ws.workspace.name, baseUrl(ctx.req));
+    if (type === 'approval') notifyApproval(sys, e, graphFor(ctx), ctx.ws.workspace.name, baseUrl(ctx.req));
     return e;
   });
 

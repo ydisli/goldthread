@@ -39,6 +39,10 @@ export interface AuthState {
   signup: 'open' | 'invite-only';
   demo: DemoAccount[];
   firstRun: boolean;
+  /** The server can send email (password resets, invites, notifications). */
+  mail?: boolean;
+  /** Single sign-on is set up; `name` labels the button. */
+  sso?: { name: string } | null;
 }
 
 type Status = 'loading' | 'auth' | 'ready' | 'offline' | 'error';

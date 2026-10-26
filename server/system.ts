@@ -146,6 +146,10 @@ export class SystemDB {
         id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), token_hash TEXT NOT NULL UNIQUE,
         created_by TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, used_at TEXT
       );
+      CREATE TABLE IF NOT EXISTS mail_outbox (
+        id TEXT PRIMARY KEY, to_addr TEXT NOT NULL, subject TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL,
+        sent_at TEXT, attempts INTEGER NOT NULL DEFAULT 0, next_at INTEGER NOT NULL DEFAULT 0, last_error TEXT
+      );
       CREATE TABLE IF NOT EXISTS ai_config (
         workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id), provider TEXT NOT NULL, model TEXT, base_url TEXT, key_enc TEXT,
         updated_at TEXT NOT NULL, updated_by TEXT
@@ -224,6 +228,10 @@ export class SystemDB {
     this.db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId);
   }
 
+  allUsers(): User[] {
+    return (this.db.prepare('SELECT * FROM users ORDER BY created_at').all() as any[]).map((r) => this.rowToUser(r));
+  }
+
   hasPassword(userId: string): boolean {
     const r = this.db.prepare('SELECT pw_hash FROM users WHERE id = ?').get(userId) as { pw_hash: string | null } | undefined;
     return !!r?.pw_hash;
@@ -235,6 +243,30 @@ export class SystemDB {
       for (const t of ['memberships', 'sessions', 'tokens', 'resets']) this.db.prepare(`DELETE FROM ${t} WHERE user_id = ?`).run(userId);
       this.db.prepare('DELETE FROM users WHERE id = ?').run(userId);
     });
+  }
+
+  // ---------------- mail outbox ----------------
+
+  queueMail(m: { to: string; subject: string; text: string }) {
+    this.db.prepare('INSERT INTO mail_outbox(id, to_addr, subject, body, created_at) VALUES (?, ?, ?, ?, ?)').run(id('mail'), m.to, m.subject, m.text, now());
+  }
+
+  dueMail(at = Date.now()): { id: string; to: string; subject: string; text: string; attempts: number }[] {
+    return (this.db.prepare('SELECT * FROM mail_outbox WHERE sent_at IS NULL AND attempts < 5 AND next_at <= ? ORDER BY created_at LIMIT 50').all(at) as any[])
+      .map((r) => ({ id: r.id, to: r.to_addr, subject: r.subject, text: r.body, attempts: r.attempts }));
+  }
+
+  markMailSent(mailId: string) {
+    this.db.prepare('UPDATE mail_outbox SET sent_at = ?, last_error = NULL WHERE id = ?').run(now(), mailId);
+  }
+
+  markMailFailed(mailId: string, error: string, retryAt: number) {
+    this.db.prepare('UPDATE mail_outbox SET attempts = attempts + 1, last_error = ?, next_at = ? WHERE id = ?').run(error.slice(0, 500), retryAt, mailId);
+  }
+
+  mailLog(limit = 20): { to: string; subject: string; createdAt: string; sentAt?: string; attempts: number; error?: string }[] {
+    return (this.db.prepare('SELECT * FROM mail_outbox ORDER BY created_at DESC LIMIT ?').all(limit) as any[])
+      .map((r) => ({ to: r.to_addr, subject: r.subject, createdAt: r.created_at, sentAt: r.sent_at ?? undefined, attempts: r.attempts, error: r.last_error ?? undefined }));
   }
 
   // ---------------- password reset links ----------------

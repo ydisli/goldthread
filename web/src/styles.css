@@ -696,3 +696,8 @@ a.list-item:hover { background: var(--surface-2); text-decoration: none; }
 .conflict-options label.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .conflict-options input { position: absolute; opacity: 0; pointer-events: none; }
 @media (max-width: 640px) { .conflict-options { grid-template-columns: 1fr; } }
+.or-line { display: flex; align-items: center; gap: 10px; }
+.or-line::before, .or-line::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.dot.good { background: var(--good); } .dot.critical { background: var(--critical); }
+.check-row { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; line-height: 1.45; }
+.check-row input { margin-top: 3px; }

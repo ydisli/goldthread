@@ -94,6 +94,7 @@ function ProfileTab() {
           </>
         )}
       </Card>
+      <Notifications />
       <Card title="Your data">
         <Row label="Download" help="Your profile, preferences, tokens, comments and everything you changed in each workspace, as one JSON file.">
           <a className="btn" href="/api/me/export" download><Icon name="download" size={14} />Download my data</a>
@@ -107,6 +108,25 @@ function ProfileTab() {
       <div><button className="btn btn-ghost" onClick={() => void logout()}><Icon name="log-out" size={14} />Sign out</button></div>
       {deleting && <DeleteAccountModal onClose={() => setDeleting(false)} />}
     </div>
+  );
+}
+
+function Notifications() {
+  const me = useMe()!;
+  const mail = !!useStore().auth?.mail;
+  const n = (me.prefs.notify ?? {}) as { mentions?: boolean; approvals?: boolean; digest?: boolean };
+  const set = (k: 'mentions' | 'approvals' | 'digest', v: boolean) => updateMe({ prefs: { notify: { ...n, [k]: v } } }).catch(errorToast);
+  const toggle = (k: 'mentions' | 'approvals' | 'digest', on: boolean, label: string, help: string) => (
+    <label className="check-row"><input type="checkbox" checked={on} disabled={!mail || me.demo} onChange={(e) => set(k, e.target.checked)} /><span><span className="strong">{label}</span><span className="small muted"> — {help}</span></span></label>
+  );
+  return (
+    <Card title="Notifications" sub={mail ? `Emails go to ${me.email}.` : 'This server has no email set up, so everything shows in your Inbox instead.'}>
+      <div className="col" style={{ gap: 8 }}>
+        {toggle('mentions', n.mentions !== false, 'When someone mentions me', 'with the comment and a link')}
+        {toggle('approvals', n.approvals !== false, 'When my sign-off is requested', 'with the due date')}
+        {toggle('digest', n.digest === true, 'Weekly digest', 'Monday morning: what is waiting on you in each workspace')}
+      </div>
+    </Card>
   );
 }
 
@@ -176,12 +196,40 @@ function WorkspaceTab() {
       <Card title="Use it everywhere">
         <div className="small">Install Throughline as an app: in Chrome or Edge choose <b>Install app</b> in the address bar; in Safari use <b>File → Add to Dock</b> (macOS) or <b>Share → Add to Home Screen</b> (iPhone, iPad). The last copy of the workspace stays readable offline.</div>
       </Card>
+      {isAdmin && <EmailStatus />}
       {cur?.role === 'owner' && (
         <Card title="Archive workspace">
           <div className="row"><div className="small muted grow">Removes it from everyone's switcher. You need at least one other workspace.</div><button className="btn btn-danger" onClick={archive}>Archive…</button></div>
         </Card>
       )}
     </div>
+  );
+}
+
+function EmailStatus() {
+  const [st, setSt] = useState<{ enabled: boolean; from?: string; host?: string; recent: { to: string; subject: string; createdAt: string; sentAt?: string; attempts: number; error?: string }[] } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const load = useCallback(() => { api('/api/admin/mail').then(setSt).catch(errorToast); }, []);
+  useEffect(load, [load]);
+  const test = async () => {
+    setBusy(true);
+    try { const r = await api<{ to: string }>('/api/admin/mail/test', { method: 'POST' }); toast(`Test email sent to ${r.to}`); } catch (err) { errorToast(err); } finally { setBusy(false); load(); }
+  };
+  if (!st) return null;
+  return (
+    <Card title="Email (whole server)" sub={st.enabled ? `Sending as ${st.from} through ${st.host}.` : 'Not set up. Invites and reset links are shared by hand, and notifications stay in the Inbox.'}
+      actions={st.enabled && <button className="btn btn-sm" onClick={test} disabled={busy}>{busy ? 'Sending…' : 'Send me a test email'}</button>}>
+      {!st.enabled && <div className="small">Set <code>TL_SMTP_URL</code> (for example <code>smtp://user:password@smtp.example.com:587</code>), <code>TL_MAIL_FROM</code> and <code>TL_PUBLIC_URL</code> on the server and restart it. See the self-hosting guide.</div>}
+      {st.enabled && st.recent.length > 0 && (
+        <div className="list">{st.recent.map((m, i) => (
+          <div key={i} className="list-item small" style={{ padding: '6px 0' }}>
+            <span className={`dot ${m.sentAt ? 'good' : m.attempts >= 5 ? 'critical' : 'warning'}`} />
+            <div className="grow ellipsis">{m.subject} <span className="muted">→ {m.to}</span>{m.error && !m.sentAt && <div className="muted ellipsis">{m.error}</div>}</div>
+            <span className="muted nowrap">{m.sentAt ? 'sent' : m.attempts >= 5 ? 'gave up' : `retrying (${m.attempts})`}</span>
+          </div>
+        ))}</div>
+      )}
+    </Card>
   );
 }
 
@@ -207,7 +255,9 @@ function MembersTab() {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<Role>('editor');
   const [teamIds, setTeamIds] = useState<string[]>([]);
-  const [link, setLink] = useState<{ email: string; url: string } | null>(null);
+  const [link, setLink] = useState<{ email: string; url: string; emailed?: boolean } | null>(null);
+  const mail = !!s.auth?.mail;
+  const [sendEmail, setSendEmail] = useState(true);
   const [resetLink, setResetLink] = useState<{ name: string; url: string; expiresAt: string } | null>(null);
   const teams = g.all('team');
   const load = useCallback(() => {
@@ -218,8 +268,8 @@ function MembersTab() {
 
   const invite = async () => {
     try {
-      const r = await api<{ link: string }>('/api/admin/invites', { method: 'POST', json: { email, role, teamIds } });
-      setLink({ email, url: r.link });
+      const r = await api<{ link: string; emailed: boolean }>('/api/admin/invites', { method: 'POST', json: { email, role, teamIds, sendEmail: mail && sendEmail } });
+      setLink({ email, url: r.link, emailed: r.emailed });
       setEmail(''); setTeamIds([]);
       load();
     } catch (err) { errorToast(err); }
@@ -246,7 +296,7 @@ function MembersTab() {
 
   return (
     <div className="stack">
-      <Card title="Invite someone" sub="Throughline doesn't send email. Create a link and share it in Slack, Teams or email — it works once, for that address, for 14 days.">
+      <Card title="Invite someone" sub={mail ? 'They get an email with a link. It works once, for that address, for 14 days.' : 'This server has no email set up. Create a link and share it in Slack, Teams or email — it works once, for that address, for 14 days.'}>
         <form className="invite-form" onSubmit={(e) => { e.preventDefault(); void invite(); }}>
           <input className="input" type="email" placeholder="name@company.com" value={email} onChange={(e) => setEmail(e.target.value)} aria-label="Email to invite" />
           <select className="select" value={role} onChange={(e) => setRole(e.target.value as Role)} aria-label="Role">
@@ -254,6 +304,7 @@ function MembersTab() {
           </select>
           <button className="btn btn-primary" disabled={!email.includes('@')}><Icon name="user-plus" size={14} />Create invite link</button>
         </form>
+        {mail && <label className="row small mt8" style={{ gap: 6 }}><input type="checkbox" checked={sendEmail} onChange={(e) => setSendEmail(e.target.checked)} />Email the invite to them</label>}
         {teams.length > 0 && (
           <div className="row-wrap mt8 small"><span className="muted">Add to teams:</span>
             {teams.map((t) => (
@@ -265,7 +316,7 @@ function MembersTab() {
         )}
         {link && (
           <div className="invite-link mt12">
-            <div className="small"><b>Invite for {link.email}</b> — copy it now; for security it isn't shown again.</div>
+            <div className="small"><b>Invite for {link.email}</b>{link.emailed ? ' — emailed to them. The link is here too, in case it lands in spam.' : ' — copy it now; for security it isn\'t shown again.'}</div>
             <div className="row mt8"><input className="input mono" readOnly value={link.url} onFocus={(e) => e.target.select()} /><button className="btn" onClick={() => copyText(link.url, 'Invite link copied')}><Icon name="copy" size={14} />Copy</button></div>
           </div>
         )}

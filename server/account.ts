@@ -5,6 +5,8 @@ import { isEmail, normalizeEmail, ROLE_RANK, ROLES, validatePassword, type AiPro
 import type { Sample, Workspaces } from './workspaces.ts';
 import { demoEnabled } from './demo.ts';
 import { MCP_TOOL_NAMES } from './mcp.ts';
+import { baseUrl, flushOutbox, mailConfig, mailEnabled, queueMail } from './mail.ts';
+import { notifyInvite, notifyReset } from './notify.ts';
 import { resolve } from 'node:path';
 
 const signupPolicy = () => (process.env.TL_SIGNUP === 'invite-only' ? 'invite-only' : 'open');
@@ -35,7 +37,20 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
       signup: signupPolicy(),
       demo: demoEnabled() ? sys.demoUsers().map((u) => ({ id: u.id, name: u.name, title: u.title, role: u.role })) : [],
       firstRun: sys.countUsers() === 0,
+      mail: mailEnabled(),
     };
+  });
+
+  /** "Forgot password?" — only when email is set up. The answer never reveals whether an account exists. */
+  r.add('POST', '/api/auth/forgot', 'none', async (ctx) => {
+    if (!mailEnabled()) throw new HttpError(404, 'Email isn\'t set up on this server. Ask an admin for a password reset link.');
+    const email = normalizeEmail((await ctx.body())?.email);
+    const key = `forgot|${ctx.req.socket.remoteAddress}|${email}`;
+    checkRateLimit(key);
+    recordFailure(key);
+    const u = isEmail(email) ? sys.userByEmail(email) : undefined;
+    if (u && !u.demo && u.status === 'active' && u.hasPassword) notifyReset(sys, u, sys.createResetLink(u.id, 'self').token, baseUrl(ctx.req));
+    return { ok: true };
   });
 
   r.add('POST', '/api/auth/login', 'none', async (ctx) => {
@@ -340,6 +355,19 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
     return sys.createResetLink(target.id, ctx.user.id);
   });
 
+  r.add('GET', '/api/admin/mail', 'admin', () => {
+    const cfg = mailConfig();
+    return { enabled: !!cfg, from: cfg?.from, host: cfg ? `${cfg.host}:${cfg.port}` : undefined, recent: cfg ? sys.mailLog(10) : [] };
+  });
+
+  r.add('POST', '/api/admin/mail/test', 'admin', async (ctx: WCtx) => {
+    if (!queueMail(sys, { to: ctx.user.email, subject: 'Throughline test email', text: `This is a test from ${baseUrl(ctx.req)}. If you can read it, email works.` })) throw new HttpError(409, 'Email isn\'t set up. Set TL_SMTP_URL on the server.');
+    await flushOutbox(sys);
+    const last = sys.mailLog(1)[0];
+    if (!last?.sentAt) throw new HttpError(502, `Sending failed: ${last?.error ?? 'unknown error'}. It will be retried.`);
+    return { ok: true, to: ctx.user.email };
+  });
+
   r.add('GET', '/api/admin/invites', 'admin', (ctx: WCtx) => sys.invites(ctx.ws.workspace.id).map((i) => ({ ...i, invitedBy: sys.user(i.createdBy)?.name })));
 
   r.add('POST', '/api/admin/invites', 'admin', async (ctx: WCtx) => {
@@ -352,7 +380,8 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
     if (existing && sys.membership(ctx.ws.workspace.id, existing.id)) throw new HttpError(409, `${email} is already a member.`);
     const teamIds = Array.isArray(b.teamIds) ? b.teamIds.filter((t: unknown) => typeof t === 'string') : [];
     const { invite, token } = sys.createInvite({ workspaceId: ctx.ws.workspace.id, email, role, teamIds, createdBy: ctx.user.id });
-    return { ...invite, link: `${originOf(ctx)}/#/join/${token}` };
+    const emailed = b.sendEmail !== false && notifyInvite(sys, { email, token, workspace: ctx.ws.workspace.name, role, by: ctx.user.name, base: baseUrl(ctx.req) });
+    return { ...invite, link: `${originOf(ctx)}/#/join/${token}`, emailed };
   });
 
   r.add('DELETE', '/api/admin/invites/:id', 'admin', (ctx: WCtx) => {
