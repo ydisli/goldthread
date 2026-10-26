@@ -114,7 +114,7 @@ export class Store {
     return e;
   }
 
-  update(id: string, patch: Record<string, unknown>, actor: Actor = 'system'): Entity {
+  update(id: string, patch: Record<string, unknown>, actor: Actor = 'system', opts: { silent?: boolean } = {}): Entity {
     const current = this.get(id);
     if (!current) throw new ValidationError([`Not found: ${id}`]);
     const def = ENTITY_MAP[current.type];
@@ -134,7 +134,7 @@ export class Store {
     for (const k of Object.keys(clean)) {
       if (JSON.stringify(current[k]) !== JSON.stringify(data[k])) changes[k] = { from: compact(current[k]), to: compact(data[k]) };
     }
-    if (Object.keys(changes).length) {
+    if (Object.keys(changes).length && !opts.silent) {
       const labels = Object.keys(changes).map((k) => def.fields.find((f) => f.key === k)?.label ?? k);
       this.log(actor, next, 'update', `Updated ${labels.slice(0, 4).join(', ')}${labels.length > 4 ? '…' : ''}`, changes);
     }
@@ -168,6 +168,17 @@ export class Store {
   private log(actor: Actor, e: Entity, action: Activity['action'], summary: string, changes?: Activity['changes']) {
     this.db.prepare('INSERT INTO activity(at, actor, actor_id, entity_id, entity_type, action, summary, changes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
       .run(new Date().toISOString(), actorName(actor), actorId(actor), e.id, e.type, action, summary, changes ? JSON.stringify(changes) : null);
+  }
+
+  /** Everything one account did here, oldest first (for "download my data"). */
+  activityBy(actorId: string): Activity[] {
+    const rows = this.db.prepare('SELECT * FROM activity WHERE actor_id = ? ORDER BY id').all(actorId) as any[];
+    return rows.map((r) => ({ id: r.id, at: r.at, actor: r.actor, actorId: r.actor_id ?? undefined, entityId: r.entity_id, entityType: r.entity_type, action: r.action, summary: r.summary, changes: r.changes ? JSON.parse(r.changes) : undefined }));
+  }
+
+  /** After an account is deleted, its name no longer appears in the trail. */
+  anonymiseActor(actorId: string, label = 'Former member') {
+    this.db.prepare('UPDATE activity SET actor = ?, actor_id = NULL WHERE actor_id = ?').run(label, actorId);
   }
 
   activity(opts: { entityId?: string; limit?: number } = {}): Activity[] {

@@ -10,7 +10,7 @@ import { resolve } from 'node:path';
 const signupPolicy = () => (process.env.TL_SIGNUP === 'invite-only' ? 'invite-only' : 'open');
 
 function publicUser(u: User) {
-  return { id: u.id, email: u.email, name: u.name, title: u.title, demo: u.demo, prefs: u.prefs };
+  return { id: u.id, email: u.email, name: u.name, title: u.title, demo: u.demo, prefs: u.prefs, hasPassword: u.hasPassword !== false };
 }
 
 function originOf(ctx: Ctx): string {
@@ -137,6 +137,23 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
     return { ok: true, workspaceId: ws.id };
   });
 
+  // ---------------- password reset links (public side) ----------------
+
+  r.add('GET', '/api/password-reset/:token', 'none', (ctx) => {
+    const u = sys.resetFor(ctx.params.token);
+    if (!u) throw new HttpError(410, 'This link has expired or was already used. Ask for a new one.');
+    return { email: u.email, name: u.name };
+  });
+
+  r.add('POST', '/api/password-reset/:token', 'none', async (ctx) => {
+    const { password } = await ctx.body();
+    let user: User;
+    try { user = sys.useResetLink(ctx.params.token, String(password ?? '')); } catch (err) { throw new HttpError(422, (err as Error).message); }
+    const first = sys.workspacesOf(user.id)[0];
+    setSessionCookie(ctx.req, ctx.res, sys.createSession(user.id, first?.id));
+    return { ok: true, workspaceId: first?.id };
+  });
+
   // ---------------- me ----------------
 
   r.add('GET', '/api/me', 'user', (ctx: UCtx) => publicUser(ctx.user));
@@ -164,6 +181,58 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
     if (err) throw new HttpError(422, err);
     sys.setPassword(ctx.user.id, next);
     setSessionCookie(ctx.req, ctx.res, sys.createSession(ctx.user.id, sys.workspacesOf(ctx.user.id)[0]?.id));
+    return { ok: true };
+  });
+
+  /** Everything Throughline holds about you, as one JSON file. */
+  r.add('GET', '/api/me/export', 'user', (ctx: UCtx) => {
+    const u = ctx.user;
+    ctx.res.setHeader('Content-Disposition', `attachment; filename="throughline-my-data-${new Date().toISOString().slice(0, 10)}.json"`);
+    return {
+      exportedAt: new Date().toISOString(),
+      account: { id: u.id, email: u.email, name: u.name, title: u.title, createdAt: u.createdAt, preferences: u.prefs },
+      tokens: sys.tokens(u.id).map((t) => ({ name: t.name, scope: t.scope, workspace: sys.workspace(t.workspaceId)?.name, createdAt: t.createdAt, lastUsedAt: t.lastUsedAt })),
+      workspaces: sys.workspacesOf(u.id).map((w) => {
+        const store = workspaces.store(w.id);
+        return {
+          id: w.id, name: w.name, role: w.role,
+          stakeholderRecord: store.byType('stakeholder').find((x) => x.userId === u.id) ?? null,
+          comments: store.byType('comment').filter((c) => c.authorId === u.id),
+          activity: store.activityBy(u.id),
+        };
+      }),
+    };
+  });
+
+  /**
+   * Delete your account. Workspaces where you are the only member are deleted with it;
+   * elsewhere your name is removed from comments and the activity trail.
+   */
+  r.add('DELETE', '/api/me', 'user', async (ctx: UCtx) => {
+    const { password, confirm } = (await ctx.body()) ?? {};
+    const u = ctx.user;
+    if (u.demo) throw new HttpError(403, 'Demo accounts are shared and can\'t be deleted.');
+    const ok = sys.hasPassword(u.id) ? !!sys.checkPassword(u.email, String(password ?? '')) : normalizeEmail(confirm) === u.email;
+    if (!ok) throw new HttpError(401, sys.hasPassword(u.id) ? 'Your password is not right.' : 'Type your email address to confirm.');
+    const mine = sys.workspacesOf(u.id);
+    const stuck = mine.filter((w) => w.role === 'owner' && sys.owners(w.id) <= 1 && sys.members(w.id).length > 1);
+    if (stuck.length) throw new HttpError(409, `You're the only owner of ${stuck.map((w) => `“${w.name}”`).join(', ')}. Make someone else an owner there first, or remove the other members.`);
+    for (const w of mine) {
+      if (sys.members(w.id).length <= 1) { workspaces.destroy(w); continue; }
+      const store = workspaces.store(w.id);
+      store.anonymiseActor(u.id);
+      store.transaction(() => {
+        for (const c of store.byType('comment')) {
+          if (c.authorId === u.id) store.update(c.id, { author: 'Former member', authorId: null }, 'system', { silent: true });
+          else if (((c.mentions ?? []) as string[]).includes(u.id)) store.update(c.id, { mentions: (c.mentions as string[]).filter((x) => x !== u.id) }, 'system', { silent: true });
+        }
+        for (const st of store.byType('stakeholder')) if (st.userId === u.id) store.update(st.id, { userId: null }, 'system', { silent: true });
+        for (const t of store.byType('team')) if ((t.memberUserIds ?? []).includes(u.id)) store.update(t.id, { memberUserIds: (t.memberUserIds as string[]).filter((x) => x !== u.id) }, 'system', { silent: true });
+      });
+      broadcast(w.id, [{ op: 'members' }]);
+    }
+    sys.deleteUser(u.id);
+    clearSessionCookie(ctx.res);
     return { ok: true };
   });
 
@@ -252,6 +321,23 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
     }
     broadcast(ctx.ws.workspace.id, [{ op: 'members' }]);
     return { ok: true };
+  });
+
+  /**
+   * A one-time link for a member who forgot their password. Only if you administer every
+   * workspace they belong to, so an admin here can't take over an account that matters elsewhere.
+   */
+  r.add('POST', '/api/admin/members/:userId/reset-link', 'admin', (ctx: WCtx) => {
+    const target = sys.user(ctx.params.userId);
+    if (!target || !sys.membership(ctx.ws.workspace.id, target.id)) throw new HttpError(404, 'Not a member.');
+    if (target.id === ctx.user.id) throw new HttpError(422, 'Change your own password under Profile.');
+    if (target.demo) throw new HttpError(422, 'Demo accounts share a password.');
+    for (const w of sys.workspacesOf(target.id)) {
+      const mine = sys.membership(w.id, ctx.user.id)?.role;
+      const allowed = mine === 'owner' || (mine === 'admin' && (w.role === 'editor' || w.role === 'viewer'));
+      if (!allowed) throw new HttpError(403, `${target.name} also belongs to “${w.name}”, which you don't administer. The server operator can reset it with: npm run reset-password -- ${target.email}`);
+    }
+    return sys.createResetLink(target.id, ctx.user.id);
   });
 
   r.add('GET', '/api/admin/invites', 'admin', (ctx: WCtx) => sys.invites(ctx.ws.workspace.id).map((i) => ({ ...i, invitedBy: sys.user(i.createdBy)?.name })));

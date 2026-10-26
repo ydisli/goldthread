@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { ENTITIES, ENTITY_MAP, nameOf, type Entity } from '../../../../core/schema.ts';
-import { api, can, getState, logout, refreshAuth, restoreEntity, updateMe, updateSettings, useGraph, useMe, useSettings, useStore, type Persona, type Role } from '../../store.ts';
+import { api, can, deleteAccount, getState, logout, refreshAuth, restoreEntity, updateMe, updateSettings, useGraph, useMe, useSettings, useStore, type Persona, type Role } from '../../store.ts';
 import { setQuery, useRoute } from '../../router.tsx';
-import { Avatar, Card, Empty, PageHead, Seg, Tabs, copyText, errorToast, toast } from '../../ui/kit.tsx';
+import { Avatar, Card, Empty, Modal, PageHead, Seg, Tabs, copyText, errorToast, toast } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
 import { fmtDate, relDays } from '../../ui/format.ts';
 import { openEditor } from '../../entity/editor.tsx';
@@ -56,6 +56,7 @@ function ProfileTab() {
   const [name, setName] = useState(me.name);
   const [title, setTitle] = useState(me.title ?? '');
   const [pw, setPw] = useState({ current: '', next: '' });
+  const [deleting, setDeleting] = useState(false);
   const persona = me.prefs.persona ?? 'both';
   const saveProfile = async () => {
     try { await updateMe({ name, title }); toast('Profile saved'); } catch (err) { errorToast(err); }
@@ -93,8 +94,51 @@ function ProfileTab() {
           </>
         )}
       </Card>
+      <Card title="Your data">
+        <Row label="Download" help="Your profile, preferences, tokens, comments and everything you changed in each workspace, as one JSON file.">
+          <a className="btn" href="/api/me/export" download><Icon name="download" size={14} />Download my data</a>
+        </Row>
+        {!me.demo && (
+          <Row label="Delete account" help="Workspaces where you're the only member are deleted with it. Elsewhere your work stays, and your name is replaced with “Former member”.">
+            <button className="btn btn-danger" onClick={() => setDeleting(true)}><Icon name="trash-2" size={14} />Delete my account…</button>
+          </Row>
+        )}
+      </Card>
       <div><button className="btn btn-ghost" onClick={() => void logout()}><Icon name="log-out" size={14} />Sign out</button></div>
+      {deleting && <DeleteAccountModal onClose={() => setDeleting(false)} />}
     </div>
+  );
+}
+
+function DeleteAccountModal({ onClose }: { onClose: () => void }) {
+  const me = useMe()!;
+  const [secret, setSecret] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const go = async () => {
+    setBusy(true); setError('');
+    try { await deleteAccount(me.hasPassword === false ? { confirm: secret } : { password: secret }); } catch (err) { setError((err as Error).message); setBusy(false); }
+  };
+  return (
+    <Modal onClose={onClose} label="Delete your account">
+      <form className="col" style={{ padding: 20, gap: 14 }} onSubmit={(e) => { e.preventDefault(); void go(); }}>
+        <div>
+          <h2>Delete your account?</h2>
+          <p className="small muted" style={{ marginBottom: 0 }}>This can't be undone. Download your data first if you want a copy.</p>
+        </div>
+        <ul className="small" style={{ margin: 0, paddingLeft: 18 }}>
+          <li>Workspaces where you're the only member are deleted.</li>
+          <li>In shared workspaces your work stays, signed “Former member”.</li>
+          <li>Your tokens stop working and you're signed out everywhere.</li>
+        </ul>
+        <div className="field">
+          <label htmlFor="del-secret">{me.hasPassword === false ? 'Type your email to confirm' : 'Your password'}</label>
+          <input id="del-secret" className="input" type={me.hasPassword === false ? 'email' : 'password'} autoComplete={me.hasPassword === false ? 'off' : 'current-password'} autoFocus value={secret} onChange={(e) => setSecret(e.target.value)} />
+        </div>
+        {error && <div className="err" role="alert">{error}</div>}
+        <div className="row"><span className="spacer" /><button type="button" className="btn" onClick={onClose}>Cancel</button><button className="btn btn-danger" disabled={busy || !secret}>{busy ? 'Deleting…' : 'Delete my account'}</button></div>
+      </form>
+    </Modal>
   );
 }
 
@@ -164,6 +208,7 @@ function MembersTab() {
   const [role, setRole] = useState<Role>('editor');
   const [teamIds, setTeamIds] = useState<string[]>([]);
   const [link, setLink] = useState<{ email: string; url: string } | null>(null);
+  const [resetLink, setResetLink] = useState<{ name: string; url: string; expiresAt: string } | null>(null);
   const teams = g.all('team');
   const load = useCallback(() => {
     api<MemberRow[]>('/api/admin/members').then(setMembers).catch(errorToast);
@@ -185,6 +230,12 @@ function MembersTab() {
   const remove = async (m: MemberRow) => {
     if (!confirm(`Remove ${m.name} from this workspace? Their history stays; they lose access straight away.`)) return;
     try { await api(`/api/admin/members/${m.userId}`, { method: 'DELETE' }); toast(`${m.name} removed`); load(); } catch (err) { errorToast(err); }
+  };
+  const issueReset = async (m: MemberRow) => {
+    try {
+      const r = await api<{ token: string; expiresAt: string }>(`/api/admin/members/${m.userId}/reset-link`, { method: 'POST' });
+      setResetLink({ name: m.name, url: `${location.origin}${location.pathname}#/reset/${r.token}`, expiresAt: r.expiresAt });
+    } catch (err) { errorToast(err); }
   };
   const revoke = async (i: InviteRow) => {
     try { await api(`/api/admin/invites/${i.id}`, { method: 'DELETE' }); load(); } catch (err) { errorToast(err); }
@@ -220,6 +271,12 @@ function MembersTab() {
         )}
       </Card>
 
+      {resetLink && (
+        <Card title={`Password reset link for ${resetLink.name}`} actions={<button className="btn btn-ghost btn-sm" onClick={() => setResetLink(null)}>Done</button>}>
+          <div className="small">Send it to them privately. It works once, until {fmtDate(resetLink.expiresAt.slice(0, 10))}, and earlier links stop working. Copy it now; it isn't shown again.</div>
+          <div className="row mt8"><input className="input mono" readOnly value={resetLink.url} onFocus={(e) => e.target.select()} aria-label="Reset link" /><button className="btn" onClick={() => copyText(resetLink.url, 'Reset link copied')}><Icon name="copy" size={14} />Copy</button></div>
+        </Card>
+      )}
       <Card title={`People · ${members.length}`} flush>
         <div className="table-wrap">
           <table className="table">
@@ -237,7 +294,12 @@ function MembersTab() {
                         {roleOptions(m.role).map((r) => <option key={r.role} value={r.role}>{r.label}</option>)}
                       </select>
                     </td>
-                    <td className="tight">{!self && !locked && <button className="btn btn-ghost btn-sm" onClick={() => remove(m)} title={`Remove ${m.name}`}>Remove</button>}</td>
+                    <td className="tight">{!self && !locked && (
+                      <div className="row" style={{ gap: 4, flexWrap: 'nowrap' }}>
+                        {!m.demo && <button className="btn btn-ghost btn-sm" onClick={() => issueReset(m)} title={`Create a password reset link for ${m.name}`}>Reset password</button>}
+                        <button className="btn btn-ghost btn-sm" onClick={() => remove(m)} title={`Remove ${m.name}`}>Remove</button>
+                      </div>
+                    )}</td>
                   </tr>
                 );
               })}

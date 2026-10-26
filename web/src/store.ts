@@ -27,7 +27,7 @@ export type Persona = 'po' | 'ba' | 'both';
 export const ROLE_RANK: Record<Role, number> = { viewer: 1, editor: 2, admin: 3, owner: 4 };
 
 export interface Prefs { persona?: Persona; pinned?: string[]; dismissedGuides?: string[]; seenMentions?: string[]; book?: Record<string, string>; [k: string]: unknown }
-export interface Me { id: string; email: string; name: string; title?: string; demo: boolean; prefs: Prefs }
+export interface Me { id: string; email: string; name: string; title?: string; demo: boolean; prefs: Prefs; hasPassword?: boolean }
 export interface WorkspaceRef { id: string; name: string; kind: 'personal' | 'team'; demo: boolean; role: Role }
 export interface Member { userId: string; name: string; email: string; role: Role }
 export interface DemoAccount { id: string; name: string; title?: string; role: Role }
@@ -189,6 +189,20 @@ export async function signup(data: { name: string; email: string; password: stri
 export async function acceptInvite(token: string, data: Record<string, unknown>) {
   const r = await api<{ workspaceId: string }>(`/api/invites/${encodeURIComponent(token)}/accept`, { method: 'POST', json: data });
   setCurrentWs(r.workspaceId);
+  await boot();
+}
+
+export async function resetPassword(token: string, password: string) {
+  const r = await api<{ workspaceId?: string }>(`/api/password-reset/${encodeURIComponent(token)}`, { method: 'POST', json: { password } });
+  setCurrentWs(r.workspaceId ?? null);
+  await boot();
+}
+
+/** Delete the signed-in account (see DELETE /api/me for what happens to workspaces). */
+export async function deleteAccount(body: { password?: string; confirm?: string }) {
+  await api('/api/me', { method: 'DELETE', json: body });
+  setCurrentWs(null);
+  disconnectLive();
   await boot();
 }
 

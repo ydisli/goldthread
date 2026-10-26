@@ -31,6 +31,8 @@ export interface User {
   demo: boolean;
   createdAt: string;
   prefs: Prefs;
+  /** False for accounts that only sign in with single sign-on. */
+  hasPassword?: boolean;
 }
 
 export interface Workspace {
@@ -140,6 +142,10 @@ export class SystemDB {
         name TEXT NOT NULL, scope TEXT NOT NULL, prefix TEXT NOT NULL, token_hash TEXT NOT NULL UNIQUE,
         created_at TEXT NOT NULL, last_used_at TEXT, revoked INTEGER NOT NULL DEFAULT 0
       );
+      CREATE TABLE IF NOT EXISTS resets (
+        id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), token_hash TEXT NOT NULL UNIQUE,
+        created_by TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, used_at TEXT
+      );
       CREATE TABLE IF NOT EXISTS ai_config (
         workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id), provider TEXT NOT NULL, model TEXT, base_url TEXT, key_enc TEXT,
         updated_at TEXT NOT NULL, updated_by TEXT
@@ -169,7 +175,7 @@ export class SystemDB {
   // ---------------- users ----------------
 
   private rowToUser(r: any): User {
-    return { id: r.id, email: r.email, name: r.name, title: r.title ?? undefined, status: r.status, demo: !!r.demo, createdAt: r.created_at, prefs: JSON.parse(r.prefs || '{}') };
+    return { id: r.id, email: r.email, name: r.name, title: r.title ?? undefined, status: r.status, demo: !!r.demo, createdAt: r.created_at, prefs: JSON.parse(r.prefs || '{}'), hasPassword: !!r.pw_hash };
   }
 
   createUser(input: { email: string; name: string; password?: string; title?: string; demo?: boolean; prefs?: Prefs }): User {
@@ -216,6 +222,49 @@ export class SystemDB {
   setPassword(userId: string, password: string) {
     this.db.prepare('UPDATE users SET pw_hash = ? WHERE id = ?').run(hashPassword(password), userId);
     this.db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId);
+  }
+
+  hasPassword(userId: string): boolean {
+    const r = this.db.prepare('SELECT pw_hash FROM users WHERE id = ?').get(userId) as { pw_hash: string | null } | undefined;
+    return !!r?.pw_hash;
+  }
+
+  /** Remove an account and everything in system.db that points at it. Workspace contents are handled by the caller. */
+  deleteUser(userId: string) {
+    this.transaction(() => {
+      for (const t of ['memberships', 'sessions', 'tokens', 'resets']) this.db.prepare(`DELETE FROM ${t} WHERE user_id = ?`).run(userId);
+      this.db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+    });
+  }
+
+  // ---------------- password reset links ----------------
+
+  /** A one-time link to set a new password, issued by an admin or the server operator. Older unused links stop working. */
+  createResetLink(userId: string, createdBy: string, hours = 24): { token: string; expiresAt: string } {
+    this.db.prepare('UPDATE resets SET used_at = ? WHERE user_id = ? AND used_at IS NULL').run(now(), userId);
+    const token = randomBytes(24).toString('base64url');
+    const expiresAt = new Date(Date.now() + hours * 3_600_000).toISOString();
+    this.db.prepare('INSERT INTO resets(id, user_id, token_hash, created_by, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)')
+      .run(id('rst'), userId, sha256(token), createdBy, now(), expiresAt);
+    return { token, expiresAt };
+  }
+
+  /** The account a reset link is for, if the link is still usable. */
+  resetFor(token: string): User | undefined {
+    const r = this.db.prepare('SELECT * FROM resets WHERE token_hash = ?').get(sha256(String(token))) as any;
+    if (!r || r.used_at || r.expires_at < now()) return undefined;
+    const u = this.user(r.user_id);
+    return u && u.status === 'active' ? u : undefined;
+  }
+
+  useResetLink(token: string, password: string): User {
+    const user = this.resetFor(token);
+    if (!user) throw new Error('This link has expired or was already used. Ask for a new one.');
+    const problem = validatePassword(password);
+    if (problem) throw new Error(problem);
+    this.db.prepare('UPDATE resets SET used_at = ? WHERE token_hash = ?').run(now(), sha256(String(token)));
+    this.setPassword(user.id, password);
+    return user;
   }
 
   countUsers(opts: { includeDemo?: boolean } = {}): number {

@@ -18,7 +18,8 @@
     "test": "node --test \"core/test/*.test.ts\" \"server/test/*.test.ts\"",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "seed": "node server/index.ts --reset-only",
-    "tl": "node cli/tl.ts"
+    "tl": "node cli/tl.ts",
+    "reset-password": "node server/index.ts --reset-password"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

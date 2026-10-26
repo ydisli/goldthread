@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
-import { acceptInvite, api, demoLogin, login, logout, signup, useStore, type Persona, type Role } from '../../store.ts';
+import { acceptInvite, api, demoLogin, login, logout, resetPassword, signup, useStore, type Persona, type Role } from '../../store.ts';
 import { navigate } from '../../router.tsx';
 import { Avatar, Seg } from '../../ui/kit.tsx';
 import { Icon } from '../../ui/icons.tsx';
@@ -229,6 +229,55 @@ export function JoinScreen({ token }: { token: string }) {
               )}
               {error && <div className="err">{error}</div>}
               {!signedInOther && <button className="btn btn-primary btn-lg" disabled={busy}>{busy ? 'Joining…' : `Join ${info.workspaceName}`}</button>}
+            </form>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+/** A one-time link from an admin or the server operator to choose a new password. */
+export function ResetScreen({ token }: { token: string }) {
+  const [info, setInfo] = useState<{ email: string; name: string } | null>(null);
+  const [loadError, setLoadError] = useState('');
+  const [password, setPassword] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    api<{ email: string; name: string }>(`/api/password-reset/${encodeURIComponent(token)}`).then(setInfo).catch((err) => setLoadError(errText(err)));
+  }, [token]);
+  const save = async (e: FormEvent) => {
+    e.preventDefault();
+    setBusy(true); setError('');
+    try {
+      await resetPassword(token, password);
+      navigate('/today', { replace: true });
+    } catch (err) { setError(errText(err)); setBusy(false); }
+  };
+  return (
+    <div className="auth">
+      <Brand />
+      <section className="auth-panel">
+        <div className="auth-card col" style={{ gap: 16 }}>
+          {loadError && (
+            <>
+              <h2 style={{ fontSize: 20 }}>This link can't be used</h2>
+              <p className="muted">{loadError}</p>
+              <button className="btn" onClick={() => navigate('/today', { replace: true })}>Go to sign in</button>
+            </>
+          )}
+          {!info && !loadError && <div className="muted">Checking your link…</div>}
+          {info && (
+            <form className="col" style={{ gap: 14 }} onSubmit={save}>
+              <div>
+                <div className="eyebrow">New password</div>
+                <h2 style={{ fontSize: 22 }}>Choose a new password</h2>
+                <div className="small muted" style={{ marginTop: 4 }}>For <b>{info.email}</b>. You'll be signed out everywhere else.</div>
+              </div>
+              <div className="field"><label htmlFor="r-pw">New password</label><input id="r-pw" className="input" type="password" autoComplete="new-password" autoFocus value={password} onChange={(e) => setPassword(e.target.value)} /><span className="help">At least 10 characters.</span></div>
+              {error && <div className="err" role="alert">{error}</div>}
+              <button className="btn btn-primary btn-lg" disabled={busy || password.length < 10}>{busy ? 'Saving…' : 'Save and sign in'}</button>
             </form>
           )}
         </div>

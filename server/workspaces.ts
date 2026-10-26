@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, renameSync } from 'node:fs';
+import { existsSync, mkdirSync, renameSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { Store } from './db.ts';
 import { seedWorkspace, type SeedPeople } from './seed.ts';
@@ -64,6 +64,15 @@ export class Workspaces {
       name: user.name, email: user.email, title: user.title, kind: 'internal', userId: user.id,
       power: 3, interest: 4, currentEngagement: 'supportive', desiredEngagement: 'supportive',
     }, 'system');
+  }
+
+  /** Delete a workspace and its data file for good (used when its only member deletes their account). */
+  destroy(ws: Workspace) {
+    this.sys.archiveWorkspace(ws.id);
+    this.stores.get(ws.id)?.close();
+    this.stores.delete(ws.id);
+    const file = join(this.dir, `${ws.id}.db`);
+    for (const suffix of ['', '-wal', '-shm']) rmSync(file + suffix, { force: true });
   }
 
   /** Archive: the workspace disappears for everyone; the data file is kept. */

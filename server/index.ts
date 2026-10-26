@@ -33,6 +33,17 @@ export const sys = new SystemDB(DATA);
 export const workspaces = new Workspaces(sys, DATA);
 ensureDemo(sys, workspaces);
 
+// Operator escape hatch: `npm run reset-password -- someone@example.com` prints a one-time link.
+if (flag('reset-password')) {
+  const email = opt('reset-password', '');
+  const user = sys.userByEmail(email);
+  if (!user) { console.error(`No account for "${email}".`); process.exit(1); }
+  const { token, expiresAt } = sys.createResetLink(user.id, 'operator');
+  const base = (process.env.TL_PUBLIC_URL ?? `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`).replace(/\/$/, '');
+  console.log(`Password reset link for ${user.name} <${user.email}>, valid until ${expiresAt}:\n${base}/#/reset/${token}`);
+  process.exit(0);
+}
+
 if (flag('reset-only')) {
   console.log(resetDemo(sys, workspaces) ? 'Reset the ServiceHub demo workspace.' : 'No demo workspace to reset (TL_DEMO=0, or this install started without one).');
   process.exit(0);

@@ -7,7 +7,7 @@ import { Toasts, Empty } from './ui/kit.tsx';
 import { Icon } from './ui/icons.tsx';
 import { ROUTES } from './routes.tsx';
 import { ErrorBoundary } from './ui/ErrorBoundary.tsx';
-import { AuthScreen, JoinScreen } from './pages/auth/Auth.tsx';
+import { AuthScreen, JoinScreen, ResetScreen } from './pages/auth/Auth.tsx';
 
 export function App() {
   const s = useStore();
@@ -21,6 +21,8 @@ export function App() {
   // Invite links work whether or not you are signed in.
   const join = match('/join/:token', path);
   if (join) return <><JoinScreen token={join.token} /><Toasts /></>;
+  const reset = match('/reset/:token', path);
+  if (reset) return <><ResetScreen token={reset.token} /><Toasts /></>;
   if (s.status === 'loading' && !s.auth) return <div className="boot"><span className="ws-mark">T</span></div>;
   if (s.status === 'auth') return <><AuthScreen /><Toasts /></>;
 
