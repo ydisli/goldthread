@@ -9,6 +9,7 @@ import { SystemDB } from './system.ts';
 import { Workspaces } from './workspaces.ts';
 import { ensureDemo, resetDemo } from './demo.ts';
 import { accountRoutes } from './account.ts';
+import { oidcRoutes } from './oidc.ts';
 import { apiRoutes } from './api.ts';
 import { aiRoutes } from './ai.ts';
 import { mcpHandler } from './mcp.ts';
@@ -53,6 +54,7 @@ if (flag('reset-only')) {
 
 const router = new Router();
 accountRoutes(router, sys, workspaces);
+oidcRoutes(router, sys, workspaces);
 apiRoutes(router, sys, workspaces);
 aiRoutes(router, sys);
 router.add('GET', '/api/health', 'none', () => ({ ok: true, name: 'throughline', version: '0.2.0' }), { cors: true });

@@ -197,6 +197,7 @@ function DemoAccounts({ accounts }: { accounts: { id: string; name: string; titl
 interface InviteInfo { workspaceName: string; email: string; role: Role; invitedBy?: string; accountExists: boolean; signedInAs: string | null }
 
 export function JoinScreen({ token }: { token: string }) {
+  const sso = useStore().auth?.sso;
   const [info, setInfo] = useState<InviteInfo | null>(null);
   const [loadError, setLoadError] = useState('');
   const [name, setName] = useState('');
@@ -247,7 +248,14 @@ export function JoinScreen({ token }: { token: string }) {
                 </>
               ) : info.signedInAs ? (
                 <p className="small muted">You're signed in as {info.signedInAs}. Accepting adds this workspace to your switcher.</p>
-              ) : info.accountExists ? (
+              ) : null}
+              {!info.signedInAs && sso && (
+                <>
+                  <a className="btn btn-lg" href={`/api/auth/oidc/start?invite=${encodeURIComponent(token)}`}><Icon name="key-round" size={15} />Continue with {sso.name}</a>
+                  <div className="or-line small muted"><span>{info.accountExists ? 'or with your password' : 'or create a password'}</span></div>
+                </>
+              )}
+              {signedInOther || info.signedInAs ? null : info.accountExists ? (
                 <div className="field"><label htmlFor="j-pw">Your password</label><input id="j-pw" className="input" type="password" autoComplete="current-password" autoFocus value={password} onChange={(e) => setPassword(e.target.value)} /><span className="help">You already have an account with this email.</span></div>
               ) : (
                 <>

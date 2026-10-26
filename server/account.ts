@@ -7,6 +7,7 @@ import { demoEnabled } from './demo.ts';
 import { MCP_TOOL_NAMES } from './mcp.ts';
 import { baseUrl, flushOutbox, mailConfig, mailEnabled, queueMail } from './mail.ts';
 import { notifyInvite, notifyReset } from './notify.ts';
+import { oidcConfig } from './oidc.ts';
 import { resolve } from 'node:path';
 
 const signupPolicy = () => (process.env.TL_SIGNUP === 'invite-only' ? 'invite-only' : 'open');
@@ -38,6 +39,7 @@ export function accountRoutes(r: Router, sys: SystemDB, workspaces: Workspaces) 
       demo: demoEnabled() ? sys.demoUsers().map((u) => ({ id: u.id, name: u.name, title: u.title, role: u.role })) : [],
       firstRun: sys.countUsers() === 0,
       mail: mailEnabled(),
+      sso: oidcConfig() ? { name: oidcConfig()!.name } : null,
     };
   });
 

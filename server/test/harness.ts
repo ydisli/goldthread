@@ -6,6 +6,7 @@ import { Workspaces } from '../workspaces.ts';
 import { accountRoutes } from '../account.ts';
 import { apiRoutes } from '../api.ts';
 import { aiRoutes } from '../ai.ts';
+import { oidcRoutes } from '../oidc.ts';
 import { authenticate } from '../auth.ts';
 import { HttpError, Router, type Ctx } from '../http.ts';
 
@@ -18,6 +19,7 @@ export function harness() {
   accountRoutes(router, sys, ws);
   apiRoutes(router, sys, ws);
   aiRoutes(router, sys);
+  oidcRoutes(router, sys, ws);
   const call = async (method: string, path: string, opts: { session?: string; workspace?: string; body?: unknown } = {}) => {
     const url = new URL(`http://localhost${path}`);
     const hit = router.match(method, url.pathname);
@@ -25,11 +27,17 @@ export function harness() {
     const headers: Record<string, string> = {};
     if (opts.session) headers.cookie = `tl_session=${opts.session}`;
     if (opts.workspace) headers['x-tl-workspace'] = opts.workspace;
-    const res: any = { headers: {} as Record<string, string | string[]>, setHeader(k: string, v: string) { this.headers[k.toLowerCase()] = v; } };
+    const res: any = {
+      headers: {} as Record<string, string | string[]>, statusCode: 200, headersSent: false,
+      setHeader(k: string, v: string) { this.headers[k.toLowerCase()] = v; },
+      writeHead(status: number, h: Record<string, string> = {}) { this.statusCode = status; for (const [k, v] of Object.entries(h)) this.headers[k.toLowerCase()] = v; this.headersSent = true; return this; },
+      end() { this.headersSent = true; },
+    };
     const ctx = { req: { headers, socket: {} } as any, res, url, params: hit.params, body: async () => opts.body ?? {} } as Ctx;
     authenticate(ctx, hit.route.need, sys, ws);
     try {
-      return { status: 200, body: await hit.route.handler(ctx) as any, headers: res.headers };
+      const body = await hit.route.handler(ctx) as any;
+      return { status: res.headersSent ? res.statusCode : 200, body, headers: res.headers };
     } catch (err) {
       if (err instanceof HttpError) return { status: err.status, body: { error: err.message, ...(err.data ?? {}) } as any, headers: res.headers };
       throw err;
